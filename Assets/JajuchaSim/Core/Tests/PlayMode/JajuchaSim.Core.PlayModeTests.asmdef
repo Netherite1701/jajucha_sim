@@ -1,0 +1,20 @@
+{
+    "name": "JajuchaSim.Core.PlayModeTests",
+    "rootNamespace": "JajuchaSim.Core.Tests",
+    "references": [
+        "JajuchaSim.Core",
+        "JajuchaSim.Core.TestSupport"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

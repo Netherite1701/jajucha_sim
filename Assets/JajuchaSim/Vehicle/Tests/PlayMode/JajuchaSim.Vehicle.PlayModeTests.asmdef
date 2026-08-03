@@ -1,0 +1,21 @@
+{
+    "name": "JajuchaSim.Vehicle.PlayModeTests",
+    "rootNamespace": "JajuchaSim.Vehicle.Tests",
+    "references": [
+        "JajuchaSim.Vehicle",
+        "JajuchaSim.Core",
+        "JajuchaSim.Core.TestSupport"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

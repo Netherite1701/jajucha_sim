@@ -1,0 +1,223 @@
+FEATURE COMPATIBILITY is the number one consideration for this project. make it compatible with the actual jajucha code.
+
+The standalone build should always show the actual Jajucha driving view as the main screen.
+Debug information appears around it or as overlays/panels, but it should never replace the driving view.
+So the default layout becomes something like:
+┌───────────────────────────────────────────────────────────────┐
+│ JAJUCHA SIM                RUNNING   1.0×   Python: CONNECTED │
+├───────────────┬───────────────────────────────────────────────┤
+│               │                                               │
+│ Simulation    │                                               │
+│ Vehicle       │                                               │
+│ Cameras       │             MAIN DRIVING VIEW                 │
+│ Depth         │          third-person / chase cam             │
+│ Bridge        │                                               │
+│ Events        │                                               │
+│ ANN           │                                               │
+│ FSM           │                                               │
+│               │                                               │
+├───────────────┴───────────────────────────────────────────────┤
+│ speed=3   steer=-5,-5   14.8 cm/s   tick=18421   184.21 s   │
+└───────────────────────────────────────────────────────────────┘
+
+No dedicated physics panel
+Remove:
+Physics
+Suspension
+Wheel force
+Rigidbody diagnostics
+
+from the normal runtime panel list.
+We can still retain low-level physics diagnostics internally for automated tests and troubleshooting, but they don't need a user-facing panel.
+So the main runtime panels become:
+Simulation
+Vehicle
+Cameras
+Depth
+Bridge
+Events
+ANN
+FSM
+
+Later potentially:
+Course / Scoring
+
+Main driving camera is permanent
+Add a dedicated:
+ObserverCamera
+
+separate from the Jajucha sensor cameras.
+Hierarchy:
+Simulation
+│
+├─ JajuchaVehicle
+│  └─ Sensors
+│     ├─ LeftCamera
+│     ├─ CenterCamera
+│     └─ RightCamera
+│
+└─ ObserverCamera
+
+The observer camera is never sent to Python.
+It exists only so the user can watch the vehicle.
+
+Default observer mode
+I’d use a smooth chase camera:
+                 Observer
+                     ●
+                    /
+                   /
+              ┌─────────┐
+              │ Jajucha │ →
+              └─────────┘
+
+Following from slightly above and behind.
+Configurable:
+distance
+height
+look-at offset
+follow smoothing
+rotation smoothing
+
+But it should not affect physics.
+
+Additional view modes
+Useful runtime buttons:
+[CHASE] [TOP] [FREE]
+
+Chase
+Normal driving view.
+Top
+Good for seeing the entire maneuver.
+       CAMERA
+          ↓
+
+     track + vehicle
+
+Free
+Developer orbit/fly camera.
+But regardless of mode:
+the main simulation viewport remains visible.
+
+Debug panels should overlay or dock beside the viewport
+For example, Camera panel:
+┌───────────────────────────────────────────────────────────────┐
+│                                                               │
+│                     MAIN DRIVING VIEW                         │
+│                                                               │
+│                                     ┌──────────────────────┐  │
+│                                     │ CENTER CAMERA        │  │
+│                                     │                      │  │
+│                                     │    live sensor       │  │
+│                                     │                      │  │
+│                                     ├──────────────────────┤  │
+│                                     │ 640×480  30 FPS      │  │
+│                                     └──────────────────────┘  │
+│                                                               │
+└───────────────────────────────────────────────────────────────┘
+
+The camera panel can be:
+collapsed
+expanded
+moved to a side area
+but the main view stays.
+
+Full camera debugging
+When selecting Cameras, I'd show compact feeds without hiding the car:
+MAIN DRIVING VIEW
+
+                          ┌───────────┐
+                          │ LEFT      │
+                          │ live feed │
+                          ├───────────┤
+                          │ CENTER    │
+                          │ live feed │
+                          ├───────────┤
+                          │ RIGHT     │
+                          │ live feed │
+                          └───────────┘
+
+If the user wants to inspect a camera in detail, enlarge it to maybe 40–50% of the screen rather than replacing the entire viewport.
+
+Vehicle panel stays lightweight
+Something like:
+VEHICLE
+
+JCHM
+left      -5
+right     -5
+speed      3
+
+Steering
+FL       -9.9°
+FR       -9.8°
+
+Motion
+speed    14.8 cm/s
+heading  31.7°
+
+No detailed force data.
+
+Bottom status bar should always remain
+Even with all panels closed:
+┌─────────────────────────────────────────────────────────────┐
+│ RUNNING │ 1.0× │ 14.8 cm/s │ (-5,-5,3) │ Python ● │ 184s │
+└─────────────────────────────────────────────────────────────┘
+
+That gives immediate visibility without opening anything.
+
+Debug UI OFF does not mean HUD completely disappears
+I'd distinguish:
+Full debug UI
+Panels/sidebar open.
+Minimal HUD
+Always visible during normal use:
+State
+speed
+current JCHM command
+Python connection
+simulation time
+
+And:
+F1
+
+toggles:
+Minimal HUD
+↕
+Full Debug UI
+
+The driving view never disappears.
+
+Revised runtime hierarchy
+_RuntimeUI
+│
+├─ MainViewport
+│  └─ ObserverCamera output
+│
+├─ MinimalHUD
+│  ├─ SimulationState
+│  ├─ VehicleSpeed
+│  ├─ MotorCommand
+│  └─ BridgeState
+│
+├─ DebugSidebar
+│
+└─ DebugPanels
+   ├─ SimulationPanel
+   ├─ VehiclePanel
+   ├─ CameraPanel
+   ├─ DepthPanel
+   ├─ BridgePanel
+   ├─ EventPanel
+   ├─ ANNPanel
+   └─ FSMPanel
+
+And importantly:
+ObserverCamera
+≠
+CenterCamera
+
+The first is for the human watching the simulator.
+The second is what the autonomous-driving program sees.
+That separation should stay strict.
+

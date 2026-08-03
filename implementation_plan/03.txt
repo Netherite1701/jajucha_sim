@@ -1,0 +1,92 @@
+Yes. I’d make that an explicit vehicle invariant in Step 2:
+speed == 0
+→ no propulsion force
+→ no commanded forward/backward motion
+
+regardless of steering angle.
+So this:
+jchm.control.set_motor(-10, 10, 0)
+
+means:
+front-left steering  = -20°
+front-right steering = +20°
+rear drive           = 0
+
+and the car must remain stationary except for tiny settling from physics.
+Update to the Step 2 drive logic
+The RearDriveModel should behave like this:
+if (command.Speed == 0)
+{
+    targetSpeedCmS = 0f;
+    driveForce = 0f;
+}
+else
+{
+    targetSpeedCmS = speedMap.Evaluate(command.Speed);
+    driveForce = CalculateDriveForce(targetSpeedCmS);
+}
+
+Steering is evaluated independently:
+leftTargetAngle =
+    command.Left * degreesPerJchmUnit;
+
+rightTargetAngle =
+    command.Right * degreesPerJchmUnit;
+
+So the two paths are completely separate:
+left/right
+    ↓
+steering servos
+    ↓
+wheel angle
+
+
+speed
+    ↓
+rear drive motor
+    ↓
+propulsion
+
+There should be no code path where steering itself generates propulsion.
+Important physics detail
+The tires will still produce lateral constraint forces while stationary. That is normal and necessary.
+For example, a wheel turned 20° still contacts the ground.
+But:
+longitudinal motor force = 0
+
+when speed == 0.
+So we must avoid a bad implementation like:
+wheel points diagonally
++
+"move along wheel forward vector"
+=
+car moves even though speed = 0
+
+That would be wrong.
+The tire orientation only changes the direction of forces when the chassis is already moving or propulsion is applied.
+Add a mandatory test
+ZeroSpeedNeverPropelsTest
+Run all combinations:
+(-10, -10, 0)
+(-10,   0, 0)
+(-10,  10, 0)
+(  0,  10, 0)
+( 10,  10, 0)
+
+Simulate for, say:
+10 simulated seconds
+
+Acceptance:
+commanded propulsion force = exactly 0
+
+horizontal displacement
+< small settling tolerance
+
+forward velocity after settling
+≈ 0
+
+This should be a hard Step 2 completion criterion.
+So the rule becomes:
+left and right only steer. speed is the only control input allowed to command translational propulsion.
+That matches the JCHM model cleanly.
+

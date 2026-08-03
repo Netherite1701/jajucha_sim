@@ -1,0 +1,1125 @@
+Step 4 — Camera System + jchm.camera Compatibility
+This step adds the first real perception input.
+The manual confirms that the Jajucha has three cameras named:
+left
+center
+right
+with the center camera mainly used for lane recognition and the left/right cameras used for depth-related perception. The real API is:
+jchm.camera.get_image("center")
+jchm.camera.get_image("left")
+jchm.camera.get_image("right")
+and it returns images usable directly with OpenCV.  
+자주차 매뉴얼.pdf
+The manual also provides:
+jchm.camera.get_depth()
+for a grayscale depth image, where brighter pixels indicate nearer objects and darker pixels indicate farther objects.  
+자주차 매뉴얼.pdf
+For this step, though, I would split implementation into Step 4A RGB cameras and Step 4B depth, because RGB camera correctness should be established before building stereo/depth behavior.
+4.1 End goal
+This real-style code:
+import jchm
+import cv2
+
+image = jchm.camera.get_image("center")
+
+cv2.imshow("camera", image)
+cv2.waitKey(1)
+should work against Unity.
+And:
+image.shape
+should behave like a normal OpenCV image:
+(height, width, 3)
+with:
+dtype = uint8
+channel order = BGR
+because the manual consistently uses the returned frames directly with OpenCV operations.
+4.2 Architecture
+Add:
+Assets/JajuchaSim/Sensors/
+
+├─ Runtime/
+│  ├─ Camera/
+│  │  ├─ JajuchaCameraSensor.cs
+│  │  ├─ CameraSensorSystem.cs
+│  │  ├─ CameraFrame.cs
+│  │  ├─ CameraCaptureScheduler.cs
+│  │  ├─ CameraConfig.cs
+│  │  └─ CameraLocation.cs
+│  │
+│  └─ Config/
+│
+└─ Tests/
+Assembly:
+JajuchaSim.Sensors.asmdef
+Dependencies:
+JajuchaSim.Core
+JajuchaSim.Vehicle
+Bridge can depend on Sensors:
+Core
+ ↑
+Vehicle
+ ↑
+Sensors
+ ↑
+Bridge
+But Sensors should not depend on Bridge.
+4.3 Camera enum
+Internally:
+public enum CameraLocation
+{
+    Left,
+    Center,
+    Right
+}
+Protocol strings remain:
+"left"
+"center"
+"right"
+Do not use arbitrary string comparisons everywhere.
+4.4 Vehicle prefab changes
+Extend the authoritative vehicle prefab:
+JajuchaVehicle
+│
+├─ Chassis
+├─ WheelMounts
+│
+├─ Sensors
+│  ├─ CameraLeftMount
+│  │  └─ CameraLeft
+│  │
+│  ├─ CameraCenterMount
+│  │  └─ CameraCenter
+│  │
+│  └─ CameraRightMount
+│     └─ CameraRight
+│
+└─ Debug
+Each mount must have an independently editable:
+position
+rotation
+in centimeter-space.
+No assumptions like:
+right = mirror(left)
+even if that is convenient initially.
+The real hardware may not be perfectly symmetric.
+4.5 Mounts are calibration objects
+The camera object itself should not be randomly moved.
+Use:
+Mount Transform
+    ↓
+Camera Sensor
+So:
+CameraCenterMount
+position = measured hardware location
+rotation = measured hardware orientation
+Then sensor configuration controls optics.
+This gives us two separate calibration layers:
+Extrinsics
+= where camera is
+
+Intrinsics
+= how camera sees
+4.6 Explicit extrinsic calibration
+For each camera:
+Position relative to vehicle origin:
+
+X cm
+Y cm
+Z cm
+
+Rotation:
+
+Pitch
+Yaw
+Roll
+Example placeholder:
+Center
+
+X = 0
+Y = ?
+Z = ?
+
+Pitch = ?
+Yaw = 0
+Roll = 0
+Unknown values should stay documented as approximate until measured.
+Do not infer exact placement from a photograph.
+4.7 Camera config
+Create:
+JajuchaCameraConfig.asset
+for each camera or one configuration containing all three.
+Fields:
+Resolution
+ ├─ width
+ └─ height
+
+Optics
+ ├─ verticalFov
+ ├─ nearClipCm
+ └─ farClipCm
+
+Timing
+ ├─ frameRate
+ └─ capturePhase
+
+Output
+ ├─ RGB/BGR format
+ └─ compression settings
+
+Calibration
+ ├─ calibrated
+ └─ notes
+4.8 Do not invent a resolution as fact
+The manual excerpts confirm three camera names and APIs, but the retrieved sections do not establish an authoritative hardware image resolution.
+Therefore initially:
+resolution = configurable
+Use a practical temporary default such as:
+640 × 480
+only as a simulator default, clearly marked:
+APPROXIMATION / CONFIGURATION DEFAULT
+Once we run the actual car:
+image = jchm.camera.get_image("center")
+print(image.shape)
+we can enter the real dimensions.
+4.9 Same rule for FOV
+Do not guess real FOV and later forget that it was guessed.
+Use:
+verticalFov = temporary configurable value
+perhaps:
+60°
+as a development default.
+But mark:
+Needs physical calibration
+4.10 Camera render units
+Our world uses:
+1 Unity unit = 1 cm
+so camera clipping distances also need to respect centimeter units.
+For example:
+near clip = 1 cm
+far clip = 1000 cm
+Unity Camera:
+camera.nearClipPlane = 1f;
+camera.farClipPlane = 1000f;
+No meter conversion should accidentally appear.
+4.11 Three independent Unity Cameras
+Use three actual Unity Camera components:
+CameraLeft
+CameraCenter
+CameraRight
+Do not fake side cameras by cropping one giant image.
+Why?
+Because later we need correct:
+parallax
+occlusion
+stereo disparity
+independent pose
+for depth.
+4.12 Cameras render only on capture
+Do not make all three cameras render every display frame unnecessarily.
+Set:
+camera.enabled = false;
+and explicitly call:
+camera.Render();
+when a sensor frame is due.
+Architecture:
+simulation tick
+    ↓
+CameraCaptureScheduler
+    ↓
+is camera frame due?
+    ↓ yes
+camera.Render()
+4.13 Camera timing is not simulation timing
+Simulation might run at:
+100 Hz
+while cameras run at:
+30 FPS
+Therefore:
+physics tick:
+0.01 s
+
+camera interval:
+~0.0333 s
+The sensor scheduler must support different rates.
+4.14 General sensor scheduling rule
+Do not capture an image every time Python calls get_image().
+That would make sensor timing dependent on Python processing speed.
+Instead:
+Camera sensor generates frames
+at its configured frame rate
+
+Python get_image()
+returns most recent completed frame
+This more closely represents real hardware.
+4.15 Example frame schedule
+Simulation:
+tick 0    0.000
+tick 1    0.010
+tick 2    0.020
+tick 3    0.030
+tick 4    0.040
+30 FPS camera approximately:
+frame #0   0.000
+frame #1   0.033
+frame #2   0.067
+...
+Don't force camera generation onto every exact integer simulation tick.
+Use an accumulator/schedule.
+4.16 Frame metadata
+Internally represent a frame as:
+public sealed class CameraFrame
+{
+    public CameraLocation Location { get; }
+
+    public long FrameId { get; }
+
+    public long SimulationTick { get; }
+
+    public double SimulationTime { get; }
+
+    public int Width { get; }
+
+    public int Height { get; }
+
+    public byte[] Data { get; }
+}
+Later this is invaluable for:
+ANN timing
+logging
+replay
+latency measurements
+debugging
+4.17 Do not expose Unity textures to Bridge
+Sensor layer outputs a neutral frame representation.
+Bad:
+Bridge reads RenderTexture
+Good:
+CameraSensor
+    ↓
+CameraFrame
+    ↓
+Bridge
+The network layer should not know how Unity rendered the image.
+4.18 Color format contract
+Unity commonly gives RGB ordering.
+OpenCV convention is:
+BGR
+The manual shows camera frames being passed directly into OpenCV processing.  
+자주차 매뉴얼.pdf
+Therefore define Python-visible contract as:
+uint8
+height × width × 3
+BGR
+Convert exactly once.
+Do not accidentally convert:
+RGB → BGR → RGB → BGR
+across layers.
+4.19 Preferred conversion point
+I would keep Unity output as:
+RGB24
+and mark protocol metadata:
+format = RGB24
+Then Python simulator backend converts:
+RGB → BGR
+before returning the NumPy array.
+Why?
+Because:
+Unity naturally generates RGB.
+Python/OpenCV naturally wants BGR.
+conversion on Python side is straightforward and testable.
+4.20 Vertical flipping
+Unity render textures frequently use image-origin conventions that differ from NumPy/OpenCV expectations.
+Therefore explicitly test:
+top of world appears at top of returned image
+Do not blindly add:
+texture.Apply();
+and assume orientation.
+If needed:
+flip vertically exactly once
+before returning the Python frame.
+4.21 Test target for orientation
+Create a test scene:
+TOP
+red marker
+
+CENTER
+green marker
+
+BOTTOM
+blue marker
+Capture frame.
+Check Python pixels.
+Expected:
+red near top
+green near middle
+blue near bottom
+This catches image inversion immediately.
+4.22 Frame transport
+Step 3 used newline-delimited JSON.
+That is fine for commands.
+It is not ideal for raw images.
+Don't do:
+{
+  "image":"base64base64base64..."
+}
+for every frame.
+That creates:
+base64 overhead
+large allocations
+parsing overhead
+unnecessary CPU usage
+4.23 Extend protocol with binary payload framing
+Use:
+JSON header
++
+binary payload
+For example:
+{"type":"response","id":21,"ok":true,"payload_type":"image","width":640,"height":480,"format":"rgb24","length":921600}
+then exactly:
+921600 binary bytes
+because:
+640 × 480 × 3 = 921600
+4.24 Protocol framing must be unambiguous
+The connection reader must know:
+read header line
+parse length
+read EXACTLY length bytes
+then next header
+Never search for newline characters inside image bytes.
+4.25 Control and image requests on one connection?
+For Step 4, one persistent TCP connection can still work.
+But serialization must be thread-safe:
+one writer lock
+so:
+response header
+binary frame
+cannot be interrupted by another response.
+Later, if throughput demands it, we can separate control and sensor channels.
+Don't add that complexity yet.
+4.26 get_image bridge command
+Python:
+jchm.camera.get_image("center")
+becomes:
+get_image(center)
+protocol command:
+{
+  "type":"command",
+  "id":42,
+  "name":"get_image",
+  "payload":{
+    "location":"center"
+  }
+}
+4.27 Unity behavior
+Unity receives:
+get_image(center)
+and retrieves:
+latest completed Center frame
+Not:
+render synchronously because Python requested it
+unless no frame exists yet.
+For initial startup, either:
+wait for first camera frame, or
+explicitly capture initial frame during sensor initialization.
+I prefer option 2.
+4.28 Python reconstruction
+Backend:
+header:
+width = 640
+height = 480
+format = RGB24
+
+payload:
+921600 bytes
+Then:
+frame = np.frombuffer(payload, dtype=np.uint8)
+frame = frame.reshape(height, width, 3)
+frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+Return:
+frame
+So student code gets a standard NumPy array.
+4.29 Exact API surface
+Implement:
+jchm.camera.get_image(location)
+with accepted locations:
+"left"
+"center"
+"right"
+matching the manual.  
+자주차 매뉴얼.pdf
+Anything else:
+jchm.camera.get_image("rear")
+should fail clearly.
+4.30 Error
+Prefer:
+ValueError:
+camera location must be one of:
+'left', 'center', 'right'
+rather than sending nonsense over the socket.
+Unity validates again anyway.
+4.31 show_image compatibility
+The manual API is:
+jchm.camera.show_image(img, "location", quality=80)
+and supports display locations including:
+center
+left
+right
+depth
+lidar
+with quality=80 as default.
+For the simulator, we have two possible interpretations.
+I recommend preserving the API but implementing it locally in Python.
+4.32 Why show_image should remain Python-side
+The real Jajucha environment appears to use its own camera display windows.
+But in our local simulator:
+jchm.camera.show_image(image, "center")
+doesn't need to send the processed image back into Unity.
+Instead simulator backend can display it using:
+OpenCV window
+or a lightweight simulator viewer later.
+This keeps the Bridge one-way for camera frames.
+4.33 Initial simulator show_image
+Implementation could conceptually map:
+jchm.camera.show_image(img, "center")
+to something equivalent to:
+cv2.imshow("center", img)
+cv2.waitKey(1)
+while preserving the function signature.
+Support:
+quality=80
+for signature compatibility even if local OpenCV display does not need JPEG quality.
+Document that quality has no meaningful effect in local display mode initially.
+4.34 Better future display
+Later we can optionally send user-processed frames back to Unity's debug UI:
+center processed
+depth
+lidar
+ANN mask
+but that should be a separate simulator extension.
+Do not couple Step 4 camera acquisition to that.
+4.35 Camera preview in Unity
+For debugging, Unity should show optional thumbnails:
+LEFT       CENTER      RIGHT
+┌──────┐   ┌──────┐   ┌──────┐
+│      │   │      │   │      │
+│      │   │      │   │      │
+└──────┘   └──────┘   └──────┘
+But preview must use the sensor's existing RenderTexture.
+Do not render a second camera for debug UI.
+4.36 Camera debug HUD
+Show:
+CENTER CAMERA
+
+Frame ID: 320
+FPS: 30.0
+Resolution: 640×480
+Age: 9 ms
+
+Position:
+X ...
+Y ...
+Z ...
+
+Rotation:
+Pitch ...
+Yaw ...
+Roll ...
+
+FOV: 60°
+Calibration: APPROXIMATE
+This is useful later when comparing real and simulated frames.
+4.37 Sensor latency
+Real cameras do not have zero latency.
+But Step 4 baseline should use:
+latency = 0 simulated ms
+while structuring the system so latency can later be configured.
+Future:
+capture
+  ↓
+latency queue
+  ↓
+published frame
+Do not add fake latency until the baseline works.
+4.38 Sensor frame freshness
+Each returned image should have an internal frame ID.
+Student-visible API still returns only:
+numpy.ndarray
+for compatibility.
+Simulator-specific API can later expose:
+jchm_sim.camera_info("center")
+with:
+frame_id
+simulation_time
+frame_age
+Do not contaminate jchm.camera.get_image().
+4.39 Camera availability during pause
+If the simulation is paused, sensor simulation should also pause.
+So repeated:
+jchm.camera.get_image("center")
+while simulation is paused should return the same latest frame.
+This makes deterministic debugging possible.
+4.40 Single-step behavior
+If:
+camera = 30 FPS
+simulation = 100 Hz
+then:
+jchm_sim.step()
+may or may not produce a new camera frame depending on sensor schedule.
+That is correct.
+Do not force one image per step.
+4.41 Reset behavior
+On reset:
+camera scheduler reset
+frame counters reset
+latest frames invalidated/reinitialized
+Then immediately generate deterministic first frames once the scene is in reset pose.
+Same initial world + same camera config should produce the same initial image.
+4.42 Camera layer masks
+Sensor cameras must render the actual world but exclude simulator debugging.
+Create layers such as:
+World
+Vehicle
+Course
+Obstacle
+Sign
+
+SimulatorDebug
+EditorOnly
+Camera culling mask includes:
+World
+Course
+Obstacle
+Sign
+but excludes:
+SimulatorDebug
+Otherwise ANN models may see gizmos, trigger volumes, path overlays, etc.
+4.43 Do not render the vehicle unless the real camera sees it
+Depending on actual physical mounting, parts of:
+hood
+wheel
+camera enclosure
+may be visible.
+Eventually the simulator should reproduce that.
+So don't automatically exclude the whole vehicle layer.
+Instead give sensor camera a specific visibility policy.
+For baseline:
+vehicle body visibility configurable
+4.44 Physically relevant lighting
+Step 4 should use normal Unity lighting.
+But don't add:
+random exposure
+noise
+motion blur
+lens distortion
+yet.
+Baseline image should be clean and deterministic.
+Domain randomization comes later.
+4.45 Anti-aliasing
+Use fixed rendering settings.
+We don't want image outputs changing unpredictably because:
+editor quality setting
+GPU profile
+user global graphics setting
+changed.
+Create a simulator-controlled render pipeline profile where practical.
+Sensor output must be deterministic enough for tests.
+4.46 Color management
+Make color-space behavior explicit.
+Ideally:
+Unity project color space:
+Linear
+with conversion to final 8-bit display output handled consistently.
+The exact setting matters less than avoiding accidental changes halfway through development.
+Document it in:
+04-camera-system.md
+4.47 First camera calibration scene
+Create:
+CameraCalibration.unity
+with:
+checkerboard
+horizontal line markers
+vertical markers
+known-distance objects
+Because world scale is centimeters, place objects at:
+50 cm
+100 cm
+150 cm
+200 cm
+This will help verify:
+FOV
+mount angle
+perspective
+4.48 Test: location correctness
+Place:
+object A visible only to left
+object B visible to center
+object C visible only to right
+Capture all three.
+Verify:
+left != center
+center != right
+This catches accidentally assigning the same camera to all three names.
+4.49 Test: API names
+These must pass:
+get_image("left")
+get_image("center")
+get_image("right")
+These must fail:
+get_image("Left")
+get_image("front")
+get_image("")
+Unless actual JCHM turns out to accept case-insensitive names.
+For now match the documented lower-case strings.  
+자주차 매뉴얼.pdf
+4.50 Test: NumPy shape
+Returned image:
+assert isinstance(image, np.ndarray)
+assert image.dtype == np.uint8
+assert image.ndim == 3
+assert image.shape[2] == 3
+Width and height checked against configured camera dimensions.
+4.51 Test: BGR
+Put a pure red Unity test object in the center.
+After Python receives the frame:
+OpenCV BGR pixel should approximately look like:
+[0, 0, 255]
+not:
+[255, 0, 0]
+This is an essential compatibility test.
+4.52 Test: frame persistence
+Pause simulation.
+Call:
+a = jchm.camera.get_image("center")
+b = jchm.camera.get_image("center")
+Expected:
+same underlying sensor frame
+The arrays can be separate Python objects, but pixels should match exactly.
+4.53 Test: movement updates frame
+Start.
+Drive:
+jchm.control.set_motor(0,0,3)
+Wait enough simulated time for at least one new camera frame.
+Expected:
+new frame ID
+image content changes
+4.54 Test: steering alone
+Use the invariant from Step 2:
+jchm.control.set_motor(-10,-10,0)
+The camera position may shift minutely from suspension/servo forces if physically modeled, but:
+car must not translate due to steering command
+and subsequent frames should not show forward movement.
+This connects perception tests to vehicle invariants.
+4.55 Test: reset image determinism
+Capture initial frame:
+A
+Drive vehicle.
+Reset.
+Capture:
+B
+Expected:
+A == B
+for deterministic scene/settings, within exact pixel equality if rendering pipeline permits it.
+If GPU rendering introduces tiny differences, use a strict small tolerance.
+4.56 Performance test
+Three cameras at:
+640×480×3
+30 FPS
+raw bandwidth if all continuously transferred would be roughly:
+~82.9 MB/s
+But crucially:
+We are not continuously transmitting all cameras.
+Unity captures at sensor rate, but Python only receives a frame when:
+get_image(...)
+is called.
+So bridge bandwidth is demand-driven.
+4.57 Avoid PNG/JPEG for internal raw frame API initially
+Compression saves bandwidth but adds:
+encoding latency
+decoding latency
+loss
+For localhost at modest resolution, raw RGB24 is simpler and more deterministic.
+So baseline:
+raw RGB24
+over the binary payload.
+Later add compressed mode if needed.
+4.58 Memory reuse
+Do not allocate:
+Texture2D
+byte[]
+from scratch 30 times per second per camera forever.
+Use reusable buffers where Unity allows.
+Architecture should aim toward:
+persistent RenderTexture
+persistent readback buffer
+latest frame buffer
+This prevents GC spikes.
+4.59 GPU readback
+Initial implementation can use a straightforward readback.
+But prefer designing for:
+AsyncGPUReadback
+rather than blocking:
+ReadPixels
+every frame.
+If supported reliably in the Unity version we're using:
+Camera.Render()
+     ↓
+AsyncGPUReadback.Request(...)
+     ↓
+frame completes later
+     ↓
+LatestFrame updated
+This is much better for performance.
+4.60 Important async rule
+If async readback completes later, frame metadata must refer to capture time, not completion time.
+So:
+Frame:
+captureTick = 500
+captureTime = 5.00s
+even if readback finished at:
+tick 502
+4.61 Dropped frame behavior
+If GPU readback can't keep up:
+do not build an infinite queue
+For a realtime camera, newer data is generally more useful.
+Use bounded in-flight captures.
+For baseline:
+max 1 in-flight capture per camera
+If next capture comes before previous one completes:
+skip sensor capture
+and increment:
+DroppedFrames
+Debug HUD shows it.
+4.62 No depth yet inside RGB sensor
+Do not make RGB camera produce:
+color
+depth
+segmentation
+normals
+all at once.
+Step 4A:
+RGB only
+Then Step 4B adds depth as its own sensor path.
+This keeps the implementation testable.
+4.63 Step 4B — Depth API
+Once RGB is stable, implement:
+jchm.camera.get_depth()
+The manual describes the JCHM depth output as a grayscale image where:
+near → brighter
+far  → darker
+and says the returned image is a NumPy array whose pixel brightness can be indexed to estimate proximity.  
+자주차 매뉴얼.pdf
+This is not necessarily a metric float depth map.
+That distinction is important.
+4.64 We need two depth representations internally
+I recommend:
+true metric simulator depth
+         ↓
+JCHM-compatible grayscale mapping
+Internally:
+distance in centimeters/meters
+Then:
+jchm.camera.get_depth()
+returns the JCHM-style grayscale image.
+Simulator-only tooling can later expose metric depth.
+4.65 Why keep metric depth internally
+Because later we may need:
+debugging
+ground truth
+ANN labels
+obstacle tests
+simulation scoring
+Metric depth is extremely valuable.
+But exposing it via:
+jchm.camera.get_depth()
+would change the real API semantics.
+So separate them.
+4.66 JCHM depth output contract
+For compatibility:
+NumPy array
+height × width
+uint8
+where:
+larger pixel = nearer
+smaller pixel = farther
+as described in the manual.  
+자주차 매뉴얼.pdf
+4.67 Depth mapping
+Do not invent a fake physical mapping and call it authoritative.
+Create configurable:
+nearDistance
+farDistance
+mappingCurve
+Basic baseline:
+near → 255
+far → 0
+with clamping.
+Could initially be linear:
+clamped to:
+0..255
+But label it:
+SIMULATOR APPROXIMATION
+until real JCHM depth behavior is measured.
+4.68 Stereo versus direct renderer depth
+The real platform derives depth using left/right camera information conceptually. The manual notes that stereo disparity could be used, while jchm directly provides a prepared depth image.  
+자주차 매뉴얼.pdf
+For simulation, I would not run OpenCV stereo reconstruction just to create errors.
+Instead:
+Unity depth buffer / ray distance
+        ↓
+metric depth
+        ↓
+JCHM grayscale transform
+This gives clean ground truth.
+Later we can optionally add a noisy stereo-emulation mode.
+4.69 Depth camera viewpoint
+The precise viewpoint used by the real get_depth() is not established by the retrieved manual text.
+Therefore make it configurable.
+Initial sensible design:
+depth viewpoint = center optical frame
+with the left/right RGB pair still physically present.
+Document this as an approximation until real output is measured.
+4.70 Python get_depth
+Protocol:
+{
+  "type":"command",
+  "id":81,
+  "name":"get_depth",
+  "payload":{}
+}
+Response header:
+{
+  "type":"response",
+  "id":81,
+  "ok":true,
+  "payload_type":"image",
+  "width":640,
+  "height":480,
+  "format":"gray8",
+  "length":307200
+}
+then raw bytes.
+Python:
+depth = np.frombuffer(...)
+depth = depth.reshape(height, width)
+No color conversion required.
+4.71 show_image(depth, "depth")
+This should work:
+depth = jchm.camera.get_depth()
+jchm.camera.show_image(depth, "depth")
+matching the manual example.  
+자주차 매뉴얼.pdf
+4.72 Depth correctness tests
+Put flat targets at known distances:
+25 cm
+50 cm
+100 cm
+200 cm
+Expected ordering:
+pixel(25cm) > pixel(50cm)
+           > pixel(100cm)
+           > pixel(200cm)
+Exact values depend on mapping configuration.
+4.73 Occlusion test
+Put:
+near cube
+far wall behind cube
+Depth image must show:
+cube brighter than wall
+in the cube region.
+This validates real geometry visibility.
+4.74 Camera/depth synchronization
+Depth and RGB should eventually carry capture timestamps.
+For baseline, schedule depth at the same nominal frame rate as cameras.
+But do not assume:
+frame IDs identical
+unless intentionally synchronized.
+Later ANN code might only use the latest values.
+4.75 Python package after Step 4
+Now:
+python/
+
+jchm/
+├─ __init__.py
+├─ control.py
+├─ camera.py
+├─ _backend.py
+├─ _sim_backend.py
+├─ _protocol.py
+└─ errors.py
+camera.py exposes:
+get_image(location)
+get_depth()
+show_image(img, location="center", quality=80)
+These correspond directly to documented JCHM camera functions.
+4.76 Example compatibility script
+This should run:
+import jchm
+import cv2
+
+center = jchm.camera.get_image("center")
+left = jchm.camera.get_image("left")
+right = jchm.camera.get_image("right")
+
+jchm.camera.show_image(center, "center")
+jchm.camera.show_image(left, "left")
+jchm.camera.show_image(right, "right")
+This is essentially the same usage pattern demonstrated in the Jajucha manual.  
+자주차 매뉴얼.pdf
+4.77 More important real-world test
+This manual-style lane-processing code should also work without adaptation:
+image = jchm.camera.get_image("center")
+
+roi = image[199:399, :]
+
+blurred = cv2.GaussianBlur(
+    roi,
+    (3, 3),
+    0
+)
+
+canny = cv2.Canny(
+    blurred,
+    100,
+    300
+)
+The manual uses this exact kind of direct OpenCV pipeline on get_image('center').  
+자주차 매뉴얼.pdf
+That is our compatibility target.
+4.78 Step 4 source-of-truth rules
+From here forward:
+Confirmed by manual
+3 RGB cameras
+
+names:
+left
+center
+right
+
+get_image(location)
+
+get_depth()
+
+show_image(img, location, quality=80)
+
+OpenCV-compatible images
+
+depth:
+grayscale
+near brighter
+far darker
+Not confirmed yet
+exact RGB resolution
+exact FPS
+exact FOV
+exact camera mount positions
+exact camera angles
+exact depth brightness-distance curve
+exact depth viewpoint
+lens distortion
+exposure characteristics
+Those remain calibration parameters.
+4.79 Step 4 Definition of Done
+Requirement
+Required
+Sensor assembly
+✅
+Three independent cameras
+✅
+left/center/right naming
+✅
+Independent editable mounts
+✅
+Configurable resolution
+✅
+Configurable FOV
+✅
+Configurable FPS
+✅
+Sensor scheduler
+✅
+Camera timing independent of physics ticks
+✅
+Latest-frame model
+✅
+Frame IDs/timestamps
+✅
+RGB24 Unity output
+✅
+BGR NumPy Python output
+✅
+Binary image protocol
+✅
+No base64 frames
+✅
+jchm.camera.get_image()
+✅
+jchm.camera.show_image()
+✅
+NumPy/OpenCV compatibility
+✅
+orientation test
+✅
+BGR test
+✅
+three-camera differentiation test
+✅
+reset determinism test
+✅
+pause behavior
+✅
+no debug overlays in sensor image
+✅
+depth subsystem
+✅
+jchm.camera.get_depth()
+✅
+grayscale uint8 depth
+✅
+nearer = brighter
+✅
+depth ordering tests
+✅
+0 compile errors
+✅
+0 project warnings
+✅
+Result after Step 4
+We now have the complete basic sense → think → act connection points:
+                    UNITY
+
+        ┌──────────────────────┐
+        │   Jajucha Vehicle    │
+        └──────────┬───────────┘
+                   │
+       ┌───────────┼───────────┐
+       ▼           ▼           ▼
+    LEFT CAM    CENTER CAM   RIGHT CAM
+       │           │           │
+       └───────────┼───────────┘
+                   │
+                DEPTH
+                   │
+                   ▼
+              Sensor System
+                   │
+               Bridge
+                   │
+                   ▼
+                 Python
+
+       jchm.camera.get_image(...)
+       jchm.camera.get_depth()
+                   │
+                   ▼
+              OpenCV / ANN
+                   │
+                   ▼
+          jchm.control.set_motor()
+                   │
+                   ▼
+               Bridge
+                   │
+                   ▼
+                Vehicle
+At that point, simple autonomous code can already run against the simulator using essentially the same jchm camera and motor interface as the real car.
+The next logical step is Step 5: course/world data model and road representation. That is where we start building the map system you originally wanted: course definition files, road centerline/boundaries, known road-width scaling, coordinate system, and the foundation for the later image-based course importer and grid editor.

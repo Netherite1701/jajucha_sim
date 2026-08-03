@@ -1,0 +1,23 @@
+{
+    "name": "JajuchaSim.Sensors.EditModeTests",
+    "rootNamespace": "JajuchaSim.Sensors.Tests",
+    "references": [
+        "JajuchaSim.Sensors",
+        "JajuchaSim.Vehicle",
+        "JajuchaSim.Core"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

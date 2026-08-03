@@ -1,0 +1,19 @@
+{
+    "name": "JajuchaSim.MapEditor",
+    "rootNamespace": "JajuchaSim.MapEditor",
+    "references": [
+        "JajuchaSim.Core",
+        "JajuchaSim.Course",
+        "UnityEngine.UI",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

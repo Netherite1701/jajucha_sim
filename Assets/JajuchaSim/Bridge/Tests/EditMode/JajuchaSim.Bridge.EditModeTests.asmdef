@@ -1,0 +1,24 @@
+{
+    "name": "JajuchaSim.Bridge.EditModeTests",
+    "rootNamespace": "JajuchaSim.Bridge.Tests",
+    "references": [
+        "JajuchaSim.Bridge",
+        "JajuchaSim.Vehicle",
+        "JajuchaSim.Sensors",
+        "JajuchaSim.Core"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

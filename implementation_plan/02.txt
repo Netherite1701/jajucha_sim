@@ -1,0 +1,1045 @@
+Step 1 — Core Simulation Kernel
+The goal of Step 1 is not to make the car move yet.
+The goal is to create a clean, deterministic foundation that every later subsystem depends on.
+By the end of Step 1, the project should:
+open cleanly in Unity
+have a predictable simulation loop
+distinguish simulation time from Unity/render time
+support pause/reset/step
+have a central event bus
+have a single simulation lifecycle
+support deterministic test runs
+contain no vehicle, camera, Python bridge, editor, ANN, or FSM code yet
+This is deliberately small.
+
+1.1 Create a fresh Unity project
+Use a completely new project.
+Recommended:
+Unity 6 LTS / current stable Unity 6 version
+3D Core
+
+Do not copy the Assets folder from the old simulator.
+The old repository can remain beside it as reference only.
+Example:
+C:\dev\Unity_Projects\
+
+├─ jajucha-sim-old\
+│
+└─ jajucha-sim-v2\
+
+Initialize Git immediately.
+git init
+
+First commit:
+chore: initialize clean Jajucha Simulator v2 project
+
+
+1.2 Establish project conventions immediately
+One major reason projects become messy is that architectural rules are introduced after hundreds of scripts already exist.
+Define them now.
+Namespace
+Everything belongs under:
+JajuchaSim
+
+Sub-namespaces:
+JajuchaSim.Core
+JajuchaSim.Vehicle
+JajuchaSim.Sensors
+JajuchaSim.Bridge
+JajuchaSim.Course
+JajuchaSim.Editor
+JajuchaSim.Entities
+JajuchaSim.Debug
+JajuchaSim.Testing
+
+For Step 1 we only use:
+JajuchaSim.Core
+
+
+1.3 Folder structure
+Create:
+Assets/
+└─ JajuchaSim/
+   ├─ Core/
+   │  ├─ Runtime/
+   │  └─ Tests/
+   │
+   ├─ Vehicle/
+   ├─ Sensors/
+   ├─ Bridge/
+   ├─ Course/
+   ├─ Entities/
+   ├─ Debug/
+   ├─ Testing/
+   │
+   ├─ Scenes/
+   ├─ Prefabs/
+   ├─ Materials/
+   ├─ Resources/
+   └─ Settings/
+
+Don't start throwing scripts directly into:
+Assets/Scripts/
+
+We should avoid generic dumping grounds entirely.
+
+1.4 Use Assembly Definitions
+Create:
+Assets/JajuchaSim/Core/Runtime/JajuchaSim.Core.asmdef
+
+Namespace:
+JajuchaSim.Core
+
+And:
+Assets/JajuchaSim/Core/Tests/JajuchaSim.Core.Tests.asmdef
+
+Test assembly references:
+JajuchaSim.Core
+UnityEngine.TestRunner
+UnityEditor.TestRunner
+
+This gives us strict subsystem boundaries later.
+Eventually:
+Core
+ ↑
+Vehicle
+ ↑
+Sensors
+ ↑
+Bridge
+
+instead of every script being able to depend on everything.
+That is one of the key protections against reproducing the old project's mess.
+
+1.5 Architectural rule: one simulation owner
+There should be exactly one object responsible for the simulation lifecycle:
+SimulationManager
+
+Not:
+VehicleManager
+GameManager
+RuntimeManager
+ScenarioManager
+ReplayManager
+SensorManager
+MasterController
+
+all independently controlling things.
+The dependency tree should look like:
+SimulationManager
+      │
+      ├── SimulationClock
+      │
+      ├── EventBus
+      │
+      └── registered simulation systems
+
+Later:
+SimulationManager
+      │
+      ├── VehicleSystem
+      ├── SensorSystem
+      ├── TriggerSystem
+      ├── ScenarioSystem
+      └── ScoringSystem
+
+But the manager should coordinate, not contain the implementation of every system.
+
+1.6 Define simulation lifecycle states
+Create:
+public enum SimulationState
+{
+    Uninitialized,
+    Ready,
+    Running,
+    Paused,
+    Stopped
+}
+
+Lifecycle:
+Unity starts
+    ↓
+Uninitialized
+    ↓
+Initialize()
+    ↓
+Ready
+    ↓
+StartSimulation()
+    ↓
+Running
+    ├──── Pause() ───→ Paused
+    │                    │
+    │                    └── Resume()
+    │
+    └──── Stop() ─────→ Stopped
+                            │
+                            └── Reset()
+                                  ↓
+                                Ready
+
+Do not overload Unity's:
+Start()
+Update()
+FixedUpdate()
+
+with lifecycle semantics.
+Those are Unity callbacks.
+Our simulation lifecycle is separate.
+
+1.7 Define ISimulationSystem
+Every major runtime subsystem should eventually implement the same interface.
+Something along these lines:
+public interface ISimulationSystem
+{
+    void Initialize(SimulationContext context);
+
+    void SimulationTick(float deltaTime);
+
+    void ResetSimulation();
+
+    void Shutdown();
+}
+
+Later:
+VehicleSystem      : ISimulationSystem
+SensorSystem       : ISimulationSystem
+TriggerSystem      : ISimulationSystem
+ScoringSystem      : ISimulationSystem
+
+This is important.
+Instead of:
+SimulationManager directly knows every class
+
+we get:
+SimulationManager
+       ↓
+List<ISimulationSystem>
+
+That keeps the kernel generic.
+
+1.8 Create SimulationContext
+Subsystems should not fetch random globals.
+Avoid patterns like:
+FindObjectOfType<SimulationManager>();
+GameObject.Find("Car");
+Camera.main;
+FindAnyObjectByType<Something>();
+
+Instead initialize systems using an explicit context.
+For Step 1:
+public sealed class SimulationContext
+{
+    public SimulationClock Clock { get; }
+    public SimulationEventBus Events { get; }
+
+    public SimulationContext(
+        SimulationClock clock,
+        SimulationEventBus events)
+    {
+        Clock = clock;
+        Events = events;
+    }
+}
+
+Later this can expand carefully.
+For example:
+SimulationContext
+{
+    Clock
+    Events
+    Random
+    Configuration
+}
+
+But avoid turning it into a 70-property service locator.
+
+1.9 Simulation clock
+This is probably the most important part of Step 1.
+Do not simply use:
+Time.deltaTime
+
+everywhere.
+Create:
+SimulationClock
+
+It should track:
+Tick
+SimulationTime
+DeltaTime
+TimeScale
+IsPaused
+
+For example:
+public sealed class SimulationClock
+{
+    public long Tick { get; private set; }
+
+    public double Time { get; private set; }
+
+    public float FixedDeltaTime { get; }
+
+    public float TimeScale { get; private set; } = 1f;
+}
+
+
+1.10 Fixed simulation timestep
+Use a fixed timestep from the beginning.
+Example:
+100 Hz simulation
+
+means:
+Δt = 0.01 s
+
+or initially:
+50 Hz
+Δt = 0.02 s
+
+For a small robot/car, I'd begin with:
+100 Hz physics/simulation
+
+because later motor dynamics and control loops can benefit from the finer resolution.
+Conceptually:
+tick 0    0.00 s
+tick 1    0.01 s
+tick 2    0.02 s
+tick 3    0.03 s
+...
+
+This matters for:
+reproducibility
+automated tests
+speed measurement
+motor dynamics
+sensor scheduling
+FSM timing
+batch simulation
+
+1.11 Don't tie rendering FPS to simulation FPS
+Architecture:
+Render loop
+Unity Update()
+      │
+      ▼
+Simulation scheduler
+      │
+      ├─ Tick
+      ├─ Tick
+      ├─ Tick
+      └─ Tick
+
+At normal speed:
+render ≈ 60 FPS
+simulation = 100 Hz
+
+At accelerated speed:
+render ≈ 30 FPS
+simulation = 800+ Hz effective
+
+Eventually we should even support:
+render = disabled
+simulation = max CPU speed
+
+for automated testing.
+
+1.12 Simulation scheduler
+Create something like:
+SimulationRunner
+
+Its job is only to determine when simulation ticks occur.
+Conceptually:
+accumulator += Time.unscaledDeltaTime * simulationSpeed;
+
+while (accumulator >= fixedDeltaTime)
+{
+    RunSimulationTick(fixedDeltaTime);
+
+    accumulator -= fixedDeltaTime;
+}
+
+Important:
+Time.unscaledDeltaTime
+
+rather than depending on Unity's global Time.timeScale.
+I would avoid using Unity Time.timeScale as our simulator speed controller.
+Our simulation clock should control itself.
+
+1.13 Manual single-step mode
+Support this from day one.
+When paused:
+[ STEP ]
+
+advances:
+exactly one tick
+
+For a 100 Hz simulation:
+Step()
+→ +0.01 simulated seconds
+
+Then another:
+Step()
+→ +0.01
+
+This becomes extremely useful later.
+Imagine debugging:
+tick 18421
+ANN says obstacle=True
+
+STEP
+
+tick 18422
+FSM:
+NORMAL → OBSTACLE_AVOID
+
+STEP
+
+motor:
+L=20
+R=62
+
+Much easier than trying to pause at exactly the right frame.
+
+1.14 Event bus
+Create:
+SimulationEventBus
+
+This is not for high-frequency sensor data.
+It's for important state/lifecycle events.
+Examples:
+SimulationStarted
+SimulationPaused
+SimulationResumed
+SimulationReset
+SimulationStopped
+
+Later:
+VehicleCollision
+TriggerEntered
+SlowZoneEntered
+FinishLineCrossed
+FSMStateChanged
+
+
+1.15 Use typed events
+Avoid:
+SendMessage("SimulationStarted");
+
+and avoid:
+Dictionary<string, object>
+
+Prefer typed events.
+For example:
+public readonly struct SimulationStartedEvent
+{
+    public double StartTime { get; }
+
+    public SimulationStartedEvent(double startTime)
+    {
+        StartTime = startTime;
+    }
+}
+
+Then conceptually:
+eventBus.Publish(
+    new SimulationStartedEvent(clock.Time)
+);
+
+Subscribers:
+eventBus.Subscribe<SimulationStartedEvent>(OnStarted);
+
+This gives compiler checking.
+
+1.16 Keep event bus implementation tiny
+Do not build a giant framework.
+It only needs something like:
+Subscribe<T>()
+Unsubscribe<T>()
+Publish<T>()
+Clear()
+
+That's it.
+Do not add:
+priorities
+reflection
+async
+network event replication
+event history
+serialization
+dependency injection framework
+
+unless a later requirement genuinely needs it.
+
+1.17 Deterministic random source
+Even though Step 1 has nothing random yet, add the abstraction now.
+Create:
+SimulationRandom
+
+Initialized with:
+seed = 12345
+
+Later:
+cameraNoise
+motorVariation
+surfaceVariation
+spawnRandomization
+
+must get randomness from this object.
+Never:
+UnityEngine.Random.Range(...)
+
+inside core simulation logic.
+Otherwise two identical test runs could diverge.
+Desired behavior:
+seed 12345
+run #1 → result A
+
+seed 12345
+run #2 → result A
+
+seed 53210
+run #3 → result B
+
+
+1.18 Simulation configuration
+Create a small ScriptableObject:
+SimulationConfig
+
+Fields:
+Fixed timestep     0.01
+Default speed      1.0
+Random seed        12345
+Max ticks/frame    100
+Auto start         false
+
+Location:
+Assets/JajuchaSim/Settings/
+
+Example asset:
+DefaultSimulationConfig.asset
+
+Do not hardcode these throughout the project.
+
+1.19 Prevent spiral-of-death
+This is important in fixed timestep systems.
+Suppose rendering freezes for 5 seconds.
+Naively:
+5 seconds × 100 Hz
+= 500 simulation ticks
+
+Unity tries to catch up immediately.
+That can freeze it even longer.
+Therefore:
+MaxTicksPerFrame
+
+Example:
+100
+
+If the accumulator becomes absurdly large, cap or handle it explicitly.
+Normal interactive mode shouldn't attempt infinite catch-up.
+Later headless batch mode can use different scheduling.
+
+1.20 Simulation Manager responsibilities
+SimulationManager should be responsible for:
+Initialize
+Register systems
+Start
+Pause
+Resume
+Step
+Reset
+Stop
+Shutdown
+
+It should not:
+drive the car
+capture camera frames
+detect lanes
+communicate with Python
+score the course
+place objects
+render UI
+
+This distinction should be documented in the class itself.
+
+1.21 Initialization order
+Make initialization explicit.
+Example:
+1. Load config
+2. Create clock
+3. Create event bus
+4. Create random source
+5. Create SimulationContext
+6. Discover/register systems
+7. Initialize systems
+8. Set state = Ready
+
+Avoid relying on Unity's arbitrary inter-component:
+Awake → Start
+
+ordering.
+The manager should own initialization.
+
+1.22 System registration
+For now, we can use explicitly assigned components.
+Example hierarchy:
+SimulationRoot
+├─ SimulationManager
+└─ Systems
+
+Later:
+Systems
+├─ VehicleSystem
+├─ SensorSystem
+├─ TriggerSystem
+└─ ScoringSystem
+
+Manager gets:
+[SerializeField]
+private MonoBehaviour[] simulationSystemBehaviours;
+
+and verifies each implements:
+ISimulationSystem
+
+Alternatively, use a base class:
+SimulationSystemBehaviour
+
+I slightly prefer a base class for Unity:
+public abstract class SimulationSystemBehaviour :
+    MonoBehaviour,
+    ISimulationSystem
+
+Then inspector references are type-safe.
+
+1.23 Scene structure
+Create exactly one scene initially:
+Assets/JajuchaSim/Scenes/Simulation.unity
+
+Hierarchy:
+Simulation
+│
+├─ _Core
+│  └─ SimulationRoot
+│      └─ SimulationManager
+│
+├─ _World
+│
+├─ _Vehicles
+│
+├─ _Environment
+│
+├─ _Debug
+│
+└─ _UI
+
+For Step 1, most are empty.
+That's fine.
+
+1.24 No DontDestroyOnLoad yet
+Don't introduce global persistent objects until we actually need multiple scenes.
+For now:
+one scene
+one simulation root
+one lifecycle
+
+Simple.
+
+1.25 Core runtime logging
+Create a tiny structured logging wrapper:
+SimLog
+
+Levels:
+Info
+Warning
+Error
+
+Example:
+[SIM] Initialized
+[SIM] Started seed=12345 dt=0.01
+[SIM] Paused tick=2931 time=29.31
+
+Do not build an elaborate logging system.
+Unity Console is sufficient initially.
+Later we can export machine-readable run results separately.
+
+1.26 Runtime debug HUD
+A tiny temporary HUD is acceptable in Step 1.
+Display:
+JAJUCHA SIM v2
+
+State: RUNNING
+Tick: 14822
+Simulation time: 148.22 s
+Speed: 1.00x
+Seed: 12345
+
+[Start]
+[Pause]
+[Step]
+[Reset]
+
+This is not the final debug UI.
+It's only there to prove the kernel works.
+
+1.27 Input System
+Since the old simulator had exactly this problem, establish the rule now:
+Use Unity's new Input System only.
+No:
+Input.GetKey()
+Input.GetAxis()
+Input.mousePosition
+
+Use:
+UnityEngine.InputSystem
+
+But ideally the Step 1 HUD simply uses UI buttons, so we barely need input handling at all.
+
+1.28 Reset semantics
+Reset() must mean something very precise.
+After reset:
+Tick = 0
+SimulationTime = 0
+Random seed = initial seed
+all registered systems reset
+State = Ready
+
+Therefore:
+Run
+→ Reset
+→ Run
+
+with the same seed must behave identically.
+This becomes a core invariant.
+
+1.29 Stop versus Reset
+Keep them separate.
+Stop
+Running
+    ↓
+Stopped
+
+Keeps the final state available for inspection.
+Reset
+anything
+    ↓
+Ready
+
+Returns simulation to its initial conditions.
+Later this matters for test results:
+Stop
+→ inspect telemetry
+→ export result
+→ Reset
+
+
+1.30 Automated unit tests
+This is mandatory before Step 2.
+We need EditMode tests for the pure C# portions.
+At minimum:
+Clock test
+initial tick = 0
+initial time = 0
+
+tick 100 times at 0.01 s
+
+expected:
+tick = 100
+time = 1.0 s
+
+
+Reset clock test
+advance 342 ticks
+reset
+
+expected:
+tick = 0
+time = 0
+
+
+Event bus test
+subscribe
+publish event
+
+expected:
+handler called once
+
+
+Unsubscribe test
+subscribe
+unsubscribe
+publish
+
+expected:
+handler not called
+
+
+Random reproducibility
+Random(seed=123)
+
+generate 100 numbers
+
+Random(seed=123)
+
+generate 100 numbers
+
+Expected:
+sequence A == sequence B
+
+
+1.31 PlayMode tests
+Also create a few Unity PlayMode tests.
+Simulation initializes
+Load:
+Simulation.unity
+
+Expected:
+SimulationManager.State == Ready
+
+
+Start
+StartSimulation()
+
+Expected:
+State == Running
+
+
+Pause
+Pause()
+
+Expected:
+tick no longer automatically changes
+
+
+Single step
+Paused:
+tick = 20
+
+Run:
+Step()
+
+Expected:
+tick = 21
+
+Exactly.
+
+Reset
+After arbitrary runtime:
+ResetSimulation()
+
+Expected:
+State = Ready
+Tick = 0
+SimulationTime = 0
+
+
+1.32 Add a fake simulation system
+This is a useful architecture test.
+Create only in the test assembly:
+FakeSimulationSystem
+
+It counts:
+Initialize calls
+Tick calls
+Reset calls
+Shutdown calls
+
+Run simulation for 100 ticks.
+Expected:
+Initialize = 1
+Tick       = 100
+Reset      = expected count
+
+This proves later systems can plug into the kernel properly.
+
+1.33 First deterministic integration test
+This should be the defining Step 1 test.
+Create:
+CounterSimulationSystem
+
+Each simulation tick:
+value += 1;
+
+Run:
+10,000 ticks
+
+Expected:
+value = 10,000
+clock.Tick = 10,000
+clock.Time = 100.00 seconds
+
+Reset.
+Run exactly the same thing again.
+Expected:
+identical
+
+It sounds trivial.
+That's the point.
+If this isn't rock-solid, vehicle physics should not be built on top of it.
+
+1.34 Editor validation
+Add inspector validation.
+For example, SimulationManager checks:
+Config assigned?
+System references valid?
+FixedDeltaTime > 0?
+MaxTicksPerFrame > 0?
+
+Invalid configuration should throw a clear error like:
+[JajuchaSim] SimulationManager cannot initialize:
+SimulationConfig is not assigned.
+
+Not:
+NullReferenceException
+at SomeManager.cs:239
+
+
+1.35 Code-quality rules
+Starting with Step 1, enforce these.
+Rule 1
+One class should have one clear responsibility.
+Rule 2
+No class should casually exceed ~300 lines.
+That's not a hard compiler rule, but a warning sign.
+Rule 3
+No static mutable global state.
+Avoid:
+public static Vehicle CurrentVehicle;
+
+Rule 4
+No scene-name lookups.
+Avoid:
+GameObject.Find("SimulationManager");
+
+Rule 5
+No hidden dependencies.
+Dependencies should be:
+constructor/context/reference
+
+not discovered magically at runtime.
+Rule 6
+No swallowed exceptions.
+Do not:
+try
+{
+    ...
+}
+catch
+{
+}
+
+Rule 7
+Compiler warnings matter.
+Aim for:
+0 errors
+0 project-code warnings
+
+
+1.36 Documentation
+Create:
+Docs/
+└─ architecture/
+   └─ 01-core-simulation.md
+
+Contents should explain:
+Purpose
+Lifecycle
+Clock
+Fixed timestep
+Simulation systems
+Event bus
+Determinism
+Reset semantics
+Rules for new systems
+
+This is particularly important if an AI coding agent will later be adding features.
+It needs an architectural contract.
+
+1.37 Definition of Done for Step 1
+Do not proceed to Step 2 merely because it compiles.
+Step 1 is complete only when all of these hold:
+Requirement
+Required
+Fresh Unity project
+✅
+Git repository
+✅
+Clean folder architecture
+✅
+Assembly definitions
+✅
+SimulationManager
+✅
+SimulationClock
+✅
+fixed simulation timestep
+✅
+ISimulationSystem
+✅
+SimulationContext
+✅
+typed EventBus
+✅
+deterministic random source
+✅
+ScriptableObject config
+✅
+Start
+✅
+Pause
+✅
+Resume
+✅
+single-step
+✅
+Stop
+✅
+Reset
+✅
+runtime status HUD
+✅
+EditMode tests
+✅
+PlayMode tests
+✅
+deterministic 10,000-tick test
+✅
+0 compile errors
+✅
+0 project-code warnings
+✅
+architecture document
+✅
+
+
+Step 1 final architecture
+                    UNITY
+                       │
+                       ▼
+              SimulationManager
+                       │
+        ┌──────────────┼──────────────┐
+        ↓              ↓              ↓
+ SimulationClock   EventBus    SimulationRandom
+        │
+        │ fixed Δt
+        ↓
+   Simulation Tick
+        │
+        ▼
+┌──────────────────────────────┐
+│   ISimulationSystem list     │
+│                              │
+│   currently: test systems    │
+│                              │
+│   later:                     │
+│   Vehicle                    │
+│   Sensors                    │
+│   Triggers                   │
+│   Scoring                    │
+└──────────────────────────────┘
+
+And the rule for Step 2 is:
+Step 1 must know absolutely nothing about "cars".
+
+That is a good sign that the architecture is properly separated.
+Step 2 will then be the minimal Jajucha vehicle implementation: geometry, rigidbody/contact model, differential motor command model, steering behavior, physical dimensions, prefab architecture, and deterministic vehicle tests—without adding the camera or Python yet.
+

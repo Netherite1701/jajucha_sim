@@ -1,0 +1,912 @@
+Step 7 — Tile-Based Structures, Objects, and Trigger System
+Now that the map is based on a single shared tile grid, Step 7 should add everything that sits on top of the road:
+tunnels
+ramps
+obstacles
+signs
+start signals
+slow zones
+speed gates
+event triggers
+All of them use the same tile size and coordinate system as the road.
+
+7.1 Core rule
+Every feature is positioned through:
+GridCoordinate(x, z)
+
+or a rectangular region:
+GridRegion
+{
+    x
+    z
+    width
+    height
+}
+
+So if tile size is:
+20 cm × 20 cm
+
+then:
+GridCoordinate(4, 7)
+
+always maps to the same physical place for:
+Road
+Tunnel
+Obstacle
+Trigger
+Sign
+
+No separate snapping systems.
+
+7.2 Shared map layers
+Keep the map very simple:
+CourseGrid
+│
+├─ Road Layer
+├─ Structure Layer
+├─ Object Layer
+└─ Trigger Layer
+
+Example:
+cell (10, 8)
+
+Road:
+    Road
+
+Structure:
+    Tunnel
+
+Object:
+    none
+
+Trigger:
+    SlowZone
+
+Layers may overlap.
+That means a tunnel doesn't replace the road underneath it.
+
+7.3 Data structure
+Something roughly like:
+public sealed class CourseCell
+{
+    public bool HasRoad;
+
+    public StructureInstance Structure;
+
+    public List<CourseObjectInstance> Objects;
+
+    public List<TriggerInstance> Triggers;
+}
+
+But don't instantiate one heavy object per cell if the map becomes large.
+The underlying grid can store IDs/references compactly.
+
+7.4 Structures
+Structures change the 3D course geometry.
+Initially support only:
+Tunnel
+Ramp
+
+Maybe later:
+Bridge
+Raised section
+Wall
+
+But don't add those yet.
+
+7.5 Tunnel tool
+Workflow in the build:
+Map Editor
+→ Structures
+→ Tunnel
+→ drag across tiles
+
+Example:
+┌────┬────┬────┬────┐
+│ T  │ T  │ T  │ T  │
+├────┼────┼────┼────┤
+│ T  │ T  │ T  │ T  │
+└────┴────┴────┴────┘
+
+The selected region defines the tunnel footprint.
+
+7.6 Tunnel data
+TunnelInstance
+
+Region:
+x
+z
+width
+height
+
+Physical:
+tunnelHeightCm
+wallThicknessCm
+
+Example:
+{
+  "type": "tunnel",
+  "region": {
+    "x": 20,
+    "z": 40,
+    "width": 4,
+    "height": 8
+  },
+  "heightCm": 55
+}
+
+
+7.7 Tunnel geometry generation
+Generate:
+left wall
+right wall
+roof
+
+over the selected road cells.
+Conceptually:
+         roof
+     ┌─────────────┐
+     │             │
+wall │    road     │ wall
+     │             │
+     └─────────────┘
+
+The road underneath stays unchanged.
+
+7.8 Tunnel orientation
+For rectangular tunnel regions, orientation should derive from the region:
+width < length
+→ long axis = tunnel direction
+
+or the user can rotate:
+0°
+90°
+
+Don't make arbitrary free-angle tunnels initially.
+Grid-aligned is enough.
+
+7.9 Ramp
+Ramp differs because it modifies the driving surface.
+So instead of:
+Road + structure overlay
+
+the ramp should create a special surface over selected road tiles.
+Workflow:
+Structures
+→ Ramp
+→ select rectangular tile region
+→ choose direction
+→ enter height
+
+
+7.10 Ramp UI
+Example:
+RAMP
+
+Region:
+3 × 6 tiles
+
+Direction:
+[ ↑ ]
+
+Rise:
+[ 30 ] cm
+
+[ Create ]
+
+The resulting slope:
+     ________
+     /
+    /
+___/
+
+
+7.11 Ramp data
+{
+  "type": "ramp",
+  "region": {
+    "x": 12,
+    "z": 30,
+    "width": 3,
+    "height": 6
+  },
+  "direction": "north",
+  "riseCm": 30
+}
+
+
+7.12 Ramp geometry
+The surface generator should calculate tile elevation across the ramp.
+For example:
+tile row 0 → 0 cm
+tile row 1 → 5 cm
+tile row 2 → 10 cm
+...
+tile row 6 → 30 cm
+
+The road mesh for those tiles follows that elevation.
+Later sections can continue flat at the raised level if needed, but for Step 7 keep ramps simple.
+
+7.13 Objects
+Objects do not modify road geometry.
+Examples:
+Obstacle
+Sign
+Start Signal
+
+They occupy one or more grid cells.
+
+7.14 Obstacle placement
+Select:
+Objects → Obstacle
+
+Click a road tile:
+┌────┐
+│ O  │
+└────┘
+
+Default:
+position = tile center
+
+Allow rotation:
+0°
+90°
+180°
+270°
+
+If an obstacle is larger than one tile, define its footprint.
+
+7.15 Object footprint
+Object definition:
+ObstacleSmall
+1 × 1
+
+ObstacleWide
+2 × 1
+
+Barrier
+3 × 1
+
+When placing, the editor shows occupied cells.
+Prevent invalid overlap where necessary.
+
+7.16 Sign placement
+Signs use same grid.
+Example:
+Slow Sign
+
+tile = (15, 24)
+rotation = 90°
+
+Default orientation can optionally use nearby road direction later.
+For now manual 90° rotation is enough.
+
+7.17 Start signal
+Same object system:
+StartSignal
+
+Placed on a tile.
+It can have runtime state:
+Red
+Yellow
+Green
+Off
+
+Later scenario logic controls it.
+
+7.18 Trigger layer
+Triggers are invisible logical regions.
+Examples:
+SlowZone
+StartTrigger
+FinishTrigger
+SpeedGate
+GenericEventTrigger
+
+They use tiles too.
+
+7.19 Trigger region
+A slow zone can simply be:
+selected tiles
+
+Example:
+S S S S
+S S S S
+S S S S
+
+where S means the tile belongs to:
+SlowZoneTrigger
+
+No need to place invisible GameObjects manually.
+
+7.20 Car overlap
+At runtime:
+car position
+    ↓
+WorldToGrid()
+    ↓
+current tile
+    ↓
+lookup trigger layer
+
+For more accurate detection, sample vehicle footprint:
+front-left
+front-right
+rear-left
+rear-right
+center
+
+Then decide whether a trigger region has been entered.
+
+7.21 Trigger enter/exit
+Each trigger tracks:
+wasInside
+isInside
+
+Then:
+false → true
+= Enter
+
+true → false
+= Exit
+
+Publish:
+TriggerEntered
+TriggerExited
+
+to the Step-1 event bus.
+
+7.22 Generic trigger architecture
+Avoid creating a unique MonoBehaviour for every course event.
+Use:
+TriggerInstance
+├─ type
+├─ region
+└─ parameters
+
+Types:
+Start
+Finish
+SlowZone
+Event
+
+Then runtime trigger system interprets them.
+
+7.23 Generic event trigger
+This is your flexible event system.
+Example:
+{
+  "type": "event",
+  "region": {
+    "x": 20,
+    "z": 50,
+    "width": 2,
+    "height": 4
+  },
+  "eventId": "tunnel_entry"
+}
+
+When the car enters:
+EventBus.Publish(
+    CourseEvent("tunnel_entry")
+)
+
+Later:
+scenario system
+scoring
+debug panel
+can react.
+
+7.24 Speed gate
+A speed gate should be slightly different from a region.
+Place it along a tile boundary.
+Example:
+┌────┬────┐
+│    │    │
+├────G────┤
+│    │    │
+
+Where:
+G = gate line
+
+Define:
+Grid edge
++
+orientation
+
+rather than a large area.
+
+7.25 Speed gate data
+{
+  "type": "speed_gate",
+  "cellX": 20,
+  "cellZ": 30,
+  "edge": "north"
+}
+
+Runtime calculates a line segment across the road.
+
+7.26 Gate crossing detection
+Previous vehicle position:
+P0
+
+Current position:
+P1
+
+Check whether segment:
+P0 → P1
+
+crossed the gate.
+This is better than checking whether the vehicle happened to overlap a tiny trigger during one frame.
+
+7.27 Two-gate speed measurement
+Example:
+Gate A
+    ↓
+car
+    ↓
+Gate B
+
+Record:
+tA
+tB
+
+Known distance:
+d
+
+Then:
+\[ v = \frac{d}{t_B - t_A} \]
+This can feed the scoring system later.
+
+7.28 Runtime editor palette
+Build version:
+STRUCTURES
+[ Tunnel ]
+[ Ramp ]
+
+OBJECTS
+[ Obstacle ]
+[ Slow Sign ]
+[ Start Signal ]
+
+TRIGGERS
+[ Slow Zone ]
+[ Start ]
+[ Finish ]
+[ Speed Gate ]
+[ Event ]
+
+Everything placed in the same runtime map editor.
+
+7.29 Tile selection
+Support just three selection methods initially:
+Click
+Rectangle
+Paint
+
+Enough for almost everything.
+Examples:
+Obstacle → click
+Tunnel → rectangle
+Slow Zone → paint/rectangle
+
+No lasso needed yet.
+
+7.30 Placement preview
+When dragging a tunnel region:
+valid cells:
+[preview]
+
+invalid overlap:
+[warning]
+
+The editor should show:
+4 × 8 tiles
+80 × 160 cm
+
+assuming 20 cm tiles.
+This is useful because the user thinks physically in centimeters.
+
+7.31 Selection inspector
+Click an existing tunnel:
+TUNNEL
+
+Grid:
+X 20
+Z 30
+
+Size:
+4 × 8 tiles
+80 × 160 cm
+
+Height:
+55 cm
+
+[ Delete ]
+
+Click obstacle:
+OBSTACLE
+
+Tile:
+(23, 37)
+
+Rotation:
+90°
+
+[ Rotate ]
+[ Delete ]
+
+
+7.32 Editing structures
+For v1, keep editing simple.
+For a tunnel/ramp:
+move
+resize
+rotate
+delete
+
+Resize handles should snap in whole tiles.
+No arbitrary centimeter resizing.
+
+7.33 Moving structures
+Dragging:
+Tunnel 4 × 8
+
+moves the entire footprint tile-by-tile.
+This keeps everything aligned.
+
+7.34 Object movement
+Objects move from tile center to tile center.
+Optionally later:
+local offset
+
+can be supported for unusual cases.
+But don't add it now unless needed.
+
+7.35 Undo/redo
+All Step-7 actions go through the Step-6 runtime undo system:
+Place structure
+Delete structure
+Resize structure
+Move structure
+Place object
+Move object
+Paint trigger
+Delete trigger
+
+Ctrl+Z must work in standalone build.
+
+7.36 Layer visibility
+Map editor:
+LAYERS
+
+[✓] Road
+[✓] Structures
+[✓] Objects
+[✓] Triggers
+
+Trigger layer can render translucent colors/outlined tiles during editing.
+During driving:
+Triggers hidden
+
+unless runtime debug overlay is enabled.
+
+7.37 Trigger debug overlay
+In Drive mode, debug menu:
+[ ] Trigger Regions
+
+When enabled, show tile overlays.
+Example:
+SlowZone
+▒▒▒▒▒▒▒▒
+
+Finish
+████
+
+But these overlays must be excluded from sensor cameras.
+Only observer camera sees them.
+
+7.38 Observer vs sensor layer masks
+Important:
+ObserverCamera:
+sees debug overlays
+
+Jajucha Cameras:
+DO NOT see debug overlays
+
+So ANN never sees:
+trigger colors
+selection outlines
+grid
+debug labels
+
+
+7.39 Build integration
+All Step-7 functionality must work in:
+JajuchaSim.exe
+
+Including:
+placing tunnels
+placing ramps
+moving them
+placing objects
+painting triggers
+saving
+loading
+test drive
+No Unity Editor required.
+
+7.40 Save format
+Extend course JSON:
+{
+  "structures": [
+    {
+      "id": "tunnel_01",
+      "type": "tunnel",
+      "region": {
+        "x": 20,
+        "z": 30,
+        "width": 4,
+        "height": 8
+      },
+      "heightCm": 55
+    }
+  ],
+
+  "objects": [
+    {
+      "id": "slow_sign_01",
+      "type": "slow_sign",
+      "tile": [18, 29],
+      "rotationDeg": 90
+    }
+  ],
+
+  "triggers": [
+    {
+      "id": "slow_zone_01",
+      "type": "slow_zone",
+      "region": {
+        "x": 20,
+        "z": 40,
+        "width": 4,
+        "height": 10
+      }
+    }
+  ]
+}
+
+Simple and readable.
+
+7.41 Unique IDs
+Every structure/object/trigger gets an ID.
+Example:
+tunnel_01
+ramp_01
+slow_sign_02
+speed_gate_a
+
+Needed later for:
+scoring
+events
+scenario control
+debug logging
+Don't rely on array index.
+
+7.42 Auto-generated IDs
+Editor can generate:
+tunnel_001
+tunnel_002
+
+but user can rename if needed.
+
+7.43 Validation
+Before saving:
+Tunnel must occupy road tiles
+Ramp must occupy road tiles
+Obstacle placement must be within map bounds
+Trigger region cannot be empty
+IDs unique
+
+Invalid items should be highlighted.
+
+7.44 Tunnel validation
+Example:
+tunnel region contains:
+32 tiles
+
+road under tunnel:
+30 tiles
+
+Warn:
+2 tunnel tiles do not contain road.
+
+Allow override only if needed.
+
+7.45 Ramp validation
+Ramp requires:
+continuous rectangular region
+
+and:
+road coverage across full ramp
+
+Otherwise geometry becomes weird.
+Reject invalid ramps initially.
+
+7.46 Object collision validation
+Prevent:
+two large obstacles occupying the same tile
+start signal inside tunnel wall
+obvious impossible placements
+But don't build a huge rule engine.
+Simple occupancy checks are enough.
+
+7.47 Runtime event panel
+Step 7 makes the Events debug panel useful.
+Example:
+EVENTS
+
+12.31  slow_zone_01 ENTER
+15.80  speed_gate_a CROSS
+17.32  speed_gate_b CROSS
+22.04  tunnel_01 ENTER
+28.71  tunnel_01 EXIT
+
+Works in standalone build.
+
+7.48 Structure debug info
+No separate structure debug panel required.
+Selecting structure in Map Editor shows its data.
+In Drive mode, optional overlay:
+[ ] Structure IDs
+
+can show:
+tunnel_01
+ramp_01
+
+in observer view.
+
+7.49 Test-drive loop
+Map editor workflow:
+place tunnel
+place slow sign
+paint slow zone
+      ↓
+[Test Drive]
+      ↓
+drive through map
+      ↓
+watch event panel
+      ↓
+[Back to Editor]
+      ↓
+adjust
+
+No restart and no save required between edits/tests.
+
+7.50 Automated tests
+Tunnel placement
+Place:
+4 × 8
+
+region.
+Expected:
+structure created
+correct tile footprint
+generated walls/roof
+road still exists underneath
+
+7.51 Ramp test
+Place:
+3 × 6
+rise = 30 cm
+
+Expected:
+surface elevation rises monotonically
+car can drive onto it
+no collision gaps
+
+7.52 Trigger enter test
+Spawn car outside slow zone.
+Move into zone.
+Expected exactly once:
+SlowZoneEntered
+
+Stay inside.
+Expected:
+no repeated enter event
+
+Exit.
+Expected once:
+SlowZoneExited
+
+
+7.53 Speed gate crossing test
+Move from one side of gate to other between two ticks.
+Expected:
+crossing detected
+
+Even if no sampled position lands directly on the gate.
+
+7.54 Save/load test
+Create:
+1 tunnel
+1 ramp
+2 obstacles
+1 sign
+2 triggers
+Save.
+Reload.
+Expected exact semantic match.
+
+7.55 Build smoke test
+In standalone:
+open map
+→ edit mode
+→ create tunnel
+→ create ramp
+→ place sign
+→ paint slow zone
+→ save
+→ drive
+→ event appears
+→ back to editor
+
+If this works, Step 7 is done.
+
+Definition of Done — Step 7
+Requirement
+Required
+Shared grid used by all features
+✅
+Structure layer
+✅
+Object layer
+✅
+Trigger layer
+✅
+Tunnel
+✅
+Ramp
+✅
+Obstacle
+✅
+Slow sign
+✅
+Start signal
+✅
+Slow zone
+✅
+Start/finish trigger
+✅
+Generic event trigger
+✅
+Speed gate
+✅
+Tile/region placement
+✅
+Move/resize/delete
+✅
+Runtime placement preview
+✅
+Runtime validation
+✅
+Undo/redo
+✅
+Save/load
+✅
+Trigger enter/exit
+✅
+Speed gate crossing
+✅
+EventBus integration
+✅
+Runtime event debug panel
+✅
+Sensor cameras exclude debug overlays
+✅
+All tools work in standalone build
+✅
+
+The next logical step is Step 8: scenario/scoring system — start signal behavior, timers, slow-zone speed rules, gate measurements, collisions, course completion, and a runtime results panel.
+

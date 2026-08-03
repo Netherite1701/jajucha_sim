@@ -1,0 +1,9 @@
+{
+  "implementation_model": "opencode-go/grok-4.5",
+  "verification_model": "opencode-go/qwen3.7-max",
+  "escalation_model": "opencode-go/qwen3.7-max",
+  "final_audit_model": "opencode-go/kimi-k2.7-code",
+  "escalate_after_attempts": 2,
+  "max_verification_attempts": 8,
+  "restart_delay_seconds": 5
+}

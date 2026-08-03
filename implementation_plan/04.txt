@@ -1,0 +1,1154 @@
+Step 3 — Python Bridge + jchm Compatibility Layer
+Step 3 connects the clean Unity vehicle from Step 2 to Python.
+The goal is:
+import jchm
+
+jchm.control.set_motor(-5, -5, 3)
+
+to control the Unity vehicle without changing student code semantics.
+No camera yet. No ANN yet. No FSM yet. This step is only the control bridge.
+
+3.1 Step 3 end state
+At the end:
+Python
+  │
+  │ jchm.control.set_motor(-5,-5,3)
+  ▼
+jchm simulator backend
+  │
+  │ localhost IPC
+  ▼
+Unity Bridge
+  │
+  ▼
+JajuchaVehicle.SetMotor(-5,-5,3)
+  │
+  ▼
+Vehicle Physics
+
+And:
+jchm.control.set_motor(0, 0, 0)
+
+must stop propulsion while preserving the requested steering values exactly as defined in Step 2.
+
+3.2 Main architectural rule
+The bridge must not understand vehicle physics.
+It only translates messages.
+Bad:
+PythonBridge
+├─ computes steering angles
+├─ computes motor velocity
+├─ applies Rigidbody forces
+└─ knows suspension
+
+Good:
+PythonBridge
+    ↓
+JajuchaVehicle.SetMotor(left,right,speed)
+
+Everything physical remains in Vehicle.
+
+3.3 Add Bridge assembly
+Create:
+Assets/JajuchaSim/Bridge/
+
+├─ Runtime/
+│  ├─ JajuchaBridgeServer.cs
+│  ├─ BridgeConnection.cs
+│  ├─ BridgeProtocol.cs
+│  ├─ BridgeMessage.cs
+│  ├─ CommandDispatcher.cs
+│  └─ BridgeConfig.cs
+│
+└─ Tests/
+
+Assembly:
+JajuchaSim.Bridge.asmdef
+
+Dependencies:
+JajuchaSim.Core
+JajuchaSim.Vehicle
+
+Not the other way around.
+
+3.4 Transport choice
+For this simulator, I recommend:
+TCP over localhost
+
+initially.
+Why not HTTP?
+Because later camera frames and realtime control become much easier with a persistent socket.
+Why not WebSocket immediately?
+Possible, but unnecessary complexity.
+Why not named pipes?
+They are nice locally, but TCP is much easier to keep cross-platform.
+So use:
+127.0.0.1
+
+with a configurable port.
+Example:
+8765
+
+
+3.5 Never expose simulator publicly by default
+Bind to:
+127.0.0.1
+
+not:
+0.0.0.0
+
+The bridge is for local development.
+Later remote/container mode can explicitly enable another interface.
+
+3.6 Bridge configuration
+Create:
+JajuchaBridgeConfig.asset
+
+Fields:
+Host                127.0.0.1
+Port                8765
+
+AutoStart           true
+
+CommandTimeoutMs    1000
+
+MaxMessageBytes     65536
+
+ProtocolVersion     1
+
+Keep network config separate from simulation config.
+
+3.7 Protocol format
+Use simple newline-delimited JSON.
+Example:
+{"type":"set_motor","left":-5,"right":-5,"speed":3}
+
+followed by:
+\n
+
+Response:
+{"type":"ack","ok":true}
+
+This is easy to:
+inspect manually
+log
+generate in Python
+parse in Unity
+test
+Do not invent a binary protocol yet.
+
+3.8 Every message needs a version
+Prefer a handshake.
+Python connects:
+{
+  "type": "hello",
+  "protocol": 1,
+  "client": "jchm-sim"
+}
+
+Unity responds:
+{
+  "type": "hello_ack",
+  "protocol": 1,
+  "simulator": "JajuchaSim"
+}
+
+If protocol versions don't match:
+{
+  "type": "error",
+  "code": "PROTOCOL_VERSION_MISMATCH"
+}
+
+This avoids silent breakage later.
+
+3.9 Message envelope
+Do not make every command an unrelated JSON structure.
+Use a consistent envelope:
+{
+  "type": "command",
+  "id": 17,
+  "name": "set_motor",
+  "payload": {
+    "left": -5,
+    "right": -5,
+    "speed": 3
+  }
+}
+
+Response:
+{
+  "type": "response",
+  "id": 17,
+  "ok": true
+}
+
+The id lets Python match replies to requests.
+This becomes more important once camera/status requests exist.
+
+3.10 Keep transport and protocol separate
+Structure:
+TCP bytes
+   ↓
+BridgeConnection
+   ↓
+JSON line
+   ↓
+BridgeProtocol
+   ↓
+BridgeMessage
+   ↓
+CommandDispatcher
+   ↓
+JajuchaVehicle
+
+Do not put socket reads, JSON parsing, and car commands into one 700-line class.
+
+3.11 Threading model
+TCP reading should not block the Unity main thread.
+Use:
+background receive thread/task
+
+for socket I/O.
+But never mutate Unity objects from that thread.
+Instead:
+network thread
+     ↓
+thread-safe incoming queue
+     ↓
+Unity simulation/main thread
+     ↓
+CommandDispatcher
+     ↓
+JajuchaVehicle
+
+This is critical.
+
+3.12 Command queue
+Create:
+ConcurrentQueue<BridgeMessage>
+
+Conceptually:
+Python sends command
+      ↓
+network receives
+      ↓
+IncomingCommands.Enqueue(...)
+      ↓
+simulation tick
+      ↓
+dequeue
+      ↓
+ApplyCommand()
+
+This avoids race conditions.
+
+3.13 Apply commands at simulation boundaries
+Do not apply steering/motor commands at arbitrary render times.
+At each simulation tick:
+1. consume pending bridge commands
+2. update current JCHM command
+3. run vehicle simulation
+
+This makes command timing deterministic.
+
+3.14 Latest-command semantics
+For motor control, if Python sends:
+tick between updates:
+
+set_motor(0,0,2)
+set_motor(0,0,3)
+set_motor(0,0,5)
+
+before the next simulation tick, I recommend:
+latest command wins
+
+So only:
+(0,0,5)
+
+is applied.
+Otherwise old commands can queue up and introduce artificial lag.
+
+3.15 But preserve command order for non-motor commands later
+So don't globally collapse all messages.
+Implement command-specific policy:
+set_motor
+→ latest-wins
+
+future reset
+→ ordered
+
+future capture_frame
+→ ordered/request-response
+
+
+3.16 Watchdog timeout
+This is essential.
+If Python dies while the car command is:
+speed = 10
+
+the simulated car should not drive forever.
+Maintain:
+LastMotorCommandReceiveTime
+
+If:
+now - lastCommand > timeout
+
+then:
+speed = 0
+
+while preserving steering:
+left = current left
+right = current right
+speed = 0
+
+That matches the Step 2 invariant.
+
+3.17 Timeout should use wall time, not simulation time
+If simulation is paused:
+SimulationTime
+
+stops.
+But Python may disconnect.
+So watchdog should use:
+real/unscaled wall time
+
+not simulation clock time.
+
+3.18 Connection state
+Expose:
+Disconnected
+Listening
+Connected
+HandshakeComplete
+Faulted
+
+Debug HUD:
+PYTHON BRIDGE
+
+State: CONNECTED
+Host: 127.0.0.1
+Port: 8765
+
+Protocol: v1
+Last command: 42 ms ago
+
+
+3.19 Disconnect behavior
+On disconnect:
+speed → 0
+
+immediately or within one simulation tick.
+Keep steering position unchanged.
+Then wait for reconnection.
+Do not crash Unity.
+
+3.20 Multiple clients
+For v1:
+Allow exactly one control client.
+If another connects:
+{
+  "type":"error",
+  "code":"CLIENT_ALREADY_CONNECTED"
+}
+
+Multiple control clients are dangerous and unnecessary.
+Later debug clients can be treated separately.
+
+3.21 Python package layout
+Create a simulator-side Python compatibility package:
+python/
+└─ jchm/
+   ├─ __init__.py
+   ├─ control.py
+   ├─ _backend.py
+   ├─ _sim_backend.py
+   ├─ _protocol.py
+   └─ errors.py
+
+Later camera support adds:
+camera.py
+
+
+3.22 Preserve import jchm
+Student code should still say:
+import jchm
+
+not:
+import jajucha_sim
+
+because the simulator should emulate the real runtime interface.
+The backend selection should be internal.
+
+3.23 Backend abstraction
+Inside Python:
+jchm.control.set_motor(...)
+          ↓
+selected backend
+     ┌────┴────┐
+     ↓         ↓
+real backend   simulator backend
+
+For simulator development:
+JCHM_BACKEND=sim
+
+could select Unity.
+Or a local configuration file.
+Do not make students modify their autonomous algorithm.
+
+3.24 Python control function
+Conceptually:
+def set_motor(left: int, right: int, speed: int):
+    _backend.set_motor(left, right, speed)
+
+Simulator backend:
+def set_motor(left, right, speed):
+    client.send_command(
+        "set_motor",
+        {
+            "left": left,
+            "right": right,
+            "speed": speed,
+        },
+    )
+
+Keep the public function tiny.
+
+3.25 Range handling location
+Do range validation in both places.
+Python:
+validate/clamp early
+
+Unity:
+validate/clamp again
+
+Never trust the network boundary.
+Canonical limits stay:
+left/right: -10..10
+speed:      -30..30
+
+
+3.26 Simulator-specific API must be separate
+Do not pollute:
+jchm.control
+
+with things that don't exist on the actual car.
+Bad:
+jchm.control.teleport_car()
+jchm.control.set_simulation_speed()
+
+Instead create:
+jchm_sim
+
+for simulator-only tooling.
+Example:
+import jchm
+import jchm_sim
+
+jchm.control.set_motor(0, 0, 3)
+
+jchm_sim.reset()
+
+That keeps real/sim compatibility clean.
+
+3.27 jchm_sim package
+Future structure:
+python/
+├─ jchm/
+│
+└─ jchm_sim/
+   ├─ __init__.py
+   ├─ simulation.py
+   ├─ debug.py
+   └─ testing.py
+
+For Step 3, only implement:
+jchm_sim.connect()
+jchm_sim.disconnect()
+jchm_sim.ping()
+
+Optionally:
+jchm_sim.reset()
+
+if we expose reset now.
+
+3.28 Automatic connection
+Student scripts should not require:
+connect()
+
+before every call.
+This:
+import jchm
+
+jchm.control.set_motor(0,0,3)
+
+should automatically connect to:
+127.0.0.1:8765
+
+if simulator backend is active.
+
+3.29 Fail clearly if simulator isn't running
+Bad:
+ConnectionRefusedError: [WinError 10061]
+
+Better:
+JCHM Simulator connection failed.
+
+Expected simulator at:
+127.0.0.1:8765
+
+Start Jajucha Simulator and try again.
+
+Wrap lower-level socket errors.
+
+3.30 Reconnection
+If Unity restarts:
+Python client
+→ detects broken connection
+→ reconnects on next command
+
+Do not require restarting VS Code/Python unnecessarily.
+Initial policy:
+one reconnect attempt on next API call
+
+Keep it simple.
+
+3.31 Request timeout
+Each synchronous request should have a timeout.
+Example:
+1 second
+
+If Unity doesn't acknowledge:
+JchmSimulatorTimeout
+
+Never hang forever.
+
+3.32 set_motor response policy
+For normal use, the public function can be synchronous enough to ensure the command was accepted:
+jchm.control.set_motor(...)
+
+returns after Unity sends:
+{"ok":true}
+
+That makes errors deterministic.
+Later, if latency matters, we can add a fire-and-forget optimization.
+For local control, acknowledgement overhead is negligible.
+
+3.33 Ping command
+Protocol:
+{
+  "type":"command",
+  "id":1,
+  "name":"ping",
+  "payload":{}
+}
+
+Response:
+{
+  "type":"response",
+  "id":1,
+  "ok":true,
+  "payload":{
+    "sim_time":12.34
+  }
+}
+
+Useful for smoke testing.
+
+3.34 Status command
+Add a debug-only status request:
+get_status
+
+Response:
+{
+  "state":"Running",
+  "tick":5230,
+  "sim_time":52.30,
+  "vehicle":{
+    "command":{
+      "left":-5,
+      "right":-5,
+      "speed":3
+    }
+  }
+}
+
+Do not expose this through real-compatible jchm.control.
+Expose it under:
+jchm_sim.status()
+
+
+3.35 Reset command
+This is worth implementing now for testing.
+Python:
+jchm_sim.reset()
+
+Unity:
+Bridge
+ ↓
+SimulationManager.ResetSimulation()
+
+This is simulator-only.
+
+3.36 Start/pause/step
+Likewise simulator-only:
+jchm_sim.start()
+jchm_sim.pause()
+jchm_sim.step()
+
+These directly invoke Step 1 lifecycle controls.
+This will become extremely valuable for automated testing.
+
+3.37 Step command behavior
+When paused:
+jchm_sim.step()
+
+must advance:
+exactly 1 simulation tick
+
+No more.
+This lets Python deterministic tests control Unity precisely.
+
+3.38 Protocol command set for v1
+I would define exactly these:
+hello
+
+ping
+
+set_motor
+
+sim_start
+sim_pause
+sim_step
+sim_reset
+
+get_status
+
+Nothing else yet.
+Camera commands come in Step 4.
+
+3.39 Error protocol
+Standard error structure:
+{
+  "type":"response",
+  "id":12,
+  "ok":false,
+  "error":{
+    "code":"INVALID_ARGUMENT",
+    "message":"speed must be between -30 and 30"
+  }
+}
+
+Define stable error codes.
+Examples:
+INVALID_MESSAGE
+INVALID_ARGUMENT
+UNKNOWN_COMMAND
+NOT_READY
+PROTOCOL_VERSION_MISMATCH
+INTERNAL_ERROR
+
+
+3.40 Never send stack traces to students by default
+Unity logs can contain the detailed exception.
+Python receives:
+INTERNAL_ERROR
+
+plus a concise message.
+Optionally enable verbose debug mode later.
+
+3.41 JSON serialization
+Use one serialization method consistently.
+Do not mix:
+JsonUtility
+Newtonsoft
+custom regex parsing
+
+If Unity's available JSON implementation handles the message model cleanly, use it.
+Otherwise use Unity's supported Newtonsoft package.
+Keep protocol DTOs simple so serialization is boring.
+
+3.42 Protocol DTOs should not be gameplay objects
+Bad:
+Deserialize directly into JajuchaVehicle
+
+Good:
+SetMotorRequest
+    ↓
+validation
+    ↓
+JajuchaMotorCommand
+
+Keep network representation separate from domain representation.
+
+3.43 Main thread dispatcher
+Create:
+BridgeCommandDispatcher
+
+It knows:
+SimulationManager
+JajuchaVehicle
+
+and maps:
+"set_motor"
+→ vehicle.SetMotor()
+
+"sim_reset"
+→ simulation.Reset()
+
+"sim_pause"
+→ simulation.Pause()
+
+It should not know socket details.
+
+3.44 Command dispatch architecture
+Network Thread
+     │
+     ▼
+BridgeConnection
+     │
+     ▼
+Incoming Queue
+     │
+──── simulation thread boundary ────
+     │
+     ▼
+CommandDispatcher
+     │
+ ┌───┴────────────┐
+ ▼                ▼
+Vehicle       SimulationManager
+
+This separation is mandatory.
+
+3.45 Test Python client
+Before building the jchm package fully, create a minimal diagnostic script:
+tools/bridge_smoke_test.py
+
+Sequence:
+connect
+hello
+ping
+reset
+set_motor(0,0,3)
+wait
+set_motor(0,0,0)
+status
+disconnect
+
+This helps debug protocol independent of the compatibility layer.
+
+3.46 Core bridge unit tests
+Unity tests:
+JSON parsing
+Input:
+{"type":"command","id":1,"name":"set_motor","payload":{"left":0,"right":0,"speed":3}}
+
+Expected:
+valid SetMotorRequest
+
+
+3.47 Invalid JSON test
+Input:
+{"type":"command",
+
+Expected:
+INVALID_MESSAGE
+
+No crash.
+
+3.48 Unknown command test
+Input:
+{
+  "type":"command",
+  "id":1,
+  "name":"explode_car",
+  "payload":{}
+}
+
+Expected:
+UNKNOWN_COMMAND
+
+
+3.49 Set motor dispatch test
+Send:
+(-5,-5,3)
+
+Expected:
+vehicle.CurrentCommand.Left  == -5
+vehicle.CurrentCommand.Right == -5
+vehicle.CurrentCommand.Speed == 3
+
+
+3.50 Zero-speed invariant bridge test
+Send:
+(-10,10,0)
+
+Expected:
+steering targets change
+propulsion command == 0
+
+This specifically protects the rule you just added.
+
+3.51 Latest-wins motor test
+Enqueue:
+(0,0,1)
+(0,0,2)
+(0,0,3)
+
+before the next tick.
+Expected applied command:
+(0,0,3)
+
+and no artificial three-tick lag.
+
+3.52 Timeout safety test
+Send:
+(0,0,10)
+
+Then stop sending commands.
+After watchdog timeout:
+speed == 0
+
+while:
+left/right remain at current values
+
+if they were nonzero.
+
+3.53 Disconnect safety test
+Connect.
+Send:
+(-5,-5,10)
+
+Disconnect socket.
+Expected:
+within one tick:
+speed = 0
+
+No Unity exception.
+
+3.54 Reconnect test
+Sequence:
+connect
+set_motor
+disconnect
+reconnect
+set_motor
+
+Expected:
+second session works
+
+No requirement to reload Unity scene.
+
+3.55 Python unit tests
+Use:
+pytest
+
+Test:
+jchm.control.set_motor(...)
+
+with a mocked backend first.
+Verify:
+arguments preserved
+
+
+3.56 Range tests
+Python:
+jchm.control.set_motor(-50, 50, 100)
+
+Depending on compatibility policy:
+clamp
+
+to:
+(-10,10,30)
+
+and optionally warn.
+Keep this behavior consistent with Unity.
+
+3.57 Connection error test
+Unity not running.
+Call:
+jchm.control.set_motor(0,0,3)
+
+Expected:
+clear simulator connection exception
+
+not raw socket internals.
+
+3.58 Full integration test
+This is the defining Step 3 test.
+Unity starts in:
+Ready
+
+Python runs:
+import jchm
+import jchm_sim
+
+jchm_sim.reset()
+jchm_sim.start()
+
+jchm.control.set_motor(0, 0, 3)
+
+Simulate enough ticks.
+Then:
+status = jchm_sim.status()
+
+Expected:
+speed command = 3
+vehicle moved forward
+
+Then:
+jchm.control.set_motor(-5, -5, 0)
+
+Expected:
+steering = left
+propulsion = zero
+
+Then:
+jchm_sim.reset()
+
+Expected:
+vehicle returns to spawn
+tick = 0
+
+
+3.59 VS Code workflow
+The desired student workflow becomes:
+1. Launch Unity simulator
+2. Press Play
+
+3. Open Python file in VS Code
+
+4. Run:
+
+python main.py
+
+No manual:
+open port tool
+click connect
+copy IP
+set simulator mode
+
+for every run.
+The bridge should just be available.
+
+3.60 Later: automatic Unity launch
+Do not implement this yet.
+Eventually:
+python main.py
+
+could detect simulator absence and launch a standalone build.
+But that belongs after the standalone simulator build is stable.
+Step 3 should assume Unity is already running.
+
+3.61 Logging
+Unity log:
+[BRIDGE] Listening on 127.0.0.1:8765
+[BRIDGE] Client connected
+[BRIDGE] Handshake complete protocol=1
+[BRIDGE] set_motor left=-5 right=-5 speed=3
+[BRIDGE] Client disconnected
+[BRIDGE] Motor watchdog stop
+
+Do not log every packet forever once camera frames arrive.
+For now it's fine for control debugging.
+
+3.62 Python debug logging
+Optional environment variable:
+JCHM_SIM_DEBUG=1
+
+prints:
+[jchm-sim] connected 127.0.0.1:8765
+[jchm-sim] set_motor(-5,-5,3)
+[jchm-sim] ack id=17
+
+Default should remain quiet.
+
+3.63 Bridge performance target
+Motor control messages are tiny.
+Target localhost round trip:
+well below one simulation frame
+
+At 100 Hz:
+one tick = 10 ms
+
+Ideally command round trip is:
+< 5 ms
+
+on the same computer.
+But correctness matters more than optimizing microseconds in Step 3.
+
+3.64 Avoid coupling Python timing to network latency
+Later control code may do:
+while True:
+    ...
+    jchm.control.set_motor(...)
+
+We don't want every synchronous acknowledgement to dominate the loop.
+So internally, plan for an eventual:
+persistent socket
+
+with lightweight request handling.
+Do not reconnect per command.
+That would be terrible.
+
+3.65 Connection lifetime
+This:
+for _ in range(1000):
+    jchm.control.set_motor(...)
+
+should use:
+one TCP connection
+
+not 1000 connections.
+Backend maintains a singleton/session connection internally.
+
+3.66 Thread safety on Python side
+Even if students don't initially use threads, make the backend safe enough that two Python threads don't interleave raw JSON bytes.
+Use:
+send lock
+request ID lock
+
+around request operations.
+
+3.67 No camera over this design yet
+Step 4 will need high-bandwidth data.
+Do not prematurely cram images into the same simplistic request/response JSON encoding.
+We can reuse the connection architecture but define a proper binary frame payload or separate stream.
+For Step 3:
+JSON control only
+
+is enough.
+
+3.68 Documentation
+Create:
+Docs/architecture/03-python-bridge.md
+
+Sections:
+Purpose
+Transport
+Protocol
+Handshake
+Command model
+Threading
+Simulation tick boundary
+Motor watchdog
+Error handling
+Python backend
+Real-vs-sim compatibility
+Testing
+
+And add:
+Docs/protocol-v1.md
+
+with exact message schemas.
+
+3.69 Protocol compatibility rule
+Once Protocol v1 is declared stable:
+Never silently change an existing field's meaning.
+If later we need something different:
+protocol v2
+
+or add optional fields.
+This matters if the simulator and Python package are updated independently.
+
+3.70 Step 3 definition of done
+Requirement
+Required
+Bridge assembly
+✅
+TCP localhost server
+✅
+Persistent connection
+✅
+Protocol v1
+✅
+Version handshake
+✅
+Newline-delimited JSON control
+✅
+Request IDs
+✅
+Background network I/O
+✅
+Main-thread command dispatch
+✅
+Simulation-boundary command application
+✅
+set_motor(left,right,speed)
+✅
+Exact JCHM command semantics
+✅
+zero-speed invariant preserved
+✅
+latest-wins motor command
+✅
+watchdog
+✅
+disconnect safety stop
+✅
+reconnect support
+✅
+jchm simulator backend
+✅
+import jchm remains valid
+✅
+simulator-specific jchm_sim
+✅
+ping
+✅
+status
+✅
+reset
+✅
+start/pause/step
+✅
+Unity bridge tests
+✅
+Python unit tests
+✅
+full Python→Unity integration test
+✅
+0 compile errors
+✅
+0 project-code warnings
+✅
+
+
+Result after Step 3
+We now have:
+           STUDENT PYTHON
+
+import jchm
+
+jchm.control.set_motor(-5,-5,3)
+
+                  │
+                  ▼
+
+       JCHM Compatibility Layer
+
+                  │
+              localhost
+                  │
+                  ▼
+
+          Unity Bridge Server
+
+                  │
+                  ▼
+
+        JajuchaVehicle.SetMotor
+
+                  │
+          ┌───────┴────────┐
+          ▼                ▼
+     Steering          Rear Drive
+
+          └───────┬────────┘
+                  ▼
+
+             Vehicle Physics
+
+At this point the simulator has something genuinely useful: the same motor-control syntax can drive either the real Jajucha or the simulated Jajucha, while simulator-only operations stay outside the real jchm API.
+Step 4 should be the camera subsystem and jchm.camera compatibility layer—including physical camera mount, resolution/FOV, frame timing, image transfer to Python, and making OpenCV code consume simulator frames with minimal or zero changes.
+

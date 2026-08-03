@@ -1,0 +1,802 @@
+Yes — then Step 10 should not be “testing only.” It should be a combined Competition Evaluation System: scoring + batch testing + reproducible runs.
+Step 10 — Competition Scoring + Automated Testing
+The simulator should evaluate a run the way a competition judge would.
+Core flow:
+Reset
+  ↓
+Start
+  ↓
+Drive course
+  ↓
+Detect penalties / objective failures / terminal speed
+  ↓
+Finish or timeout
+  ↓
+Calculate final score
+  ↓
+Save result
+  ↓
+Optionally repeat automatically
+
+1. Scoring model
+Use:
+Final Score
+=
+Base Score
+- Penalties
+
+I would not hardcode the actual penalty values yet unless you provide the real rules.
+Instead define configurable rules like:
+Line contact             -X points
+Obstacle collision       -X points
+Objective failure        -X points
+Speed violation          -X points
+False start              -X points
+Course departure         -X points
+Timeout                  -X points
+
+That way the simulator can exactly match the competition rules later.
+
+2. Line stepping / line contact
+This should be a real scoring event.
+The road tile system should distinguish:
+Road surface
+Boundary line
+
+Then detect if the Jajucha footprint touches/crosses the forbidden line.
+Do not just check the car's center.
+Use several contact/footprint points, for example:
+front-left
+front-right
+rear-left
+rear-right
+
+or the actual chassis/wheel footprint.
+Conceptually:
+car footprint
+      ↓
+boundary-line geometry
+      ↓
+overlap?
+      ↓
+LineViolation
+      ↓
+penalty
+
+Example event:
+18.42 s
+LINE_CONTACT
+section: curve_02
+penalty: -5
+
+The number -5 is only an example; actual scoring stays configurable.
+
+3. Don't deduct every simulation tick
+If the car stays on the line for 0.5 seconds, don't generate:
+50 penalties
+
+Use a violation episode:
+not touching
+→ touching
+= one LineViolation
+
+remain touching
+= same violation
+
+leave line
+→ episode ends
+
+If it later touches again:
+new violation
+
+This same debouncing principle should apply to collisions.
+
+4. Objective system
+Each important course feature can define an objective.
+Examples:
+Pass tunnel successfully
+Complete obstacle section
+Obey slow section
+Pass speed measurement section
+Recognize/start after signal
+Reach finish
+
+The scorer doesn't care how your code accomplishes them.
+Each objective has:
+ID
+success condition
+failure condition
+penalty
+optional timeout
+
+
+5. Objective states
+Use:
+Pending
+Passed
+Failed
+Skipped
+
+Example:
+objective_tunnel_01
+Pending
+   ↓ car enters
+Active
+   ↓ exits correctly
+Passed
+
+or:
+enters tunnel
+↓
+hits tunnel wall / exits forbidden side
+↓
+Failed
+↓
+penalty
+
+
+6. Objective failure penalty
+Example result:
+OBJECTIVES
+
+Start Signal       PASS
+Slow Section       PASS
+Tunnel             FAIL   -10
+Obstacle Section   PASS
+Speed Test         FAIL    -5
+Finish             PASS
+
+Again, point values should come from configuration.
+
+7. Objective regions use the same tile grid
+Since the entire course uses the common tile grid, an objective can reference:
+trigger tiles
+structure IDs
+object IDs
+terminal pairs
+
+Example:
+{
+  "id": "tunnel_objective_01",
+  "type": "pass_structure",
+  "targetId": "tunnel_01",
+  "penaltyPoints": 10
+}
+
+Simple.
+
+8. Course departure
+Road tiles give us a very clean way to detect this.
+Sample the car footprint.
+If too much of it is outside:
+Road Layer
+
+then generate:
+COURSE_DEPARTURE
+
+This can either:
+deduct points
+
+or, for severe departures:
+fail objective / terminate run
+
+depending on rules.
+
+9. Collision scoring
+Collisions should identify what was hit.
+For example:
+Obstacle
+Tunnel wall
+Barrier
+Other structure
+
+Result:
+31.24 s
+COLLISION
+object: obstacle_02
+penalty: -5
+
+Again:
+continuous contact = one incident
+
+not one penalty per physics callback.
+
+10. Start-signal scoring
+Possible scoring events:
+false start
+failed to start
+valid start
+
+Example:
+signal RED
+car crosses start line
+→ FALSE_START
+→ penalty
+
+The autonomous program still gets no hidden signal state.
+It must see the actual visual start signal.
+
+11. Slow-zone scoring
+For competition realism, we should distinguish:
+Zone behavior
+Whether the objective was completed correctly.
+Terminal measured speed
+Actual official measured speed:
+\[ v=\frac{d}{t_2-t_1} \]
+So the scorer can say:
+Speed objective:
+Terminal A: 24.100 s
+Terminal B: 25.020 s
+Distance: 20 cm
+
+Measured:
+21.74 cm/s
+
+Limit:
+20 cm/s
+
+FAIL
+Penalty: -X
+
+Do not use instantaneous Rigidbody speed as the official measurement.
+
+12. Terminal pair as a scoring device
+Data:
+SpeedTerminalPair
+├─ Terminal A
+├─ Terminal B
+├─ distance
+├─ allowed threshold
+└─ scoring rule
+
+When A then B is crossed:
+Δt = t2 - t1
+speed = d / Δt
+
+Then scorer evaluates it.
+
+13. Missing terminal measurement
+Possible case:
+A crossed
+B never crossed
+
+Then objective can become:
+FAILED
+
+at:
+finish, or
+objective timeout
+depending on configuration.
+This should not silently disappear from results.
+
+14. Finish scoring
+When finish is reached:
+stop official timer
+finalize unfinished objectives
+finalize penalties
+calculate score
+create RunResult
+Example:
+RUN COMPLETE
+
+Time             58.41 s
+
+Base Score       100
+
+Penalties:
+Line contact      -5
+Tunnel failure   -10
+Collision         -5
+
+Final Score       80
+
+The actual base score and deduction values stay configurable.
+
+15. Timeout
+If:
+elapsed > MaxRunTime
+
+then:
+TIMEOUT
+
+Possible behavior:
+unfinished objectives → fail
+timeout penalty → apply
+run ends
+
+This should be scenario-configurable.
+
+16. Penalty record
+Every deduction should create a structured record:
+PenaltyRecord
+├─ RuleId
+├─ EventType
+├─ Points
+├─ SimulationTime
+├─ TargetId
+└─ Description
+
+Example:
+{
+  "eventType": "line_contact",
+  "points": -5,
+  "time": 18.42,
+  "targetId": "road_boundary_03"
+}
+
+This makes results auditable.
+
+17. ScoreManager
+Keep scoring centralized:
+Scenario events
+     ↓
+ScoreManager
+     ↓
+Rules
+     ↓
+PenaltyRecords
+     ↓
+FinalScore
+
+Do not let every obstacle directly modify a global integer.
+Bad:
+score -= 5;
+
+Better:
+publish CollisionEvent
+↓
+CollisionRule evaluates
+↓
+PenaltyRecord created
+
+This makes rules replaceable.
+
+18. Configurable scoring rules
+Example scenario config:
+{
+  "scoring": {
+    "baseScore": 100,
+
+    "lineContactPenalty": 5,
+    "collisionPenalty": 5,
+    "falseStartPenalty": 10,
+    "objectiveFailurePenalty": 10,
+    "courseDeparturePenalty": 5
+  }
+}
+
+Later replace these with exact competition values.
+
+19. Per-object override
+Some objectives may have different penalties.
+Example:
+{
+  "id": "tunnel_01",
+  "failurePenalty": 15
+}
+
+while another objective might be:
+{
+  "id": "slow_zone_01",
+  "failurePenalty": 5
+}
+
+So global defaults + per-objective overrides.
+
+20. Runtime scoring panel
+In the standalone build:
+SCORING
+──────────────────────
+
+Current Score
+90
+
+Penalties
+2
+
+Objectives
+
+Start             PASS
+Slow Zone         PASS
+Tunnel            FAIL
+Obstacle           ACTIVE
+Speed Test         PENDING
+Finish             PENDING
+
+Main Jajucha driving view remains visible.
+
+21. Live penalties
+When something happens:
+-5 LINE CONTACT
+
+can briefly appear as an observer HUD notification.
+For example:
+┌─────────────────────┐
+│ -5  LINE CONTACT    │
+└─────────────────────┘
+
+Only observer/debug UI sees this.
+Never sensor cameras.
+
+22. Final results panel
+At finish:
+RESULT
+────────────────────────
+
+COMPLETED
+
+Time                 58.41 s
+
+Base Score              100
+
+Line Contact            -5
+Collision               -5
+Tunnel Objective       -10
+
+Final Score              80
+
+Speed Terminal
+21.74 cm/s
+FAIL
+
+[ Run Again ]
+[ Details ]
+[ Export ]
+
+
+23. Detailed result
+Click Details:
+18.42  Line Contact          -5
+31.22  Collision obstacle_02 -5
+42.13  Tunnel Objective     -10
+47.91  Terminal A
+48.83  Terminal B
+48.83  Speed = 21.74 cm/s
+58.41  Finish
+
+This is useful for both manual debugging and batch testing.
+
+24. Now combine testing and scoring
+TestRunner doesn't invent a separate scoring model.
+It simply runs scenarios and collects their official RunResult.
+Architecture:
+              Scenario
+                  │
+                  ▼
+             ScoreManager
+                  │
+                  ▼
+              RunResult
+                  │
+          ┌───────┴────────┐
+          ▼                ▼
+    Results Panel      TestRunner
+                           │
+                           ▼
+                      BatchRunner
+
+So manual runs and automated tests use exactly the same scoring system.
+This is important.
+
+25. Single test
+Automated test:
+Reset
+↓
+Start
+↓
+external controller drives
+↓
+Scenario ends
+↓
+ScoreManager finalizes
+↓
+RunResult
+
+Example:
+Score: 90
+Time: 59.2s
+Line violations: 1
+Objectives failed: 0
+Terminal speed: PASS
+
+
+26. Batch runs
+Then:
+Run 1 → Score 100
+Run 2 → Score 95
+Run 3 → Score 80
+...
+
+Summary:
+BATCH
+
+Runs                 50
+
+Average Score       94.2
+Best Score           100
+Worst Score           70
+
+Perfect Runs          31
+Completed             48
+Timeouts               2
+
+Line Violations       13
+Collisions              4
+Objective Failures      6
+
+
+27. Batch success criteria
+A test can define:
+Minimum score
+Required objectives
+Maximum collisions
+Completion required
+
+Example:
+{
+  "passCriteria": {
+    "mustComplete": true,
+    "minimumScore": 90,
+    "maximumCollisions": 0
+  }
+}
+
+Then each run gets:
+TEST PASS
+
+or:
+TEST FAIL
+
+separate from its competition score.
+
+28. Important distinction
+These are different:
+Competition result:
+Score = 85
+
+and:
+Automated test result:
+FAIL because minimum required = 90
+
+Don't mix them.
+
+29. Regression system
+Known-good baseline:
+Average score: 96
+Completion: 100%
+
+New controller:
+Average score: 82
+Completion: 84%
+
+Regression system reports:
+REGRESSION
+
+without needing to know anything about the controller internals.
+
+30. Per-run JSON
+Example:
+{
+  "runId": "run_0017",
+  "status": "completed",
+
+  "elapsedSec": 58.41,
+
+  "score": {
+    "base": 100,
+    "penalties": 20,
+    "final": 80
+  },
+
+  "violations": {
+    "lineContacts": 1,
+    "collisions": 1
+  },
+
+  "objectives": [
+    {
+      "id": "tunnel_01",
+      "status": "failed",
+      "penalty": 10
+    }
+  ],
+
+  "speedMeasurements": [
+    {
+      "pairId": "speed_01",
+      "distanceCm": 20,
+      "t1": 47.91,
+      "t2": 48.83,
+      "speedCmS": 21.74,
+      "result": "fail"
+    }
+  ]
+}
+
+
+31. Batch CSV
+Example:
+run,status,score,time,line_contacts,collisions,objective_failures
+1,completed,100,55.2,0,0,0
+2,completed,95,56.1,1,0,0
+3,completed,80,61.4,0,1,1
+4,timeout,40,,2,0,3
+
+Very easy to analyze.
+
+32. Failure diagnostics
+For failed or low-score runs save:
+center camera frame
+depth image
+event log
+penalty log
+motor command trace
+final vehicle location
+objective states
+
+Still no dependency on ANN/FSM internals.
+
+33. Debug re-run
+Select:
+run_0017
+Score: 65
+
+then:
+[ Debug Run ]
+
+Simulator uses:
+same course
+same seed
+same scenario
+1× speed
+full runtime UI
+
+Then your external code drives normally.
+
+34. Course editor scoring configuration
+Map Editor should now have:
+SCORING
+
+for selected items.
+Example line:
+Boundary Line
+Penalty on contact:
+[ 5 ]
+
+Example tunnel:
+Tunnel Objective
+
+Required:
+[✓]
+
+Failure penalty:
+[10]
+
+Example terminal pair:
+Speed Test
+
+Maximum:
+[20] cm/s
+
+Failure penalty:
+[5]
+
+All runtime-build editable.
+
+35. Don't put scoring directly in tiles
+Keep tile data clean.
+Road layer:
+road
+line
+
+Scenario/scoring references those features.
+So:
+Map geometry
+≠
+competition rules
+
+The same map could potentially be used with another scoring profile.
+
+36. Recommended rule categories
+Start with:
+Rule
+Event
+Line violation
+vehicle touches forbidden line
+Collision
+vehicle hits obstacle/structure
+Course departure
+vehicle leaves valid road
+False start
+moves/crosses before allowed
+Objective failure
+fails required feature
+Speed violation
+two-terminal measurement exceeds target
+Timeout
+course not finished in time
+
+That's enough for the first competition implementation.
+
+37. Objective success should also be recorded
+Not only failures.
+Example:
+Tunnel
+PASS
+
+So results can show exactly what the car accomplished.
+This also makes batch statistics useful:
+Tunnel success       98%
+Obstacle success     82%
+Speed test success   94%
+
+without inspecting controller internals.
+
+38. Definition of Done — Combined Step 10
+Requirement
+Required
+ScoreManager
+✅
+configurable base score
+✅
+configurable penalties
+✅
+line contact detection
+✅
+debounced line violations
+✅
+collision penalties
+✅
+course-departure penalties
+✅
+false-start penalty
+✅
+objective system
+✅
+objective pass/fail
+✅
+objective failure penalties
+✅
+two-terminal speed scoring
+✅
+d/(t2-t1) official measurement
+✅
+finish/time scoring
+✅
+timeout handling
+✅
+structured PenaltyRecords
+✅
+runtime scoring panel
+✅
+final result panel
+✅
+detailed event/penalty log
+✅
+single automated testing
+✅
+batch testing
+✅
+batch score summary
+✅
+pass criteria separate from score
+✅
+regression comparison
+✅
+per-run JSON
+✅
+batch CSV
+✅
+failure diagnostics
+✅
+command recording/replay
+✅
+debug re-run
+✅
+standalone-build support
+✅
+zero dependency on ANN/FSM
+✅
+
+This makes the testing system much closer to a digital competition judge: it watches what actually happens on the course, assigns negative points for mistakes, records objective success/failure, calculates the two-terminal speed measurement, and then uses those exact same results for single runs, batch runs, and regression testing.
+

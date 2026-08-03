@@ -1,0 +1,156 @@
+Yes. Then I’d simplify and lock it to one shared tile grid for everything.
+Final map model
+The map uses one fixed-size grid:
+Tile size = configurable, e.g. 20 cm × 20 cm
+
+Then both roads and structures occupy those same tiles.
+CourseGrid
+├─ Road layer
+├─ Structure layer
+├─ Object layer
+└─ Trigger layer
+
+Example:
+┌────┬────┬────┬────┬────┐
+│ R  │ R  │ R  │    │    │
+├────┼────┼────┼────┼────┤
+│ R  │ T  │ T  │    │    │
+├────┼────┼────┼────┼────┤
+│ R  │ T  │ T  │ O  │    │
+└────┴────┴────┴────┴────┘
+
+R = road
+T = tunnel structure over road
+O = obstacle
+
+Road tiles
+Each road cell is just one tile:
+RoadStraight
+RoadCurve
+RoadSpecial
+
+Or even simpler: the tile just says:
+Road = true
+
+and the renderer figures out how neighbouring road tiles connect.
+That is probably the cleanest version.
+Structures use the exact same grid
+A tunnel might occupy:
+2 × 4 tiles
+
+A ramp:
+2 × 3 tiles
+
+A slow zone:
+3 × 6 tiles
+
+An obstacle:
+1 tile
+
+A speed gate:
+2 tiles across the road
+
+Everything snaps automatically because everything references:
+GridCoordinate(x, z)
+
+instead of arbitrary world positions.
+Multiple layers can overlap
+This is important.
+A single tile could contain:
+Road layer:
+Road
+
+Structure layer:
+Tunnel
+
+Trigger layer:
+SlowZone
+
+So a tunnel does not replace the road underneath it.
+Example:
+Tile (12, 8)
+
+Road      = true
+Structure = Tunnel
+Trigger   = None
+
+That is much cleaner.
+Runtime editor becomes simple
+The built simulator has tools like:
+ROAD
+[ Paint ]
+[ Erase ]
+
+STRUCTURES
+[ Tunnel ]
+[ Ramp ]
+
+OBJECTS
+[ Obstacle ]
+[ Sign ]
+[ Start Signal ]
+
+TRIGGERS
+[ Slow Zone ]
+[ Speed Gate ]
+[ Event Trigger ]
+
+Then you either:
+click one tile
+drag a rectangle of tiles
+paint several tiles
+For example:
+Select Tunnel
+→ drag 2 × 5 tile region
+→ tunnel generated over those tiles
+
+Everything works in the standalone build.
+Saving is also simple
+Conceptually:
+{
+  "tileSizeCm": 20,
+
+  "road": [
+    [10, 10],
+    [10, 11],
+    [10, 12]
+  ],
+
+  "structures": [
+    {
+      "type": "tunnel",
+      "tiles": [
+        [10, 11],
+        [10, 12]
+      ]
+    }
+  ],
+
+  "objects": [
+    {
+      "type": "slow_sign",
+      "tile": [9, 11]
+    }
+  ]
+}
+
+We can compress this later if necessary.
+Rendering
+The data is tile-based, but the road does not have to visually look blocky.
+tile data
+   ↓
+inspect neighbouring road tiles
+   ↓
+generate connected road mesh
+
+So:
+■
+■
+■■■■
+
+can render as a clean continuous road.
+Same idea for tunnels and ramps: they occupy grid cells logically, but can use proper 3D meshes.
+So I’d lock the rule to
+One uniform map grid. Roads occupy tiles. Structures occupy the same-sized tiles on separate layers. Objects and triggers also snap to that same grid.
+That is much simpler than the module/socket/composite system and should make the runtime editor far easier to implement and maintain.
+

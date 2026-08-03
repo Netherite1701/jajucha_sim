@@ -1,0 +1,1017 @@
+Step 8 — Scenario, Timing, and Scoring System
+This step turns the simulator from “a car driving on a map” into an actual competition/test environment.
+The important rule is:
+The simulator knows the ground truth for scoring, but the autonomous-driving code does not.
+So Unity can know that the car entered a slow zone, crossed a gate, hit an obstacle, or finished the course. Python still has to infer what is happening from the simulated cameras and jchm interface.
+
+8.1 End goal
+A complete run should work like:
+Reset
+  ↓
+Waiting for start
+  ↓
+Start signal activates
+  ↓
+Timer starts
+  ↓
+Car drives
+  ↓
+Slow zone measured
+  ↓
+Obstacle collisions tracked
+  ↓
+Speed gates measured
+  ↓
+Finish crossed
+  ↓
+Run ends
+  ↓
+Results displayed
+
+And all of this must work in the standalone build.
+
+8.2 Architecture
+Add:
+Assets/JajuchaSim/Scenario/
+
+├─ Runtime/
+│  ├─ ScenarioManager.cs
+│  ├─ ScenarioState.cs
+│  ├─ ScenarioDefinition.cs
+│  ├─ RunSession.cs
+│  │
+│  ├─ Rules/
+│  │  ├─ RuleEvaluator.cs
+│  │  ├─ SlowZoneRule.cs
+│  │  ├─ CollisionRule.cs
+│  │  ├─ SpeedGateRule.cs
+│  │  └─ CompletionRule.cs
+│  │
+│  ├─ Timing/
+│  │  ├─ RunTimer.cs
+│  │  └─ GateTimer.cs
+│  │
+│  ├─ Scoring/
+│  │  ├─ ScoreManager.cs
+│  │  ├─ ScoreResult.cs
+│  │  └─ PenaltyRecord.cs
+│  │
+│  └─ RuntimeUI/
+│     ├─ ScenarioPanel.cs
+│     └─ ResultsPanel.cs
+│
+└─ Tests/
+
+Assembly:
+JajuchaSim.Scenario
+
+Dependencies:
+Core
+Course
+Vehicle
+
+It listens to map events from Step 7.
+
+8.3 Scenario states
+Use an explicit state machine:
+Idle
+Ready
+Countdown
+Running
+Finished
+Aborted
+
+Flow:
+Idle
+ ↓ load/reset
+Ready
+ ↓ start requested
+Countdown
+ ↓ start signal
+Running
+ ↓ finish
+Finished
+
+If something goes wrong:
+Running
+ ↓ abort
+Aborted
+
+
+8.4 ScenarioManager
+Responsibilities:
+prepare run
+control scenario state
+start/stop timer
+listen to course events
+send events to scoring rules
+finalize results
+
+It should not:
+drive the car
+run ANN
+run FSM
+render cameras
+edit the map
+
+
+8.5 ScenarioDefinition
+Course geometry and scenario rules should remain separate.
+Example:
+{
+  "scenario": {
+    "name": "Competition Run",
+
+    "startTrigger": "start_line",
+    "finishTrigger": "finish_line",
+
+    "maxRunTimeSec": 180,
+
+    "slowZones": [
+      {
+        "triggerId": "slow_zone_01",
+        "maxSpeedCmS": 20
+      }
+    ]
+  }
+}
+
+This means the same course could theoretically be tested with different rules.
+
+8.6 Start signal
+The Step-7 StartSignal object gets controlled by ScenarioManager.
+States:
+OFF
+RED
+YELLOW
+GREEN
+
+A simple run sequence might be:
+RED
+ ↓
+YELLOW
+ ↓
+GREEN
+
+At:
+GREEN
+
+the run begins.
+
+8.7 Important: Python must detect the start visually
+Do not send:
+STARTED = true
+
+through jchm.
+The student's algorithm should see:
+camera image
+    ↓
+ANN / image processing
+    ↓
+start signal recognized
+
+Unity's ScenarioManager separately knows the true signal state for scoring/timing.
+
+8.8 Start sequence configuration
+Make it configurable:
+Red duration
+Yellow duration
+Green duration / persistent
+
+Example:
+Red       2.0 sec
+Yellow    1.0 sec
+Green     persistent
+
+Don't hardcode competition timings unless known.
+
+8.9 Manual start mode
+For development:
+[ Start Run ]
+
+can immediately set:
+GREEN
+
+or execute normal countdown.
+Useful options:
+Start mode:
+[ Normal Signal ]
+[ Immediate ]
+
+Standalone UI.
+
+8.10 Run timer
+The official simulation timer should use:
+SimulationClock
+
+not wall-clock time.
+Therefore at:
+0.5×
+2×
+8×
+
+simulation speed, the measured course time remains physically correct in simulated seconds.
+
+8.11 Timer lifecycle
+Scenario enters Running
+    ↓
+RunTimer.Start()
+
+finish
+    ↓
+RunTimer.Stop()
+
+Track:
+startTick
+endTick
+elapsedSimulationTime
+
+This keeps results deterministic.
+
+8.12 Maximum time
+Scenario config can include:
+MaxRunTimeSec
+
+If exceeded:
+Running
+→ Finished or Aborted
+
+with:
+TIME_LIMIT
+
+result.
+
+8.13 Slow zone rule
+Step 7 already provides:
+SlowZoneEntered
+SlowZoneExited
+
+Now Step 8 evaluates vehicle speed while inside.
+Example:
+slow_zone_01
+
+max allowed speed:
+20 cm/s
+
+Track:
+entry time
+exit time
+maximum speed
+average speed
+time above limit
+
+
+8.14 Don't score using jchm speed command
+Important distinction:
+jchm.control speed = 3
+
+is a motor command.
+Actual speed might differ.
+Scoring must use:
+actual simulated vehicle velocity
+
+from ground truth.
+So:
+vehicle speed = Rigidbody-derived cm/s
+
+is what SlowZoneRule evaluates.
+
+8.15 Slow-zone measurement
+At each simulation tick while inside:
+currentSpeed = vehicle.ForwardSpeedCmS
+
+update:
+maxSpeed
+sum / average
+timeAboveLimit
+
+Then on exit generate result.
+Example:
+slow_zone_01
+
+Allowed:     ≤20.0 cm/s
+Maximum:      23.4 cm/s
+Average:      17.2 cm/s
+Over limit:    0.31 s
+
+Result: FAIL
+
+
+8.16 Configurable rule behavior
+Don't assume every rule means immediate failure.
+Support:
+Pass/Fail
+Penalty
+Informational
+
+Example:
+{
+  "maxSpeedCmS": 20,
+  "violationMode": "penalty",
+  "penalty": 5
+}
+
+
+8.17 Collision tracking
+The simulator should detect collisions with:
+obstacles
+tunnel walls
+course structures
+
+but not count ordinary:
+wheel-road contact
+
+as collisions.
+Use collision categories/layers.
+
+8.18 Collision event
+Vehicle collision system publishes:
+VehicleCollisionEvent
+{
+    objectId
+    relativeVelocity
+    simulationTime
+}
+
+Scenario system records it.
+
+8.19 Collision debouncing
+A car resting against one obstacle may generate many physics callbacks.
+Don't count:
+50 collision callbacks
+
+as:
+50 crashes
+
+Use per-object collision sessions:
+collision begins
+→ one incident
+
+remain touching
+→ no new incident
+
+separate
+→ collision session ends
+
+
+8.20 Collision result
+Example:
+Obstacle collision
+
+Object: obstacle_03
+Time: 34.28 s
+Relative speed: 18.2 cm/s
+
+Possible policy:
+major collision
+minor collision
+informational
+
+but keep baseline simple initially:
+one collision = one incident
+
+
+8.21 Speed gates
+Step 7 already detects crossings.
+Step 8 associates gates into measurement pairs.
+Example:
+speed_gate_A
+speed_gate_B
+
+distance can be calculated from map coordinates.
+Then:
+A crossed at 14.21 s
+B crossed at 15.02 s
+
+\[ v = \frac{d}{0.81} \]
+8.22 Gate measurement data
+Store:
+GateMeasurement
+├─ firstGate
+├─ secondGate
+├─ distanceCm
+├─ startTime
+├─ endTime
+└─ averageSpeedCmS
+
+Display in results.
+
+8.23 Finish trigger
+When:
+FinishTriggerEntered
+
+ScenarioManager verifies:
+state == Running
+
+then:
+stop timer
+finalize rules
+state = Finished
+
+
+8.24 Start-line crossing vs green light
+These are different things.
+The run can be configured to start timing:
+Option A
+when signal turns green.
+Option B
+when vehicle crosses start line.
+Make this configurable.
+For initial implementation, I'd support:
+StartTimingMode.SignalGreen
+StartTimingMode.StartGateCrossing
+
+
+8.25 False start
+If the car moves/crosses start gate while signal is still red:
+FalseStart
+
+can be recorded.
+This is a useful rule but should be optional.
+Example:
+signal != GREEN
+AND
+start gate crossed
+→ FalseStart
+
+
+8.26 Course completion result
+Run result should contain:
+Completed
+TimedOut
+Aborted
+FalseStart
+
+plus individual rule results.
+Do not reduce everything immediately to one score.
+Keep raw measurements.
+
+8.27 RunSession
+Every run creates one session:
+RunSession
+├─ RunId
+├─ CourseId
+├─ ScenarioId
+├─ StartTime
+├─ EndTime
+├─ Events
+├─ Measurements
+├─ Penalties
+└─ FinalResult
+
+Reset creates a new run.
+
+8.28 Run IDs
+Use simple incrementing or UUID-like IDs internally.
+Example:
+run_0001
+run_0002
+
+Enough for local simulation.
+
+8.29 Results data
+Example:
+RUN RESULT
+
+Status:
+COMPLETED
+
+Time:
+54.82 s
+
+Slow Zone
+PASS
+Max: 18.4 cm/s
+
+Speed Gate
+14.7 cm/s
+
+Collisions
+1
+
+False Start
+No
+
+
+8.30 Runtime results panel
+When run finishes, show a panel over the still-visible driving view.
+┌──────────────────────────────────┐
+│ RUN COMPLETE                     │
+├──────────────────────────────────┤
+│ Time                 54.82 s     │
+│                                  │
+│ Slow Zone            PASS        │
+│ Max Speed            18.4 cm/s   │
+│                                  │
+│ Speed Measurement    14.7 cm/s   │
+│                                  │
+│ Collisions            1          │
+│                                  │
+│ [ Run Again ] [ Details ]        │
+└──────────────────────────────────┘
+
+Main Jajucha view remains behind it.
+
+8.31 Scenario panel during driving
+Runtime debug sidebar:
+SCENARIO
+
+State
+RUNNING
+
+Elapsed
+31.28 s
+
+Slow Zone
+outside
+
+Collisions
+0
+
+Last Gate
+speed_gate_a
+
+Finish
+not reached
+
+No physics panel.
+
+8.32 Events panel
+Continue using the existing Events panel.
+Example:
+12.000  SIGNAL GREEN
+12.000  RUN START
+18.213  slow_zone_01 ENTER
+22.612  slow_zone_01 EXIT
+31.822  obstacle_02 COLLISION
+42.124  speed_gate_a CROSS
+43.011  speed_gate_b CROSS
+58.271  finish ENTER
+58.271  RUN FINISH
+
+Very useful for debugging FSM behavior later.
+
+8.33 Event timestamps
+Every scenario event should include:
+SimulationTick
+SimulationTime
+
+not just formatted strings.
+This allows deterministic regression testing.
+
+8.34 Save run results
+Support:
+[ Export Result ]
+
+to JSON.
+Example:
+{
+  "runId": "run_0042",
+  "course": "competition_course",
+  "status": "completed",
+  "elapsedSec": 54.82,
+  "collisions": 1
+}
+
+Detailed rule measurements can be included.
+This will be useful for automated agents later.
+
+8.35 Automatic result file option
+Config:
+Automatically save results:
+[✓]
+
+Destination:
+Runs/
+
+Example:
+Runs/
+├─ run_0001.json
+├─ run_0002.json
+└─ run_0003.json
+
+
+8.36 Simulator-only Python control
+Extend:
+jchm_sim
+
+with:
+jchm_sim.start_run()
+jchm_sim.abort_run()
+jchm_sim.get_run_status()
+jchm_sim.get_result()
+
+These are not part of real jchm.
+They are for testing/automation.
+
+8.37 Student code still unchanged
+Student autonomous program still only sees:
+import jchm
+
+image = jchm.camera.get_image("center")
+...
+jchm.control.set_motor(...)
+
+It should not call:
+jchm_sim.get_result()
+
+during normal autonomous logic.
+That's for test harnesses.
+
+8.38 Automated run flow
+Now an external test script can do:
+import jchm_sim
+
+jchm_sim.reset()
+jchm_sim.start_run()
+
+# launch autonomous code
+
+result = jchm_sim.wait_for_result()
+
+Later agentic coding can use this.
+
+8.39 Don't make wait_for_result() infinite
+Give timeout support:
+result = jchm_sim.wait_for_result(
+    timeout=180
+)
+
+or poll status.
+
+8.40 Scoring engine design
+Keep scoring rules modular:
+IRunRule
+├─ OnRunStart()
+├─ OnEvent()
+├─ OnTick()
+└─ Finalize()
+
+Examples:
+SlowZoneRule
+CollisionRule
+FalseStartRule
+CompletionRule
+SpeedGateRule
+
+This avoids one giant ScoreManager.cs.
+
+8.41 Score should be optional
+Some simulator sessions may just be development tests.
+Scenario config:
+ScoringEnabled = true/false
+
+If false:
+timing/events still work
+no final points calculated
+Useful during debugging.
+
+8.42 Raw data first, points later
+I recommend not hardcoding a competition points system yet.
+Record:
+time
+speed
+collisions
+zone violations
+completion
+
+first.
+Then when actual scoring rules are known, map those measurements to points.
+That prevents us from inventing competition rules.
+
+8.43 Generic penalties
+We can support generic penalties without committing to exact values.
+Example:
+PenaltyRecord
+{
+    ruleId
+    reason
+    value
+}
+
+But scenario files define the actual numbers.
+
+8.44 Scenario editor integration
+Map Editor gains a:
+SCENARIO
+
+section.
+For example:
+Start Signal
+[start_signal_01]
+
+Start Trigger
+[start_line]
+
+Finish Trigger
+[finish_line]
+
+Max Time
+[180] sec
+
+For slow zone:
+slow_zone_01
+Max Speed
+[20] cm/s
+
+All editable in standalone build.
+
+8.45 Trigger selection dropdown
+Scenario editor should reference IDs already placed in the map.
+So:
+Finish Trigger:
+[ finish_line ▼ ]
+
+instead of manually typing IDs.
+This reduces mistakes.
+
+8.46 Start-signal preview
+In Map Editor/Test mode, allow:
+[ Red ]
+[ Yellow ]
+[ Green ]
+
+for manually testing ANN detection.
+This is extremely useful.
+It should be simulator debug control only.
+
+8.47 Random start timing later
+Prepare for:
+random delay before green
+
+to prevent algorithms from just waiting a fixed number of seconds.
+But don't enable it initially unless needed.
+
+8.48 Reset semantics
+jchm_sim.reset() now resets:
+Scenario state → Ready
+RunTimer → 0
+ScoreManager → empty
+Triggers → reset
+Start signal → initial state
+Vehicle → start pose
+Simulation clock → 0
+
+One deterministic reset.
+
+8.49 Run Again
+Results panel:
+[ Run Again ]
+
+should:
+reset
+→ ready
+→ execute start sequence
+
+No scene reload required.
+
+8.50 Abort
+Runtime:
+[ Abort Run ]
+
+sets:
+ScenarioState.Aborted
+
+stops vehicle propulsion for safety:
+speed = 0
+
+but does not destroy results collected so far.
+
+8.51 Collision after finish
+Once:
+ScenarioState == Finished
+
+new events should not alter the finalized result.
+This avoids weird results if the car rolls into something after crossing finish.
+
+8.52 Slow-zone overlapping triggers
+If multiple slow zones overlap, track them independently by ID.
+Don't use one global:
+isInSlowZone
+
+Use:
+activeZones = Set<string>
+
+or rule-local state.
+
+8.53 Gate crossing direction
+Speed gate should optionally require direction.
+Example:
+A → B
+
+not count driving backwards through:
+B → A
+
+unless configured.
+Store gate normal/orientation.
+
+8.54 Finish direction
+Same.
+Finish line can optionally only count if crossed in the correct direction.
+Useful if track loops near itself.
+
+8.55 Start signal debug panel
+No separate panel needed.
+Scenario panel can show:
+Signal
+GREEN
+
+plus:
+[RED] [YELLOW] [GREEN]
+
+only when manual/debug override is enabled.
+
+8.56 Build requirement
+Everything must work in:
+JajuchaSim.exe
+
+including:
+scenario configuration
+start sequence
+timing
+scoring
+results
+run reset
+run export
+test mode
+event viewing
+No Unity Editor dependency.
+
+8.57 Unit tests
+Timer
+Start at tick:
+100
+
+finish at:
+5100
+
+with:
+dt = 0.01
+
+Expected:
+50.00 seconds
+
+
+8.58 Start sequence test
+Run:
+Ready
+→ Start
+
+Expected state order:
+Ready
+Countdown
+Running
+
+Signal ends at:
+GREEN
+
+and timer begins exactly at configured moment.
+
+8.59 Slow-zone pass test
+Allowed:
+20 cm/s
+
+Vehicle max:
+19 cm/s
+
+Expected:
+PASS
+
+
+8.60 Slow-zone fail test
+Vehicle reaches:
+21 cm/s
+
+Expected:
+FAIL / penalty
+
+according to config.
+
+8.61 Collision debounce test
+Stay touching obstacle for:
+2 seconds
+
+Expected:
+1 collision incident
+
+not 200.
+
+8.62 Finish test
+Enter finish while running.
+Expected:
+state = Finished
+timer stops
+result finalized
+
+
+8.63 False-start test
+Cross start line while signal is RED.
+Expected:
+FalseStart = true
+
+if rule enabled.
+
+8.64 Deterministic run test
+Run identical scripted vehicle input twice.
+Expected:
+same finish tick
+same slow-zone measurements
+same collision count
+same gate speed
+
+within deterministic physics tolerance.
+
+8.65 Export test
+Finish run.
+Export result.
+Reload JSON.
+Expected data matches in-memory RunSession.
+
+8.66 Standalone smoke test
+In build:
+Open map
+→ Reset
+→ Start Run
+→ watch signal
+→ drive
+→ trigger slow zone
+→ cross gates
+→ finish
+→ results appear
+→ export
+→ Run Again
+
+If this works, Step 8 is complete.
+
+Definition of Done — Step 8
+Requirement
+Required
+ScenarioManager
+✅
+Scenario states
+✅
+Start signal control
+✅
+Countdown/start sequence
+✅
+simulation-time timer
+✅
+max run time
+✅
+slow-zone speed measurement
+✅
+collision recording
+✅
+collision debounce
+✅
+speed gate measurement
+✅
+false-start support
+✅
+finish detection
+✅
+configurable rules
+✅
+modular rule evaluators
+✅
+RunSession
+✅
+final results
+✅
+runtime Scenario panel
+✅
+runtime Results panel
+✅
+driving view always visible
+✅
+event timestamps
+✅
+result JSON export
+✅
+jchm_sim automation API
+✅
+map-editor scenario configuration
+✅
+standalone build support
+✅
+automated regression tests
+✅
+
+
+After Step 8, the simulator is already usable as a complete autonomous-driving test environment:
+Map Editor
+   ↓
+Tile-based Course
+   ↓
+Structures / Triggers
+   ↓
+Scenario
+   ↓
+Jajucha
+   ↕
+jchm-compatible Python
+   ↓
+Results / scoring
+
+The next step should be Step 9: ANN perception + FSM integration/debugging support — not running the ANN inside Unity, but making Python perception/FSM status visible in the simulator's runtime debug UI and creating the clean observation/state pipeline for autonomous-driving testing.
+

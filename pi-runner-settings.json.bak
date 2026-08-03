@@ -1,0 +1,9 @@
+{
+  "implementation_model": "opencode-go/deepseek-v4-flash",
+  "verification_model": "opencode-go/qwen3.7-plus",
+  "escalation_model": "opencode-go/qwen3.7-max",
+  "final_audit_model": "opencode-go/qwen3.7-max",
+  "escalate_after_attempts": 2,
+  "max_verification_attempts": 8,
+  "restart_delay_seconds": 5
+}

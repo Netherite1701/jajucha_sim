@@ -1,0 +1,166 @@
+Yes — then we should replace the generic “speed gate” idea with a two-terminal speed measurement system that matches the competition hardware.
+Revised speed measurement system
+Use two terminals:
+Terminal 1 ───────────── Terminal 2
+    │                         │
+   t1                        t2
+
+The distance between them is fixed and known:
+d
+
+Then measured speed is:
+\[ v=\frac{d}{t_2-t_1} \]
+So in the simulator:
+car crosses Terminal 1
+→ record t1
+
+car crosses Terminal 2
+→ record t2
+
+speed = distance / (t2 - t1)
+
+Map editor representation
+Both terminals should be placeable on the same grid as everything else:
+[ Speed Terminal A ]
+[ Speed Terminal B ]
+
+Each terminal is snapped to a grid edge or tile boundary.
+Example:
+─────── A ─────────────── B ───────
+          ←──── d ────→
+
+A terminal should have:
+grid position
+orientation
+width across the road
+pair ID
+For example:
+{
+  "type": "speed_terminal",
+  "id": "speed_a",
+  "pairId": "speed_zone_01",
+  "cellX": 20,
+  "cellZ": 30,
+  "edge": "north"
+}
+
+and:
+{
+  "type": "speed_terminal",
+  "id": "speed_b",
+  "pairId": "speed_zone_01",
+  "cellX": 20,
+  "cellZ": 40,
+  "edge": "north"
+}
+
+Pair definition
+The scenario system pairs them:
+speed_zone_01
+├─ Terminal A
+└─ Terminal B
+
+Distance should preferably be calculated from their actual grid/world positions:
+d = distance(A, B)
+
+rather than manually entered.
+That prevents configuration mistakes.
+Crossing detection
+Use line-crossing detection, not a tiny collider.
+Each terminal is logically a line:
+──────────────
+
+For every simulation tick:
+previous car position = P0
+current car position  = P1
+
+Check whether:
+P0 → P1
+
+crossed the terminal line.
+That means even if the car moves past it between ticks, the crossing is still detected.
+Timing
+Use SimulationClock, not wall-clock time.
+Example:
+Terminal A:
+t1 = 31.240 s
+
+Terminal B:
+t2 = 31.890 s
+
+d = 20 cm
+
+Then:
+\[ v = \frac{20}{31.890-31.240} = 30.77\ \text{cm/s} \]
+This is the value used for competition-style speed measurement.
+Important distinction
+We should now have two different concepts:
+Internal vehicle speed
+Used for debugging:
+Rigidbody / vehicle velocity
+
+Competition measured speed
+Used for scoring:
+d / (t2 - t1)
+
+The score system should use the terminal measurement, because that reproduces the actual competition method.
+So even if Unity internally knows:
+actual instantaneous speed = 31.4 cm/s
+
+the competition result might be:
+terminal measured speed = 30.8 cm/s
+
+and 30.8 cm/s is what the scorer uses.
+Runtime debug display
+In the Events/Scenario panel:
+SPEED MEASUREMENT
+
+Pair:
+speed_zone_01
+
+Terminal A
+31.240 s
+
+Terminal B
+31.890 s
+
+Distance
+20.0 cm
+
+Measured Speed
+30.77 cm/s
+
+And in the event log:
+31.240  speed_terminal_A CROSS
+31.890  speed_terminal_B CROSS
+31.890  SPEED = 30.77 cm/s
+
+Direction handling
+Normally:
+A → B
+
+is the valid measurement direction.
+If the car goes:
+B → A
+
+either:
+ignore it, or
+treat it as a separate reverse measurement
+For competition simulation I would default to ignore reverse order, unless the course explicitly allows it.
+Step 8 correction
+So remove the previous generic:
+SpeedGateRule
+
+and replace it with:
+SpeedTerminalPairRule
+
+with:
+Terminal A crossing
+Terminal B crossing
+known distance
+Δt
+measured speed
+pass/fail or recorded value
+
+That makes the simulator's speed measurement method match the actual competition setup instead of using Unity's ground-truth velocity for the official result.
+

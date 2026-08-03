@@ -1,0 +1,1540 @@
+# Step 11 — Template Scene, Project Workflow, and User Scripts
+
+This step turns the completed simulator systems into a clean, repeatable project workflow.
+
+The goal is to provide:
+
+* one authoritative simulator scene
+* one clean template course
+* one standard runtime hierarchy
+* clear student/user script locations
+* example scripts using the real-compatible `jchm` API
+* launch and test scripts
+* validation scripts
+* build scripts
+* documentation explaining the complete workflow
+
+The resulting project should be usable without manually assembling Unity objects or guessing which files to run.
+
+---
+
+## 11.1 Core principle
+
+The project must have one clearly documented default workflow:
+
+```text
+Open simulator
+    ↓
+Load or create course
+    ↓
+Start Python program
+    ↓
+Run simulation
+    ↓
+View scoring/debug information
+    ↓
+Reset or batch test
+```
+
+A new user should not need to:
+
+* construct a scene hierarchy manually
+* connect subsystem references manually
+* create cameras manually
+* configure the bridge manually
+* copy scripts into arbitrary folders
+* edit Unity prefabs to begin testing
+* open Unity Editor for normal simulator use
+
+The standalone build should provide the complete normal workflow.
+
+---
+
+# 11.2 Authoritative template scene
+
+Create one authoritative runtime scene:
+
+```text
+Assets/JajuchaSim/Scenes/JajuchaSimulator.unity
+```
+
+This is the primary simulator scene for:
+
+* Unity Play Mode
+* standalone builds
+* runtime map editing
+* normal driving
+* scoring
+* automated testing
+
+Do not maintain several slightly different “main” scenes.
+
+Small isolated test scenes may exist under:
+
+```text
+Assets/JajuchaSim/Scenes/Tests/
+```
+
+but they are not user-facing simulator scenes.
+
+---
+
+# 11.3 Template scene hierarchy
+
+Use a clear fixed hierarchy:
+
+```text
+JajuchaSimulator
+│
+├─ _Core
+│  ├─ SimulationManager
+│  ├─ SimulationClock
+│  ├─ SimulationRunner
+│  ├─ SimulationEventBus
+│  └─ ApplicationBootstrap
+│
+├─ _Course
+│  ├─ CourseManager
+│  ├─ CourseRuntimeRoot
+│  ├─ RoadLayerRoot
+│  ├─ StructureLayerRoot
+│  ├─ ObjectLayerRoot
+│  ├─ TriggerLayerRoot
+│  └─ RuntimeOverlayRoot
+│
+├─ _Vehicle
+│  └─ JajuchaVehicle
+│
+├─ _Sensors
+│  └─ SensorRuntimeRoot
+│
+├─ _Bridge
+│  └─ JajuchaBridgeServer
+│
+├─ _Scenario
+│  ├─ ScenarioManager
+│  ├─ ScoreManager
+│  └─ TestRunner
+│
+├─ _Observer
+│  ├─ ObserverCamera
+│  └─ ObserverCameraController
+│
+├─ _RuntimeUI
+│  ├─ MainViewport
+│  ├─ MinimalHUD
+│  ├─ DebugUI
+│  ├─ MapEditorUI
+│  ├─ ScoringUI
+│  └─ TestingUI
+│
+└─ _Services
+   ├─ SaveLoadService
+   ├─ RuntimeFileDialogService
+   ├─ ScreenshotService
+   └─ ApplicationShutdownService
+```
+
+The hierarchy should remain stable.
+
+Runtime-generated course objects belong under their designated roots rather than at the scene root.
+
+---
+
+# 11.4 `ApplicationBootstrap`
+
+Create one bootstrap component responsible for ordered startup.
+
+Example order:
+
+```text
+1. Load application configuration
+2. Initialize simulation kernel
+3. Initialize save/load paths
+4. Load default course
+5. Generate tile-based course runtime
+6. Spawn/reset Jajucha vehicle
+7. Initialize sensors
+8. Start Python bridge
+9. Initialize scenario/scoring
+10. Initialize runtime UI
+11. Enter READY state
+```
+
+The bootstrap must detect initialization failures and show a readable runtime error.
+
+Do not allow random `Awake()` and `Start()` ordering to define system initialization implicitly.
+
+---
+
+# 11.5 Bootstrap result
+
+Use an explicit startup result:
+
+```text
+BootstrapResult
+├─ Success
+├─ FailedSystem
+├─ ErrorCode
+└─ Message
+```
+
+Example runtime error:
+
+```text
+Simulator startup failed
+
+System:
+CourseManager
+
+Reason:
+Default course file was not found.
+
+Path:
+Courses/template_course.json
+```
+
+Do not leave users with only a `NullReferenceException`.
+
+---
+
+# 11.6 Template course
+
+Create:
+
+```text
+Courses/template_course.json
+```
+
+It should demonstrate the complete baseline workflow without being overly complex.
+
+Include:
+
+* start position
+* straight road tiles
+* curve road tiles
+* one tunnel
+* one ramp
+* one obstacle
+* one slow sign
+* one start signal
+* one slow-zone objective
+* two speed terminals
+* one finish trigger
+* boundary lines
+* scoring configuration
+
+The course should be small enough for quick tests.
+
+---
+
+# 11.7 Template course purpose
+
+The template course is not meant to reproduce the final competition course exactly.
+
+Its purpose is to verify that:
+
+```text
+vehicle
+cameras
+bridge
+runtime map
+structures
+triggers
+scoring
+speed measurement
+testing
+```
+
+all work together.
+
+Mark any non-manual competition layout assumptions as:
+
+```text
+SIMULATOR_ONLY
+```
+
+or:
+
+```text
+EXAMPLE
+```
+
+in documentation.
+
+---
+
+# 11.8 Template course layout
+
+A simple layout could be:
+
+```text
+START
+  │
+  │ straight
+  │
+SLOW SIGN
+  │
+SLOW ZONE
+  │
+TERMINAL A
+  │
+TERMINAL B
+  │
+CURVE
+  │
+TUNNEL
+  │
+RAMP
+  │
+OBSTACLE
+  │
+FINISH
+```
+
+This lets a user test every major feature in one short run.
+
+---
+
+# 11.9 Default application modes
+
+The simulator should expose clear modes:
+
+```text
+Drive
+Edit Map
+Test
+Batch Test
+```
+
+Mode switching must be explicit.
+
+Use a state such as:
+
+```text
+ApplicationMode
+├─ Drive
+├─ MapEditor
+├─ SingleTest
+└─ BatchTest
+```
+
+Do not infer application mode from which UI panel happens to be visible.
+
+---
+
+# 11.10 Mode behavior
+
+## Drive
+
+* observer camera follows car
+* bridge active
+* scoring optional
+* minimal HUD visible
+* debug panels available
+
+## Edit Map
+
+* simulation paused
+* vehicle propulsion stopped
+* top/editor camera active
+* tile grid visible
+* map tools enabled
+* sensor output may remain available for preview
+* course modifications allowed
+
+## Single Test
+
+* course reset
+* scoring active
+* test result saved
+* runtime panels visible
+
+## Batch Test
+
+* repeated reset/run cycle
+* observer rendering optional
+* sensor rendering active
+* results automatically collected
+
+---
+
+# 11.11 User Python workspace
+
+Provide a clearly separated user workspace:
+
+```text
+python/
+├─ jchm/
+├─ jchm_sim/
+│
+├─ examples/
+│  ├─ 01_motor_test.py
+│  ├─ 02_center_camera.py
+│  ├─ 03_three_cameras.py
+│  ├─ 04_depth_view.py
+│  ├─ 05_drive_and_view.py
+│  └─ 06_test_run.py
+│
+├─ user/
+│  ├─ main.py
+│  └─ README.md
+│
+├─ tests/
+└─ requirements.txt
+```
+
+The simulator must not place user ANN/FSM implementations inside Unity.
+
+The `python/user/` folder belongs entirely to the user.
+
+---
+
+# 11.12 Minimal user script
+
+Create:
+
+```text
+python/user/main.py
+```
+
+with a small real-compatible example.
+
+Example behavior:
+
+```python
+import time
+
+import jchm
+
+
+def main() -> None:
+    try:
+        while True:
+            image = jchm.camera.get_image("center")
+
+            # Replace this section with the user's own perception
+            # and driving algorithm.
+            left = 0
+            right = 0
+            speed = 3
+
+            jchm.control.set_motor(left, right, speed)
+
+            time.sleep(0.03)
+
+    except KeyboardInterrupt:
+        jchm.control.set_motor(0, 0, 0)
+
+
+if __name__ == "__main__":
+    main()
+```
+
+The exact implementation should include appropriate error handling and documentation.
+
+It must not assume ANN or FSM architecture.
+
+---
+
+# 11.13 Motor test script
+
+Create:
+
+```text
+python/examples/01_motor_test.py
+```
+
+The script should demonstrate:
+
+```text
+stop
+forward
+reverse
+left steering
+right steering
+independent wheel steering
+speed zero with steering
+```
+
+It must respect the manual-defined `jchm.control.set_motor()` semantics.
+
+The manual remains authoritative for command ranges and examples.
+
+---
+
+# 11.14 Camera example script
+
+Create:
+
+```text
+python/examples/02_center_camera.py
+```
+
+It should:
+
+```python
+image = jchm.camera.get_image("center")
+jchm.camera.show_image(image, "center")
+```
+
+and demonstrate OpenCV-compatible image processing.
+
+Keep the example minimal.
+
+---
+
+# 11.15 Three-camera example
+
+Create:
+
+```text
+python/examples/03_three_cameras.py
+```
+
+It should display:
+
+* left
+* center
+* right
+
+without assuming all cameras have identical confirmed hardware calibration.
+
+Document any simulator approximation separately.
+
+---
+
+# 11.16 Depth example
+
+Create:
+
+```text
+python/examples/04_depth_view.py
+```
+
+It should use:
+
+```python
+depth = jchm.camera.get_depth()
+```
+
+and display the manual-compatible grayscale depth result.
+
+Do not describe it as metric depth unless using an explicitly simulator-only API.
+
+---
+
+# 11.17 Combined driving example
+
+Create:
+
+```text
+python/examples/05_drive_and_view.py
+```
+
+It should:
+
+* read center camera
+* display camera image
+* send a safe low-speed motor command
+* stop when interrupted
+* demonstrate normal user workflow
+
+This is still only a usage example, not an ANN/FSM implementation.
+
+---
+
+# 11.18 Test-run example
+
+Create:
+
+```text
+python/examples/06_test_run.py
+```
+
+It may use simulator-only APIs:
+
+```python
+import jchm_sim
+```
+
+to:
+
+```text
+reset
+start scenario
+poll status
+read final result
+```
+
+It should make the distinction clear:
+
+```text
+jchm
+= real-compatible vehicle API
+
+jchm_sim
+= simulator/testing controls
+```
+
+---
+
+# 11.19 User script rules
+
+Document these rules in:
+
+```text
+python/user/README.md
+```
+
+1. Real driving code should use `jchm`.
+2. Simulator lifecycle/testing tools use `jchm_sim`.
+3. Do not modify simulator internals to implement autonomous logic.
+4. Always send `speed=0` on shutdown where practical.
+5. Handle bridge disconnects safely.
+6. Do not depend on simulator ground truth for normal autonomous driving.
+7. The same user code should remain as real-compatible as possible.
+
+---
+
+# 11.20 Python environment setup
+
+Create a project-local virtual environment workflow.
+
+Use:
+
+```text
+.venv
+```
+
+Do not require global Python package installation.
+
+Provide:
+
+```text
+scripts/setup_python.ps1
+scripts/setup_python.sh
+```
+
+Each script should:
+
+1. find a supported Python installation
+2. create `.venv`
+3. upgrade pip inside `.venv`
+4. install `python/requirements.txt`
+5. verify imports
+6. print the exact command for running examples
+
+---
+
+# 11.21 Windows activation script
+
+Provide:
+
+```text
+scripts/activate_python.ps1
+```
+
+or document:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+```
+
+If PowerShell execution policy blocks scripts, provide a documented one-session command such as:
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+```
+
+Do not silently change machine-wide execution policy.
+
+---
+
+# 11.22 Simulator launch scripts
+
+Provide:
+
+```text
+scripts/run_simulator.ps1
+scripts/run_simulator.bat
+```
+
+The script should locate the standalone build and launch it.
+
+Optional arguments:
+
+```text
+--course
+--mode
+--simulation-speed
+--no-debug-ui
+--batch-config
+```
+
+Example:
+
+```powershell
+.\scripts\run_simulator.ps1 `
+    -Course "template_course" `
+    -Mode "Drive"
+```
+
+---
+
+# 11.23 Combined development launcher
+
+Provide a convenience script:
+
+```text
+scripts/run_development.ps1
+```
+
+It may:
+
+1. verify `.venv`
+2. launch the simulator
+3. wait for bridge readiness
+4. launch `python/user/main.py`
+5. forward useful logs
+6. stop safely when interrupted
+
+This is a convenience wrapper only.
+
+The simulator and external Python code must still be independently runnable.
+
+---
+
+# 11.24 Do not make process launching architecturally mandatory
+
+The simulator must not require that it launched the Python process.
+
+Users must still be able to run:
+
+```powershell
+python .\python\user\main.py
+```
+
+from a separate terminal.
+
+This matches the real development workflow more closely.
+
+---
+
+# 11.25 Bridge readiness check
+
+Provide a script or command such as:
+
+```text
+scripts/check_bridge.py
+```
+
+It should:
+
+* connect to the simulator bridge
+* verify protocol version
+* send ping
+* report ready/not ready
+* exit with a useful status code
+
+Example:
+
+```text
+[OK] Simulator bridge reachable
+[OK] Protocol v1
+[OK] Simulation READY
+```
+
+---
+
+# 11.26 Project validation script
+
+Create:
+
+```text
+scripts/validate_project.ps1
+```
+
+It should verify:
+
+* required folders exist
+* manual exists
+* template scene exists
+* template course exists
+* Python package imports
+* required documentation exists
+* no obvious generated folders are tracked
+* configuration files parse
+* course files validate
+* example scripts compile
+* bridge protocol files are present
+
+Where practical, also run automated tests.
+
+---
+
+# 11.27 Unity validation
+
+Provide an Editor-independent runtime validator where possible, and optionally an Editor-only build-time validator.
+
+Validate:
+
+```text
+exactly one SimulationManager
+exactly one observer camera
+vehicle prefab assigned
+sensor cameras assigned
+bridge configuration valid
+course root assigned
+runtime UI assigned
+required layers exist
+required input actions exist
+```
+
+The standalone build should display clear startup validation failures.
+
+---
+
+# 11.28 Scene validation test
+
+Create an automated test that loads:
+
+```text
+JajuchaSimulator.unity
+```
+
+and verifies the expected core hierarchy and required components.
+
+The test should fail when:
+
+* a required root is missing
+* a core component is duplicated
+* a required prefab reference is null
+* observer camera is missing
+* bridge server is missing
+
+---
+
+# 11.29 Template scene should contain configuration, not generated map content
+
+Do not permanently place the full road and structures by hand in the scene.
+
+The scene should contain:
+
+```text
+system roots
+managers
+vehicle prefab
+observer camera
+runtime UI
+services
+```
+
+The course itself should load from:
+
+```text
+template_course.json
+```
+
+and generate at runtime.
+
+This preserves course-data authority.
+
+---
+
+# 11.30 Prefab ownership
+
+Create authoritative prefabs:
+
+```text
+Assets/JajuchaSim/Prefabs/
+├─ Core/
+│  └─ SimulatorCore.prefab
+│
+├─ Vehicle/
+│  └─ JajuchaVehicle.prefab
+│
+├─ UI/
+│  └─ RuntimeUI.prefab
+│
+├─ Course/
+│  └─ CourseRuntimeRoot.prefab
+│
+└─ Objects/
+   ├─ Obstacle.prefab
+   ├─ SlowSign.prefab
+   ├─ StartSignal.prefab
+   └─ SpeedTerminal.prefab
+```
+
+Avoid duplicated slightly different prefab copies.
+
+---
+
+# 11.31 Vehicle prefab validation
+
+The authoritative vehicle prefab should include:
+
+```text
+JajuchaVehicle
+├─ chassis visual
+├─ collision body
+├─ front-left steering/wheel
+├─ front-right steering/wheel
+├─ rear-left wheel
+├─ rear-right wheel
+├─ sensor mounts
+│  ├─ left camera
+│  ├─ center camera
+│  └─ right camera
+└─ debug anchors
+```
+
+All root transforms:
+
+```text
+position = 0,0,0
+rotation = 0,0,0
+scale = 1,1,1
+```
+
+unless an explicitly documented prefab-local transform is required.
+
+---
+
+# 11.32 Runtime UI template
+
+The default runtime layout should include:
+
+```text
+top status bar
+main always-visible driving viewport
+collapsible sidebar
+minimal HUD
+panel area
+notifications
+results modal
+```
+
+Default sidebar items:
+
+```text
+Simulation
+Vehicle
+Cameras
+Depth
+Bridge
+Course
+Scenario
+Scoring
+Events
+Testing
+Custom Debug
+```
+
+No physics panel is required.
+
+---
+
+# 11.33 Default key bindings
+
+Create a documented Input System action map.
+
+Suggested defaults:
+
+```text
+F1
+toggle full debug UI
+
+F2
+toggle map editor
+
+F3
+switch observer camera mode
+
+Space
+pause/resume when allowed
+
+Period
+single simulation step while paused
+
+R
+rotate selected map item
+
+Delete
+delete selected map item
+
+Ctrl+Z
+undo map edit
+
+Ctrl+Y
+redo map edit
+```
+
+All bindings must be configurable.
+
+Do not use the legacy Unity Input API.
+
+---
+
+# 11.34 Standard user workflow
+
+Document the exact normal workflow in:
+
+```text
+docs/USER_WORKFLOW.md
+```
+
+Example:
+
+## First setup
+
+```powershell
+.\scripts\setup_python.ps1
+```
+
+## Start simulator
+
+```powershell
+.\scripts\run_simulator.ps1
+```
+
+## Start user program
+
+In another terminal:
+
+```powershell
+.\.venv\Scripts\python.exe .\python\user\main.py
+```
+
+## Stop safely
+
+Press:
+
+```text
+Ctrl+C
+```
+
+The user script should send:
+
+```python
+jchm.control.set_motor(0, 0, 0)
+```
+
+where practical.
+
+---
+
+# 11.35 Map-creation workflow
+
+Document:
+
+```text
+Launch simulator
+→ Edit Map
+→ New Course
+→ choose tile size
+→ import drawing or paint roads
+→ place structures
+→ place triggers
+→ configure objectives/scoring
+→ save
+→ test drive
+```
+
+Everything must work in the standalone build.
+
+---
+
+# 11.36 Competition-test workflow
+
+Document:
+
+```text
+Load course
+→ choose scenario
+→ reset
+→ start external controller
+→ start run
+→ finish/timeout
+→ inspect score
+→ export result
+```
+
+---
+
+# 11.37 Batch-test workflow
+
+Document:
+
+```text
+Open Testing
+→ select course/scenario
+→ set run count
+→ set seed
+→ choose simulation speed
+→ start batch
+→ inspect summary
+→ debug failed run
+```
+
+The batch system remains independent of ANN/FSM internals.
+
+---
+
+# 11.38 Build workflow
+
+Provide:
+
+```text
+scripts/build_windows.ps1
+```
+
+The script should:
+
+1. locate a supported Unity installation
+2. validate the project
+3. run relevant tests
+4. build the Windows standalone
+5. copy required runtime files
+6. copy default courses
+7. copy Python examples/scripts where desired
+8. create a clean distribution directory
+9. fail clearly on errors
+
+---
+
+# 11.39 Distribution layout
+
+Target:
+
+```text
+dist/JajuchaSimulator/
+├─ JajuchaSimulator.exe
+├─ JajuchaSimulator_Data/
+├─ Courses/
+│  └─ template_course.json
+├─ Config/
+├─ Scripts/
+├─ Python/
+│  ├─ examples/
+│  ├─ user/
+│  └─ requirements.txt
+├─ Docs/
+└─ README.md
+```
+
+Do not require the full Unity project for normal use.
+
+---
+
+# 11.40 Runtime writable directories
+
+Do not attempt to write user-created courses or results into read-only build assets.
+
+Use a writable data directory for:
+
+```text
+Courses
+Runs
+Screenshots
+Logs
+UserConfig
+```
+
+Document the resolved location in the runtime UI.
+
+Optionally provide an **Open Data Folder** button.
+
+---
+
+# 11.41 Configuration hierarchy
+
+Use a clear configuration order:
+
+```text
+built-in defaults
+    ↓
+project/default config
+    ↓
+user config
+    ↓
+command-line overrides
+```
+
+Document every configurable field.
+
+Avoid hidden Inspector-only settings that cannot be changed in a standalone build.
+
+---
+
+# 11.42 Default configuration file
+
+Create something like:
+
+```text
+Config/default_simulator.json
+```
+
+Containing:
+
+```json
+{
+  "defaultCourse": "template_course",
+  "bridgePort": 8765,
+  "debugUiEnabled": true,
+  "observerMode": "chase",
+  "simulationSpeed": 1.0
+}
+```
+
+Hardware-related approximations should reference the appropriate calibration/config files and documentation.
+
+---
+
+# 11.43 Logging
+
+Standardize logs:
+
+```text
+Logs/
+├─ simulator.log
+├─ bridge.log
+├─ scoring.log
+└─ testing.log
+```
+
+Each entry should include:
+
+```text
+timestamp
+simulation tick when relevant
+system
+severity
+message
+```
+
+Do not rely solely on the Unity Console.
+
+Standalone users need readable logs.
+
+---
+
+# 11.44 Runtime diagnostics export
+
+Add:
+
+```text
+Export Diagnostics
+```
+
+The export may include:
+
+```text
+simulator version
+configuration
+course ID
+scenario ID
+bridge status
+recent events
+recent errors
+manual-compatibility version/reference
+logs
+```
+
+Do not include user source code unless explicitly requested.
+
+---
+
+# 11.45 Documentation index
+
+Create:
+
+```text
+docs/README.md
+```
+
+with links to:
+
+```text
+Architecture
+User workflow
+Map editor
+Course format
+Python API workflow
+Configuration
+Scoring
+Testing
+Manual compatibility
+Design decisions
+Troubleshooting
+```
+
+This becomes the documentation entry point.
+
+---
+
+# 11.46 Manual reference workflow
+
+Document clearly:
+
+> When the simulator behavior and the Jajucha manual disagree, inspect the manual first.
+
+For every example script and public compatibility API, verify against:
+
+```text
+자주차 매뉴얼.pdf
+```
+
+Record the manual-derived behavior in:
+
+```text
+docs/MANUAL_COMPATIBILITY.md
+```
+
+Do not claim compatibility based only on existing code.
+
+---
+
+# 11.47 Design-choice documentation
+
+Step 11 must document at least these accepted design choices:
+
+```text
+one authoritative simulator scene
+runtime-generated course content
+external user Python code
+one shared tile grid
+standalone-first runtime tools
+one template course
+one authoritative vehicle prefab
+generic controller-independent testing
+scoring shared by manual and automated runs
+```
+
+Add or update corresponding entries in:
+
+```text
+docs/DESIGN_DECISIONS.md
+```
+
+---
+
+# 11.48 Troubleshooting guide
+
+Create:
+
+```text
+docs/TROUBLESHOOTING.md
+```
+
+Include:
+
+```text
+simulator does not start
+bridge connection refused
+protocol mismatch
+Python package not found
+camera returns no frame
+course fails validation
+vehicle does not move
+vehicle moves after reset
+PowerShell execution policy issue
+standalone build cannot save files
+debug UI missing
+sensor image contains an overlay
+batch run never finishes
+```
+
+Each item should provide diagnostic steps, not vague advice.
+
+---
+
+# 11.49 Fresh-machine test
+
+Test the complete workflow from a clean copy where practical.
+
+The expected process:
+
+```text
+clone/copy repository
+run Python setup
+open/build simulator
+launch simulator
+run motor example
+run camera example
+run template course
+export result
+```
+
+Document all prerequisites.
+
+---
+
+# 11.50 Standalone distribution smoke test
+
+Using only the distribution folder:
+
+1. launch the simulator
+2. load template course
+3. open Map Editor
+4. edit and save a copy
+5. return to Drive mode
+6. connect Python example
+7. run scenario
+8. receive score
+9. run a short batch
+10. export results
+11. close and relaunch
+12. verify saved course remains available
+
+No Unity Editor may be used during this test.
+
+---
+
+# 11.51 Automated scene and workflow tests
+
+Add tests for:
+
+* scene bootstrap success
+* duplicate manager detection
+* missing course handling
+* template course loading
+* vehicle spawn
+* bridge readiness
+* first camera frame generation
+* reset lifecycle
+* mode transitions
+* map editor entry/exit
+* scoring initialization
+* standalone-compatible save path
+* command-line configuration parsing
+
+---
+
+# 11.52 Example-script tests
+
+At minimum:
+
+```text
+python -m compileall python/
+pytest
+```
+
+Verify imports for:
+
+```python
+import jchm
+import jchm_sim
+```
+
+Where feasible, run examples against a simulator test instance.
+
+Examples should fail with readable messages when the simulator is unavailable.
+
+---
+
+# 11.53 Build health gate
+
+Step 11 is not complete unless:
+
+```text
+Unity project compiles
+automated tests pass
+template scene loads
+template course loads
+Python examples compile
+Windows build succeeds
+standalone smoke test passes
+documentation is complete
+```
+
+Do not mark the workflow complete based only on Editor Play Mode.
+
+---
+
+# 11.54 Required documents added or updated
+
+Step 11 should create or update:
+
+```text
+README.md
+docs/README.md
+docs/USER_WORKFLOW.md
+docs/ARCHITECTURE.md
+docs/DESIGN_DECISIONS.md
+docs/MANUAL_COMPATIBILITY.md
+docs/CONFIGURATION.md
+docs/COURSE_FORMAT.md
+docs/SCORING.md
+docs/TESTING.md
+docs/TROUBLESHOOTING.md
+docs/IMPLEMENTATION_STATUS.md
+docs/CHANGELOG.md
+python/user/README.md
+```
+
+Documentation updates are part of the deliverable.
+
+---
+
+# Step 11 Definition of Done
+
+| Requirement                             | Required |
+| --------------------------------------- | -------: |
+| One authoritative simulator scene       |        ✅ |
+| Explicit startup bootstrap              |        ✅ |
+| Stable runtime hierarchy                |        ✅ |
+| One authoritative vehicle prefab        |        ✅ |
+| Runtime-generated template course       |        ✅ |
+| Template course exercises major systems |        ✅ |
+| Drive/Edit/Test/Batch modes             |        ✅ |
+| User Python workspace                   |        ✅ |
+| Minimal user script                     |        ✅ |
+| Motor example                           |        ✅ |
+| Camera examples                         |        ✅ |
+| Depth example                           |        ✅ |
+| Simulator test example                  |        ✅ |
+| Project-local `.venv` workflow          |        ✅ |
+| Python setup scripts                    |        ✅ |
+| Simulator launch scripts                |        ✅ |
+| Combined development launcher           |        ✅ |
+| Bridge readiness checker                |        ✅ |
+| Project validation script               |        ✅ |
+| Windows build script                    |        ✅ |
+| Clean distribution layout               |        ✅ |
+| Writable runtime data paths             |        ✅ |
+| Configuration files                     |        ✅ |
+| Standalone logs                         |        ✅ |
+| Runtime diagnostics export              |        ✅ |
+| User workflow documentation             |        ✅ |
+| Map workflow documentation              |        ✅ |
+| Scoring/testing workflow documentation  |        ✅ |
+| Troubleshooting guide                   |        ✅ |
+| Design decisions documented             |        ✅ |
+| Manual compatibility updated            |        ✅ |
+| Scene validation tests                  |        ✅ |
+| Workflow integration tests              |        ✅ |
+| Python example tests                    |        ✅ |
+| Standalone distribution smoke test      |        ✅ |
+
+---
+
+# Final Step 11 Result
+
+After Step 11, a normal user workflow should be:
+
+```text
+1. Run setup script once.
+2. Launch Jajucha Simulator.
+3. Load or edit a tile-based course.
+4. Run python/user/main.py in another terminal.
+5. Watch the Jajucha drive in the main viewport.
+6. Inspect cameras, events, scoring, and bridge status.
+7. Reset, test, or batch-run the same external controller.
+8. Save courses and export results.
+```
+
+The Unity project should no longer feel like a collection of subsystems requiring manual assembly.
+
+It should behave as one coherent, documented simulator product whose runtime workflow matches the real Jajucha programming model as closely as the manual and confirmed hardware information permit.

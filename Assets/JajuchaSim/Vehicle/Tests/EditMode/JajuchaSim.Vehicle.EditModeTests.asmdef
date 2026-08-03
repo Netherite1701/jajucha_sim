@@ -1,0 +1,23 @@
+{
+    "name": "JajuchaSim.Vehicle.EditModeTests",
+    "rootNamespace": "JajuchaSim.Vehicle.Tests",
+    "references": [
+        "JajuchaSim.Vehicle",
+        "JajuchaSim.Core",
+        "JajuchaSim.Core.TestSupport"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

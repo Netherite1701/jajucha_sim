@@ -1,0 +1,1017 @@
+Jajucha Simulator v2 — Master Engineering Prompt
+You are the primary engineering agent responsible for implementing Jajucha Simulator v2, a clean Unity-based simulator for the Jajucha autonomous-driving vehicle.
+This is a fresh implementation. Do not attempt to salvage or incrementally repair the old simulator architecture. Previous implementations may be inspected for lessons or requirements, but they are not architectural authority.
+Your job is to build a deterministic, maintainable simulator that closely reproduces the real Jajucha programming interface and competition environment while also providing a powerful runtime map editor, competition scoring system, debugging tools, and automated testing.
+
+1. Highest-Priority Rule: The Manual Is Ground Truth
+The official Jajucha manual is the primary source of truth for all real-vehicle behavior and APIs.
+The manual is available in the project/reference files as:
+자주차 매뉴얼.pdf
+Whenever there is any uncertainty regarding:
+jchm API names
+function signatures
+parameter ranges
+motor behavior
+steering behavior
+camera behavior
+depth-camera behavior
+returned image format
+hardware-facing semantics
+expected student programming workflow
+any other real Jajucha feature
+read the manual before making the decision.
+Authority order:
+Official Jajucha manual
+Explicit requirements in this project specification
+Measured/calibrated real hardware behavior
+Existing documented design decisions
+Reasonable engineering assumptions
+Never override the manual because an alternative implementation seems cleaner.
+If the manual contradicts existing simulator code:
+the simulator code is wrong unless an explicit documented simulator-only deviation exists.
+If the manual does not specify something, do not pretend that it does.
+Instead classify the value or behavior as one of:
+CONFIRMED_MANUAL
+MEASURED
+APPROXIMATE
+SIMULATOR_ONLY
+UNKNOWN
+Document that classification.
+
+2. Never Invent Hardware Facts
+Do not infer exact real-world specifications from photographs, screenshots, or intuition.
+Examples include:
+camera FOV
+camera resolution
+camera FPS
+camera position
+camera angle
+vehicle dimensions
+wheelbase
+tire radius
+suspension properties
+steering response speed
+speed-command mapping
+depth-value mapping
+If these are not confirmed, expose them as configuration.
+Temporary values are allowed for development, but they must be clearly documented as approximations.
+Example:
+CenterCameraFovDeg = 60
+
+Status:
+APPROXIMATE
+
+Reason:
+Manual does not specify exact FOV.
+
+Action required:
+Measure real Jajucha camera.
+
+
+3. Document Everything
+Documentation is a required part of implementation.
+A feature is not complete if its implementation exists but its design and behavior are undocumented.
+Maintain at minimum:
+docs/
+├─ ARCHITECTURE.md
+├─ DESIGN_DECISIONS.md
+├─ MANUAL_COMPATIBILITY.md
+├─ CONFIGURATION.md
+├─ COURSE_FORMAT.md
+├─ TESTING.md
+├─ SCORING.md
+└─ CHANGELOG.md
+
+Additional subsystem documentation may be created as needed.
+
+4. Design Decision Log
+Every meaningful architectural decision must be recorded in:
+docs/DESIGN_DECISIONS.md
+Use ADR-like entries.
+Example:
+## DD-014 — Use one shared tile grid for course features
+
+Status: Accepted
+
+Context:
+Roads, tunnels, ramps, signs, obstacles, and triggers need consistent placement and runtime editing.
+
+Decision:
+All course features use the same fixed-size tile coordinate system.
+
+Consequences:
+- simple runtime snapping
+- consistent serialization
+- structures can overlap road tiles using layers
+- course editing works identically in Editor and standalone build
+
+Alternatives considered:
+- spline-only roads
+- independent structure snapping systems
+- Unity SceneView placement
+
+Reason rejected:
+They complicate runtime editing and create inconsistent coordinate systems.
+
+Never silently make major architectural changes.
+If a previous accepted decision must change:
+document why,
+mark the old decision superseded,
+document the replacement,
+update affected architecture documentation.
+
+5. Manual Compatibility Document
+Maintain:
+docs/MANUAL_COMPATIBILITY.md
+Track every implemented jchm feature.
+Example:
+| Feature | Manual behavior | Simulator | Status |
+|---|---|---|---|
+| jchm.control.set_motor | left/right -10..10, speed -30..30 | implemented | CONFIRMED_MANUAL |
+| center camera FOV | unspecified | configurable, default 60° | APPROXIMATE |
+| depth grayscale mapping | nearer brighter | implemented | CONFIRMED_MANUAL |
+| exact depth curve | unspecified | configurable linear mapping | APPROXIMATE |
+
+This file must make it obvious which aspects are accurate and which remain approximations.
+
+6. Permanent World Scale
+The simulator uses:
+1 Unity unit = 1 centimeter
+
+Therefore:
+1 m = 100 Unity units
+gravity = 981 cm/s²
+
+Default gravity:
+Physics.gravity = new Vector3(0f, -981f, 0f);
+
+All course dimensions, vehicle geometry, sensor positions, structures, speed calculations, and editor measurements should use centimeters unless explicitly documented otherwise.
+Vehicle prefab root scale:
+(1,1,1)
+
+Never compensate for incorrect geometry using arbitrary Transform scaling.
+
+7. Fresh Architecture
+Use a clean subsystem structure approximately like:
+Assets/JajuchaSim/
+
+Core/
+Vehicle/
+Sensors/
+Bridge/
+Course/
+MapEditor/
+Structures/
+Scenario/
+Scoring/
+Testing/
+Debug/
+UI/
+
+Each subsystem should have clear ownership.
+Avoid giant manager classes.
+Prefer explicit interfaces and data flow.
+Avoid:
+GameObject.Find
+FindObjectOfType
+hidden global state
+uncontrolled singleton dependencies
+
+Use explicit references or a controlled simulation context.
+
+8. Simulation Kernel
+The simulator must have a deterministic central simulation lifecycle.
+States:
+Uninitialized
+Ready
+Running
+Paused
+Stopped
+
+The central simulation kernel owns simulation ticks.
+Initial target:
+100 Hz
+dt = 0.01 simulated seconds
+
+Rendering FPS and simulation frequency must remain separate.
+The simulator must support:
+pause
+single step
+reset
+simulation speed
+headless/minimal mode
+
+Physics must be stepped in one authoritative location.
+Do not create multiple independent simulation loops.
+
+9. Real-Compatible Jajucha Control API
+The real Python library is:
+jchm
+
+not jhcm.
+The simulator must support the real-style interface defined by the manual.
+Known motor API:
+jchm.control.set_motor(left, right, speed)
+
+Respect manual-defined parameter ranges and semantics.
+Do not redesign the API because another control interface would be easier.
+Simulator-only functionality belongs in:
+jchm_sim
+
+Examples:
+jchm_sim.reset()
+jchm_sim.start()
+jchm_sim.pause()
+jchm_sim.step()
+jchm_sim.get_result()
+
+Never pollute jchm with simulator-only functions.
+
+10. Vehicle
+The simulated vehicle should reproduce the actual Jajucha control model rather than becoming a generic automotive simulator.
+Known architectural requirements include:
+front-wheel steering
+rear-wheel propulsion
+independent left/right front steering commands
+speed controls propulsion
+steering alone never creates propulsion
+Hard invariant:
+speed == 0
+→ propulsion force == 0
+
+The front wheels may steer while stationary, but the vehicle must not intentionally move because steering changed.
+Do not average left/right steering commands.
+Do not impose generic Ackermann behavior if doing so overrides real jchm semantics.
+Prefer a controlled custom vehicle/contact implementation over blindly relying on WheelCollider if it causes instability.
+
+11. Bridge
+Python communicates with Unity through a versioned localhost bridge.
+Default concept:
+127.0.0.1:8765
+
+The networking thread must never directly access Unity objects.
+Correct pattern:
+network thread
+    ↓
+thread-safe queue
+    ↓
+simulation/main thread
+    ↓
+Unity systems
+
+Include:
+protocol versioning
+request IDs
+validation
+clear errors
+reconnect behavior
+command watchdog
+safe disconnect behavior
+Disconnect/watchdog must stop propulsion.
+
+12. Cameras
+The real Jajucha camera system described by the manual is the authority.
+Support the real-facing APIs such as:
+jchm.camera.get_image("left")
+jchm.camera.get_image("center")
+jchm.camera.get_image("right")
+jchm.camera.get_depth()
+jchm.camera.show_image(...)
+
+Implement separate physical Unity cameras for left, center, and right.
+Do not simulate them by cropping one wide camera.
+Python-visible images should match the manual/OpenCV usage.
+Camera capture rate must be independent from simulation tick rate.
+get_image() should normally return the latest sensor frame rather than forcing a new render every call.
+
+13. Depth
+jchm.camera.get_depth() must preserve the real API semantics documented in the manual.
+The simulator may internally retain metric ground-truth depth.
+However:
+do not expose metric depth through jchm.camera.get_depth() if the real API returns grayscale depth.
+Simulator-only diagnostic APIs may expose extra ground truth separately.
+
+14. Observer Camera
+The human must always be able to see the Jajucha driving in the standalone simulator.
+The observer camera is completely separate from Jajucha sensor cameras.
+Support useful observer modes such as:
+Chase
+Top
+Free
+
+The observer camera may see debug overlays.
+Jajucha sensor cameras must never see simulator-only overlays.
+
+15. Runtime Debug UI
+Important debug information must work inside the standalone build, not just Unity Editor Play Mode.
+Do not make essential diagnostics depend on:
+Inspector
+Scene View
+EditorWindow
+OnDrawGizmos
+UnityEditor APIs
+
+Those may exist as conveniences, but runtime debug UI is authoritative.
+The main driving view must remain visible.
+Useful runtime panels include:
+Simulation
+Vehicle
+Cameras
+Depth
+Bridge
+Course
+Scenario / Scoring
+Events
+Custom Debug
+Testing
+
+There is no requirement for a dedicated physics panel.
+
+16. Generic Custom Debug Telemetry
+The simulator must not depend on the user's autonomous-driving architecture.
+Do not implement a required ANN or FSM subsystem inside Unity.
+The user may implement any controller externally.
+Optional simulator debug telemetry may allow arbitrary values:
+jchm_sim.debug...
+
+but treat them as generic user-supplied debugging information.
+Do not make the simulator understand or depend on concepts such as:
+ANN
+FSM
+PID
+lane controller
+confidence
+state
+
+unless the user explicitly chooses to publish those values.
+
+17. Shared Tile Grid
+The course uses one shared fixed-size tile grid.
+Roads and structures use the same tile dimensions and same coordinates.
+Conceptually:
+CourseGrid
+├─ Road Layer
+├─ Structure Layer
+├─ Object Layer
+└─ Trigger Layer
+
+Layers may overlap.
+Example:
+Tile (10,12)
+
+Road:
+Road
+
+Structure:
+Tunnel
+
+Trigger:
+SlowZone
+
+A tunnel therefore sits over existing road tiles rather than replacing the road data.
+Tile size must be configurable and stored in physical centimeters.
+All placement and snapping must use this same grid system.
+
+18. Road
+Roads are tile-based.
+Do not make a spline representation the authoritative source of course geometry.
+Smooth visual geometry may be generated from the tile layout if needed.
+The underlying course data remains tile-based.
+The renderer may generate:
+connected road mesh
+boundary lines
+colliders
+markings
+from road tiles.
+
+19. Runtime Map Editor
+The map editor is part of the simulator application.
+It must work in:
+Unity Editor Play Mode
+AND
+standalone build
+
+Do not make essential map editing depend on UnityEditor.
+Runtime editing should support:
+paint road
+erase road
+select tiles
+rectangle selection
+place structures
+place objects
+place triggers
+move
+resize
+rotate where appropriate
+undo
+redo
+save
+load
+test drive
+
+The same application switches between:
+EDIT MAP
+DRIVE
+
+without restarting.
+
+20. Course Drawing Import
+Support importing real course drawings.
+Workflow:
+course drawing
+    ↓
+runtime image import
+    ↓
+scale calibration
+    ↓
+road detection
+    ↓
+tile-grid projection
+    ↓
+road tiles
+    ↓
+manual correction
+
+Known real road width may be used to calibrate image scale.
+Keep:
+pixels
+
+separate from:
+centimeters
+
+with one explicit transformation.
+Automatic extraction is a proposal, never unquestionable truth.
+The user must be able to correct imported results manually.
+
+21. Structures
+Use the same grid as the road.
+Initial structures include:
+Tunnel
+Ramp
+
+Tunnel:
+road tiles
++
+tunnel structure layer
+
+Ramp modifies the drivable surface and may therefore generate special elevated geometry over selected road tiles.
+Structures use tile-aligned footprints.
+
+22. Objects
+Objects also snap to the shared grid.
+Initial examples:
+Obstacle
+Slow sign
+Start signal
+Competition speed terminals
+
+Avoid arbitrary free placement unless a later real-world requirement demands it.
+
+23. Triggers
+Trigger regions are tile-based logical areas.
+Examples:
+Start
+Finish
+Slow zone
+Objective region
+Generic event
+
+Trigger debug visualization must only be visible to the observer/debug UI.
+Never bake trigger information into student sensor images.
+
+24. Competition Speed Measurement
+Match the real competition method.
+Speed is measured using two physical/logical terminals.
+Terminal A              Terminal B
+    │                        │
+    │<-------- d ----------->│
+   t1                       t2
+
+Official measured speed:
+v = d / (t2 - t1)
+
+Use simulation-time timestamps.
+Do not use instantaneous Rigidbody velocity as the official competition speed result.
+A terminal pair must reset completely between runs.
+Unless otherwise configured:
+A → B
+
+is valid and reverse order is ignored.
+
+25. Scenario and Competition Scoring
+The simulator should act as a digital competition judge.
+Manual runs and automated tests must use the same scenario and scoring system.
+Basic score model:
+Final Score
+=
+Base Score
+-
+Penalties
+
+Do not invent official point values.
+All values must be configurable until verified against actual competition rules.
+Possible penalties include:
+line contact
+course departure
+obstacle collision
+structure collision
+false start
+objective failure
+speed violation
+timeout
+
+
+26. Line Contact
+Touching/stepping on a forbidden course line should produce a scoring violation.
+Do not test only the vehicle center.
+Evaluate an appropriate vehicle footprint or contact geometry.
+Debounce continuous contact:
+not touching
+→ touching
+= one violation
+
+remain touching
+= same violation
+
+leave
+→ episode ends
+
+Do not deduct points every simulation tick.
+
+27. Objectives
+Competition features may define objectives.
+Examples:
+Start correctly
+Pass tunnel
+Complete obstacle section
+Complete slow section
+Pass speed requirement
+Reach finish
+
+Objective states should support at least:
+Pending
+Active
+Passed
+Failed
+Skipped
+
+Failure can generate configurable negative points.
+The scoring system evaluates only simulator-observable outcomes.
+It must not depend on how the user's controller works internally.
+
+28. Scoring Events
+Every penalty must generate a structured record.
+Example concept:
+PenaltyRecord
+├─ rule
+├─ event
+├─ points
+├─ simulation time
+├─ target
+└─ description
+
+Never scatter code such as:
+score -= 5;
+
+through unrelated components.
+Instead:
+course event
+    ↓
+scoring rule
+    ↓
+PenaltyRecord
+    ↓
+ScoreManager
+
+
+29. Testing Is Integrated With Scoring
+The testing system does not have a separate definition of success.
+Flow:
+Simulator run
+    ↓
+Scenario
+    ↓
+ScoreManager
+    ↓
+RunResult
+    ↓
+TestRunner / BatchRunner
+
+Manual run and batch run therefore produce identical official results.
+
+30. Testing Must Be Controller-Agnostic
+The test system knows nothing about the user's ANN, FSM, or control architecture.
+It only evaluates:
+completion
+time
+score
+penalties
+objective results
+terminal speed measurements
+collisions
+timeouts
+disconnects
+watchdog stops
+
+Any controller should work:
+ANN
+OpenCV
+rule-based
+PID
+manual keyboard
+custom algorithm
+
+as long as it uses the expected vehicle interface.
+
+31. Batch Testing
+Support:
+single run
+batch runs
+deterministic seed
+timeout
+result export
+failure diagnostics
+rerun
+
+Example:
+50 runs
+
+automatically:
+reset
+start
+run
+score
+save
+repeat
+
+
+32. Full Reset
+Between runs reset all relevant state:
+vehicle position
+vehicle rotation
+linear velocity
+angular velocity
+motor command
+
+sensor scheduling
+sensor frame session
+
+scenario state
+timer
+
+trigger state
+objective state
+penalty records
+
+collision state
+speed-terminal timestamps
+
+random seed
+
+Old commands and frames must never leak into a new run.
+
+33. Determinism
+Identical:
+course
+seed
+initial state
+motor-command sequence
+
+should produce equivalent simulator outcomes within documented physics tolerances.
+Create deterministic tests for:
+vehicle
+course
+triggers
+speed terminals
+scoring
+reset
+command replay
+
+
+34. Command Recording
+Testing may record received:
+jchm.control.set_motor(left, right, speed)
+
+commands with simulation ticks.
+This is allowed because it observes the public vehicle-control interface, not controller internals.
+Support replaying a command trace to isolate simulator regressions from controller changes.
+
+35. Failure Diagnostics
+Failed or low-score automated runs should preserve simulator-side evidence such as:
+latest center camera frame
+optional side/depth frames
+event history
+penalty history
+motor command history
+final vehicle pose
+objective states
+terminal measurements
+
+Do not require ANN/FSM logs.
+
+36. Results
+A RunResult should contain raw measurements as well as score.
+Examples:
+status
+elapsed time
+base score
+final score
+penalties
+line violations
+collisions
+objective results
+two-terminal speed results
+timeout / disconnect reason
+
+Do not save only a single numeric score.
+
+37. Standalone Build Requirement
+Every major user-facing simulator feature must work in the standalone build.
+This includes:
+driving
+debug panels
+camera previews
+map editing
+course import
+grid editing
+structure placement
+trigger placement
+scenario configuration
+scoring
+results
+single testing
+batch testing
+reruns
+saving/loading courses
+exporting results
+
+A feature that only works through Unity Editor tooling does not satisfy the requirement.
+
+38. Sensor Isolation
+Student sensor cameras must never see simulator-only information.
+Exclude:
+grid
+selection
+trigger regions
+ground-truth labels
+debug text
+bounding overlays
+course-authoring handles
+observer UI
+scoring notifications
+
+from left/center/right/depth sensor output.
+The observer camera may show them.
+
+39. Safety
+Any of these should result in propulsion being stopped safely:
+bridge disconnect
+watchdog timeout
+simulation reset
+scenario abort
+fatal simulator error
+
+Do not leave the previous motor command active after connection loss.
+
+40. Testing Requirements for Every Step
+Every implementation step must include appropriate automated tests.
+Do not defer all testing until the end.
+At minimum consider:
+unit tests
+serialization tests
+determinism tests
+reset tests
+runtime integration tests
+standalone-build smoke tests
+
+When fixing a bug:
+reproduce it,
+add a regression test where practical,
+fix it,
+verify existing tests,
+document the root cause.
+
+41. Build Must Stay Healthy
+After each implementation step:
+Unity compiles
+project code has zero errors
+tests pass
+standalone build succeeds when relevant
+
+Do not leave a partially broken project for the next step.
+Treat warnings in project-owned code seriously.
+Do not hide errors simply to advance.
+
+42. Git Discipline
+Make changes intentionally.
+Before modifying architecture:
+inspect current implementation
+inspect relevant documentation
+inspect manual if hardware behavior is involved
+
+Keep generated Unity directories out of Git.
+Do not commit:
+Library/
+Temp/
+Logs/
+obj/
+UserSettings/
+
+unless there is an explicit reason.
+Do commit:
+source
+configs
+course definitions
+tests
+documentation
+necessary assets
+
+
+43. Documentation Update Is Part of Every Task
+At the end of every meaningful implementation task, review whether these require updates:
+ARCHITECTURE.md
+DESIGN_DECISIONS.md
+MANUAL_COMPATIBILITY.md
+CONFIGURATION.md
+COURSE_FORMAT.md
+SCORING.md
+TESTING.md
+CHANGELOG.md
+
+If implementation changed behavior and documentation was not updated, the task is incomplete.
+
+44. Implementation Work Log
+Maintain a concise development log, for example:
+docs/IMPLEMENTATION_STATUS.md
+Track:
+## Step 4 — Cameras
+
+Status: Complete
+
+Implemented:
+- left/center/right sensors
+- get_image
+- runtime previews
+
+Tests:
+- orientation test
+- BGR test
+- sensor isolation test
+
+Remaining calibration:
+- exact FOV
+- exact FPS
+- exact mount positions
+
+This allows future coding agents to understand project state immediately.
+
+45. TODOs Must Be Explicit
+Never hide unknowns in code.
+Bad:
+float fov = 60;
+
+Good:
+// APPROXIMATE:
+// Exact real Jajucha camera FOV is not confirmed by the manual.
+// Keep configurable until measured.
+float fov = config.CenterCameraFovDeg;
+
+And document the same issue in:
+MANUAL_COMPATIBILITY.md
+
+
+46. Do Not Overengineer
+Prefer the smallest architecture that cleanly satisfies the requirements.
+Do not introduce:
+large generic frameworks
+complex ECS systems
+unnecessary dependency injection frameworks
+generic traffic simulation
+radar systems
+large replay engines
+network abstraction layers
+
+unless they solve an actual requirement.
+This simulator is specifically for Jajucha.
+
+47. Do Not Couple Future User Code
+The simulator must remain independent of the user's future autonomous-driving implementation.
+Do not assume:
+ANN architecture
+FSM structure
+model format
+training framework
+control algorithm
+Python package layout
+
+Those belong outside the simulator.
+The simulator provides:
+environment
+sensors
+real-compatible control
+competition rules
+debugging
+testing
+
+The user provides autonomous intelligence.
+
+48. Required Engineering Workflow
+For each implementation step:
+A. Inspect
+Read:
+current project files,
+relevant documentation,
+relevant manual sections.
+B. Confirm requirements
+Identify:
+confirmed behavior
+unknown behavior
+simulator-only behavior
+approximations
+
+C. Design
+Before major code changes, define:
+responsibilities
+data flow
+public interfaces
+dependencies
+failure behavior
+tests
+
+Record important decisions.
+D. Implement
+Keep changes modular.
+Do not mix unrelated future features into the current task.
+E. Test
+Run relevant:
+unit tests
+integration tests
+Unity tests
+build smoke tests
+
+F. Document
+Update all affected project documentation.
+G. Review
+Before declaring completion, inspect the diff and ask:
+Did this violate a manual-defined behavior?
+Did I introduce hidden assumptions?
+Did I introduce editor-only functionality?
+Did I accidentally couple simulator to user controller code?
+Did I document new approximations?
+Did I document important design decisions?
+Are reset and deterministic behavior preserved?
+
+Only then mark the step complete.
+
+49. When Something Is Unclear
+Do not guess silently.
+Use this procedure:
+1. Check Jajucha manual.
+2. Check existing design documentation.
+3. Check configuration/calibration records.
+4. If still unknown, choose a conservative configurable implementation.
+5. Mark it APPROXIMATE or UNKNOWN.
+6. Document why.
+7. Continue implementation without pretending certainty.
+
+Do not block the entire project merely because a hardware value is unknown if it can safely remain configurable.
+
+50. Definition of Project Success
+The simulator is successful when:
+real-style jchm programs can run against it with minimal/no simulator-specific changes,
+the physical model is stable enough for autonomous-driving development,
+cameras and depth behave consistently with the documented real API,
+courses can be built and edited from the standalone application,
+road, structures, objects, and triggers share a common tile grid,
+real course drawings can be converted into editable simulator maps,
+tunnels, ramps, signs, obstacles, triggers, and speed terminals can be placed at runtime,
+competition objectives and negative-point scoring can be configured,
+two-terminal d/(t2-t1) speed measurement is supported,
+repeated runs reset cleanly,
+testing is independent of the user's autonomous-driving architecture,
+runs can be automatically scored and repeated,
+failures can be reproduced,
+the Jajucha remains visible while driving,
+debug tools work in standalone builds,
+student sensor images never contain simulator-only ground truth,
+documentation accurately explains both implementation and design rationale.
+
+Final Rule
+When forced to choose between:
+something convenient for the simulator
+
+and:
+something faithful to the actual Jajucha/manual
+
+choose the latter.
+When forced to choose between:
+an undocumented clever solution
+
+and:
+a simpler well-documented solution
+
+choose the documented solution.
+When uncertain:
+read the manual, document the uncertainty, keep the behavior configurable, add tests, and record the design decision.
+
+

@@ -1,0 +1,76 @@
+# Testing
+
+"Testing is integrated with scoring" and "controller-agnostic" are master-plan
+rules. The full automated test/batch system arrives in Steps 9–10; this document
+tracks what exists now and what is planned.
+
+## Step 1 (implemented)
+
+**Assemblies**
+- `JajuchaSim.Core.TestSupport` — shared test doubles (`FakeSimulationSystem`,
+  `CounterSimulationSystem`).
+- `JajuchaSim.Core.EditModeTests` — pure-C#/EditMode kernel tests.
+- `JajuchaSim.Core.PlayModeTests` — Unity PlayMode tests incl. scene load.
+
+**EditMode coverage**
+- `SimulationClockTests` — initial zero, 100-tick time, reset, time-scale,
+  invalid-arg throws, negative-advance throws.
+- `SimulationEventBusTests` — subscribe/publish once, unsubscribe, payload,
+  multiple subscribers, clear, unsubscribe-during-publish safety, null-arg throw.
+- `SimulationRandomTests` — same-seed reproducibility, float/int range, distinct
+  seeds diverge, reset restores sequence.
+- `SimulationManagerTests` — initialize→Ready, null-config throws, start, pause/
+  resume, stop, stop→start blocked, reset from stopped/running, single-step,
+  step-before-start no-op, N-tick advance, **deterministic 10000-tick test**
+  (clock + counter), **same-seed replay equivalence**, fake-system lifetime
+  through the manager (initialize→ticks→shutdown).
+
+**PlayMode coverage**
+- Initialize→Ready under real Unity.
+- Start→Pause stops auto-advancing the clock.
+- Single `Step()` advances exactly one tick (paused).
+- Reset returns to Ready/tick 0.
+- Registered system receives scheduler ticks under real time.
+- `Simulation.unity` loads and the manager auto-initializes to Ready from the
+  assigned config asset.
+
+## Running the tests
+
+From the command line (Unity 6000.3.20f1):
+
+```pwsh
+$u = "C:\Program Files\Unity\Hub\Editor\6000.3.20f1\Editor\Unity.exe"
+& $u -batchmode -nographics -projectPath C:\dev\jajucha-sim `
+    -runTests -testPlatform editmode -testResults test-results-editmode.xml `
+    -logFile unity-editmode.log
+& $u -batchmode -nographics -projectPath C:\dev\jajucha-sim `
+    -runTests -testPlatform playmode -testResults test-results-playmode.xml `
+    -logFile unity-playmode.log
+```
+
+Current recorded result (Step 7):
+- EditMode: **318/318 passed**.
+- PlayMode: **37/37 passed**.
+- Project-code compiler warnings: **0**.
+
+Step 7 EditMode coverage (Course/MapEditor) includes tunnel/ramp geometry,
+placement validation, map-editor session tools, trigger enter/exit once,
+speed-gate segment crossing, document save/load (incl. legacy JSON),
+snapshot undo/redo, event log panel, and sensor-camera debug-layer exclusion.
+
+## Determinism rules for tests
+
+- Tick count is exact; time uses `1e-3` tolerance (float `FixedDeltaTime`).
+- Identical course + seed + initial state + command sequence ⇒ repeatable.
+- `ResetSimulation()` clears clock, random, events, accumulator, and systems.
+
+## Planned (Steps 9–10)
+
+- Controller-agnostic `RunResult` (status, elapsed time, base/final score,
+  penalties, line violations, collisions, objective results, two-terminal
+  speed, timeout/disconnect reason).
+- Batch runner (single/batch, deterministic seed, timeout, export, rerun).
+- Failure diagnostics (latest frames, event/penalty/motor history, final pose).
+- Manual run and batch run produce identical official results (same
+  Scenario → ScoreManager → RunResult path).
+- Command recording/replay of `jchm.control.set_motor(left, right, speed)`.
