@@ -113,7 +113,8 @@ Implemented:
   - Road layer (boolean: road present or not)
   - Structure layer (Tunnel / Ramp / None)
   - Object layer (Obstacle / Sign / StartSignal / None)
-  - Trigger layer (SlowZone / SpeedGate / EventTrigger / None)
+  - Trigger layer (SlowZone / SpeedTerminal / EventTrigger / None;
+    SpeedGate is a legacy alias for SpeedTerminal)
 - `GridCoordinate(x, z)` — int-based 2D coordinate with neighbour helpers.
 - `TileInfo` — snapshot of all four layers at one tile.
 - `CourseConfig` — ScriptableObject with `tileSizeCm` (default 20 cm).
@@ -152,7 +153,7 @@ Implemented on top of the Step-6 shared tile grid:
   with unique IDs) kept in sync with a compact `CourseGrid` lookup layer.
 - **Feature instances** — `StructureInstance` (Tunnel/Ramp), `CourseObjectInstance`
   (Obstacle/Sign/StartSignal with footprints and rotation), `TriggerInstance`
-  (SlowZone/Start/Finish/Event/SpeedGate with region or edge placement).
+  (SlowZone/Start/Finish/Event/SpeedTerminal with region or edge placement).
 - **Geometry** — `TunnelGeometry` (left/right walls + roof overlay), `RampGeometry`
   (monotonic tile elevations + surface mesh), `StructureMeshBuilder` runtime meshes.
 - **Validation** — `CourseValidator` enforces road coverage (ramp requires full
@@ -187,8 +188,32 @@ Tests (PlayMode):
 Verification:
 - Run Unity EditMode + PlayMode suites (see `docs/TESTING.md`).
 
-## Steps 8–10 (Scenario/scoring, speed terminals polish, testing/batch)
+## Step 8 — Two-Terminal Speed Measurement
+
+**Status: Complete**
+
+Replaced the generic single-gate idea with competition-style paired terminals:
+
+- `TriggerType.SpeedTerminal` (enum value shared with legacy `SpeedGate` alias)
+- JSON `type: "speed_terminal"` with `pairId`, `terminal` (A/B), `edge`,
+  `widthTiles`; legacy `"speed_gate"` still loads
+- `SpeedTerminalGeometry` — edge-snapped line endpoints + midpoint distance `d`
+- `SpeedTerminalPair` / `SpeedTerminalPairState` — pair build from document,
+  `v = d / (t2 - t1)` using SimulationClock times; reverse B→A ignored by default
+- `SpeedTerminalPairRule` — event-driven rule publishing `SpeedMeasuredEvent`
+  (official competition speed; distinct from Rigidbody velocity)
+- `TriggerDetectionSystem` — segment P0→P1 line crossing →
+  `SpeedTerminalCrossedEvent` (+ legacy `SpeedGateCrossedEvent`)
+- Map editor: **Speed A** / **Speed B** tools with shared `SpeedPairId`
+- Events panel + `EventLogSystem`: CROSS lines and `SPEED = xx.xx cm/s`,
+  plus live SPEED MEASUREMENT debug block
+- Validator warns on incomplete pairs / missing pairId
+
+Tests: `SpeedTerminalPairTests` (geometry, A→B speed, reverse ignore, JSON
+round-trip, legacy load, rule + event log + debug panel).
+
+## Steps 9–10 (Scenario/scoring, testing/batch)
 
 Not started. See `docs/SCORING.md`, `docs/TESTING.md`.
-Step 8 builds on Step-7 triggers (start signal, slow-zone rules, gate timing,
-collisions, course completion, results panel).
+Step 9 builds on Step-7/8 triggers (start signal, slow-zone rules, terminal
+speed results, collisions, course completion, results panel).

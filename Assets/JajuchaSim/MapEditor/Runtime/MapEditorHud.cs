@@ -29,6 +29,7 @@ namespace JajuchaSim.MapEditor
         private MapEditorSession _session;
         private EventLogSystem _eventLog;
         private TriggerDetectionSystem _triggers;
+        private SpeedTerminalPairRule _speedRule;
         private CourseOverlayRenderer _overlay;
         private StructureMeshBuilder _meshes;
         private SimulationManager _sim;
@@ -217,6 +218,8 @@ namespace JajuchaSim.MapEditor
             _meshes?.Bind(_session.Document);
             if (_triggers != null)
                 _triggers.SetCourse(_session.Document);
+            if (_speedRule != null)
+                _speedRule.SetDocument(_session.Document);
         }
 
         private void UpdateHudText()
@@ -239,7 +242,12 @@ namespace JajuchaSim.MapEditor
             if (_eventsText != null && _eventLog != null)
             {
                 var lines = _eventLog.ToDisplayLines(16);
-                _eventsText.text = "EVENTS\n" + string.Join("\n", lines);
+                string speedBlock = _speedRule != null
+                    ? _speedRule.FormatDebugPanel()
+                    : "SPEED MEASUREMENT\n\n(no measurement yet)";
+                _eventsText.text =
+                    "EVENTS\n" + string.Join("\n", lines) +
+                    "\n\n" + speedBlock;
             }
         }
 
@@ -417,18 +425,21 @@ namespace JajuchaSim.MapEditor
             _session.Mode = MapEditorMode.Drive;
             _session.Tool = MapEditorTool.None;
 
-            // Wire trigger detection + event log into the simulation if present
+            // Wire trigger detection, speed terminals, and event log into the simulation if present
             if (_sim != null)
             {
                 if (_triggers == null)
                 {
                     _triggers = new TriggerDetectionSystem(_session.Document);
+                    _speedRule = new SpeedTerminalPairRule(_session.Document);
                     _sim.RegisterSystem(_triggers);
+                    _sim.RegisterSystem(_speedRule);
                     _sim.RegisterSystem(_eventLog);
                 }
                 else
                 {
                     _triggers.SetCourse(_session.Document);
+                    _speedRule?.SetDocument(_session.Document);
                 }
 
                 WireVehiclePose();

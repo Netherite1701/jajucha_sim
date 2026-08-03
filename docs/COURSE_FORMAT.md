@@ -16,8 +16,9 @@ Layers (may overlap — a single tile can contain data on all four layers):
 - **Structure Layer** — optional `StructureType` per tile (Tunnel, Ramp, None).
 - **Object Layer** — optional `ObjectType` per tile (Obstacle, Sign,
   StartSignal, None).
-- **Trigger Layer** — optional `TriggerType` per tile (SlowZone, SpeedGate,
-  EventTrigger, Start, Finish, None).
+- **Trigger Layer** — optional `TriggerType` per tile (SlowZone, SpeedTerminal,
+  EventTrigger, Start, Finish, None). `SpeedGate` remains a legacy enum alias
+  for `SpeedTerminal`.
 
 `Tile (12, 8)` may simultaneously be `Road=true`, `Structure=Tunnel`,
 `Trigger=SlowZone`. A tunnel does **not** replace the road underneath it.
@@ -106,15 +107,62 @@ Each structure/object/trigger is an individual entry with a unique `id`:
       "eventId": "tunnel_entry"
     },
     {
-      "id": "speed_gate_001",
-      "type": "speed_gate",
+      "id": "speed_a",
+      "type": "speed_terminal",
+      "pairId": "speed_zone_01",
+      "terminal": "A",
       "cellX": 20,
       "cellZ": 30,
-      "edge": "north"
+      "edge": "north",
+      "widthTiles": 1
+    },
+    {
+      "id": "speed_b",
+      "type": "speed_terminal",
+      "pairId": "speed_zone_01",
+      "terminal": "B",
+      "cellX": 20,
+      "cellZ": 40,
+      "edge": "north",
+      "widthTiles": 1
     }
   ]
 }
 ```
+
+### Speed terminal pairs
+
+Competition speed uses **two** edge-snapped terminals that share a `pairId`:
+
+```
+speed_zone_01
+├─ Terminal A  (role A)
+└─ Terminal B  (role B)
+```
+
+Distance `d` is **derived** from the terminals' world-space line midpoints
+(never entered by hand). Official measured speed is:
+
+```
+v = d / (t2 - t1)
+```
+
+where `t1` / `t2` are `SimulationClock` times when the vehicle segment `P0→P1`
+crosses each terminal line. Rigidbody / internal vehicle velocity is **not**
+the official result.
+
+Fields per terminal:
+
+| Field | Meaning |
+|---|---|
+| `type` | `"speed_terminal"` (legacy `"speed_gate"` still loads) |
+| `pairId` | Links A and B into one measurement zone |
+| `terminal` | `"A"` or `"B"` (A→B is the valid direction) |
+| `cellX` / `cellZ` | Anchor cell |
+| `edge` | `north` / `south` / `east` / `west` |
+| `widthTiles` | Line span across the road (≥1) |
+
+Reverse order (B then A) is ignored by default.
 
 Auto-generated IDs look like `tunnel_001`. Users may rename; uniqueness is
 validated before save.
@@ -134,7 +182,8 @@ tile into a 1×1 instance.
 
 ### CourseDocument (instances + grid)
 
-- `PlaceTunnel` / `PlaceRamp` / `PlaceObject` / `PlaceTrigger` / `PlaceSpeedGate`
+- `PlaceTunnel` / `PlaceRamp` / `PlaceObject` / `PlaceTrigger` / `PlaceSpeedTerminal`
+- `PlaceSpeedGate` remains as a thin legacy wrapper (Terminal A, default pair)
 - Move / resize / rotate / remove by id
 - `ToJson` / `FromJson` / `ToData` / `FromData`
 - `PaintTriggerTiles` for slow-zone / start / finish painting
@@ -143,7 +192,17 @@ tile into a 1×1 instance.
 
 - Region enter/exit → `TriggerEnteredEvent` / `TriggerExitedEvent` (once each)
 - Generic event → `CourseEventTriggeredEvent(eventId, …)`
-- Speed gate → segment P0→P1 vs gate line → `SpeedGateCrossedEvent`
+- Speed terminal → segment P0→P1 vs terminal line → `SpeedTerminalCrossedEvent`
+  (legacy `SpeedGateCrossedEvent` still published for older subscribers)
+
+### SpeedTerminalPairRule
+
+- Subscribes to `SpeedTerminalCrossedEvent`
+- Arms on Terminal A, completes on Terminal B
+- Computes `v = d / (t2 - t1)` with `d` from `SpeedTerminalGeometry.DistanceCm`
+- Publishes `SpeedMeasuredEvent` (official competition speed for scoring)
+- Debug panel text via `FormatDebugPanel()`; event log lines:
+  `31.240  speed_a CROSS` / `31.890  SPEED = 30.77 cm/s`
 
 ### Map editor (standalone)
 
@@ -161,4 +220,4 @@ by `TriggerDetectionSystem`.
 
 - Road mesh generation from neighbour connectivity (smooth continuous roads).
 - Course image import (pixel→grid projection).
-- Scenario/scoring reactions to trigger events (Step 8).
+- Full scenario/scoring stack consuming `SpeedMeasuredEvent` (Step 9).

@@ -1,7 +1,8 @@
 # Scoring
 
-> Not yet implemented (Steps 8–9). Design contract captured so later steps are
-> not improvised.
+> Scoring manager not yet implemented (Step 9). Two-terminal speed measurement
+> (the official speed input) is implemented (Step 8). Design contract captured
+> so later steps are not improvised.
 
 Final Score = Base Score − Penalties. Point values are **not** official until
 verified against real competition rules; all values stay configurable.
@@ -14,12 +15,17 @@ verified against real competition rules; all values stay configurable.
 - Course departure, obstacle/structure collision, false start, objective
   failure, speed violation, timeout.
 
-## Two-terminal speed (Step 7)
+## Two-terminal speed (Step 8 — implemented)
 
-Official measured speed `v = d / (t2 − t1)` using simulation timestamps
-between Terminal A and Terminal B. Rigidbody velocity is **not** the official
-result. A terminal pair resets between runs; reverse order is ignored unless
-configured.
+Official measured speed `v = d / (t2 - t1)` using `SimulationClock` timestamps
+between Terminal A and Terminal B (`SpeedTerminalPairRule` →
+`SpeedMeasuredEvent`). Distance `d` is derived from terminal world positions.
+Rigidbody / internal vehicle velocity is **not** the official result. A terminal
+pair resets between runs; reverse order (B then A) is ignored unless configured.
+
+Scoring must subscribe to `SpeedMeasuredEvent` (or read
+`SpeedTerminalPairRule.LatestResult` / `Results`), never sample Rigidbody speed
+for pass/fail.
 
 ## Structured records
 
