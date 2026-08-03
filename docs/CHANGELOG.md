@@ -2,14 +2,30 @@
 
 ## [Unreleased]
 
+### Step 8 — Two-Terminal Competition Speed Measurement
+
+Replaced the generic single speed-gate concept with paired terminals that match
+competition hardware:
+
+- Terminal A + Terminal B share a `pairId`; distance `d` is computed from world
+  line midpoints (never manually entered)
+- Official speed `v = d / (t2 - t1)` uses `SimulationClock` crossing times
+- `SpeedTerminalPairRule` records A then B and publishes `SpeedMeasuredEvent`
+  for scoring (Rigidbody velocity remains debug-only)
+- Line-crossing detection on segment P0→P1 (not tiny colliders)
+- Reverse order (B→A) ignored by default
+- Map editor tools: Speed A / Speed B; JSON `speed_terminal` with legacy
+  `speed_gate` load path retained
+- Events/Scenario panel SPEED MEASUREMENT block + event-log CROSS/SPEED lines
+
 ### Step 7 — Structures, Objects, Triggers + Runtime Map Editor
 
 Built the full tile-aligned feature stack on top of the Step-6 grid:
 
 - `CourseDocument` instance model with unique IDs and compact grid sync
 - Tunnel / ramp geometry + mesh builder; obstacle / slow-sign / start-signal
-- Trigger layer: slow zone, start/finish, generic event, speed gate
-- `TriggerDetectionSystem` enter/exit + segment gate crossing on EventBus
+- Trigger layer: slow zone, start/finish, generic event, speed terminal
+- `TriggerDetectionSystem` enter/exit + segment terminal crossing on EventBus
 - `EventLogSystem` / `EventPanelUI` runtime events panel
 - `MapEditorSession` + standalone `MapEditorHud` (palette, preview, inspector,
   layers, undo/redo, save/load, test-drive loop) — works without Unity Editor

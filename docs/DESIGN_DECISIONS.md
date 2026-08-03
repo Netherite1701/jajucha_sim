@@ -164,3 +164,34 @@ the authority and may be called by tests/headless runners.
 Consequences: Scene just works; tests that need controlled init call
 `SetConfigForTesting` + `Initialize()` explicitly (config is null at
 `AddComponent` time, so auto-init does not fire).
+
+---
+
+## DD-015 — Two-terminal speed measurement (not Rigidbody velocity)
+
+Status: Accepted
+
+Context: Competition hardware measures speed with two fixed terminals and
+`v = d / (t2 - t1)`. An earlier single "speed gate" idea and Unity's internal
+Rigidbody velocity do not reproduce that method.
+
+Decision:
+- Represent each gate as a `speed_terminal` feature (edge-snapped line with
+  `pairId`, role A/B, width).
+- Derive pair distance from world/grid geometry (`SpeedTerminalGeometry`).
+- Detect crossings with segment-vs-line tests on P0→P1 each tick.
+- Timestamp with `SimulationClock` only.
+- `SpeedTerminalPairRule` produces the official `SpeedMeasuredEvent`; scoring
+  must consume that value. Rigidbody speed stays debug-only.
+- Default direction is A→B; reverse B→A is ignored unless explicitly allowed.
+- Keep `TriggerType.SpeedGate` and JSON `"speed_gate"` as legacy aliases.
+
+Consequences:
+- Official results can differ slightly from instantaneous vehicle velocity.
+- Incomplete pairs warn at validation and never emit a measurement.
+- Map editor exposes separate Speed A / Speed B tools sharing a pair id.
+
+Alternatives considered:
+- Single gate + ground-truth velocity (rejected: does not match hardware).
+- Physics trigger colliders (rejected: can miss fast crossings between ticks).
+- Manually entered distance (rejected: configuration error risk).

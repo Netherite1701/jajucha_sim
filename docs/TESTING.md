@@ -48,14 +48,14 @@ $u = "C:\Program Files\Unity\Hub\Editor\6000.3.20f1\Editor\Unity.exe"
     -logFile unity-playmode.log
 ```
 
-Current recorded result (Step 7):
-- EditMode: **318/318 passed**.
-- PlayMode: **37/37 passed**.
+Current recorded result (Step 8):
+- EditMode: **331/331 passed** (includes `SpeedTerminalPairTests`).
 - Project-code compiler warnings: **0**.
 
-Step 7 EditMode coverage (Course/MapEditor) includes tunnel/ramp geometry,
+Step 7–8 EditMode coverage (Course/MapEditor) includes tunnel/ramp geometry,
 placement validation, map-editor session tools, trigger enter/exit once,
-speed-gate segment crossing, document save/load (incl. legacy JSON),
+speed-terminal segment crossing, two-terminal `v = d/(t2-t1)` measurement
+(`SpeedTerminalPairTests`), document save/load (incl. legacy `speed_gate` JSON),
 snapshot undo/redo, event log panel, and sensor-camera debug-layer exclusion.
 
 ## Determinism rules for tests
