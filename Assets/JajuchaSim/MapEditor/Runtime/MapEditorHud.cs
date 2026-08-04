@@ -57,6 +57,18 @@ namespace JajuchaSim.MapEditor
         private Text _slowZoneLabel;
         private Text _startModeLabel;
 
+        // ---- Scoring configuration (Step 10.34) ----
+        private float _baseScore = 100f;
+        private float _lineContactPenalty = 5f;
+        private float _courseDeparturePenalty = 5f;
+        private float _collisionPenalty = 5f;
+        private float _objectiveFailurePenalty = 10f;
+        private Text _baseScoreLabel;
+        private Text _lineContactPenaltyLabel;
+        private Text _courseDeparturePenaltyLabel;
+        private Text _collisionPenaltyLabel;
+        private Text _objectiveFailurePenaltyLabel;
+
         public MapEditorSession Session => _session;
         public CourseDocument Document => _session?.Document;
 
@@ -571,6 +583,22 @@ namespace JajuchaSim.MapEditor
             _slowZoneLabel = ValueRow(canvasParent, "Slow Max Speed", x, ref y, width, CycleSlowZoneSpeed);
             _startModeLabel = ValueRow(canvasParent, "Start Mode", x, ref y, width, CycleStartMode);
 
+            // Step 10.34: SCORING configuration, runtime-build editable.
+            y -= 8;
+            var scoringHeader = MakeText(canvasParent, "SCORING", new Vector2(x, y), new Vector2(width, 18), TextAnchor.UpperRight, 13);
+            var shrt = scoringHeader.GetComponent<RectTransform>();
+            shrt.anchorMin = new Vector2(1, 0);
+            shrt.anchorMax = new Vector2(1, 0);
+            shrt.pivot = new Vector2(1, 0);
+            shrt.anchoredPosition = new Vector2(x, y);
+            scoringHeader.fontStyle = FontStyle.Bold;
+            y -= 22;
+            _baseScoreLabel = ValueRow(canvasParent, "Base Score", x, ref y, width, CycleBaseScore);
+            _lineContactPenaltyLabel = ValueRow(canvasParent, "Line Contact", x, ref y, width, CycleLineContactPenalty);
+            _courseDeparturePenaltyLabel = ValueRow(canvasParent, "Departure", x, ref y, width, CycleCourseDeparturePenalty);
+            _collisionPenaltyLabel = ValueRow(canvasParent, "Collision", x, ref y, width, CycleCollisionPenalty);
+            _objectiveFailurePenaltyLabel = ValueRow(canvasParent, "Obj Failure", x, ref y, width, CycleObjectiveFailurePenalty);
+
             y -= 6;
             SmallButton(canvasParent, "Start Run", new Vector2(x - width + 90, y), new Vector2(84, 26), () => OnScenarioStartRun());
             SmallButton(canvasParent, "Abort Run", new Vector2(x - 90, y), new Vector2(84, 26), () => OnScenarioAbortRun());
@@ -594,6 +622,16 @@ namespace JajuchaSim.MapEditor
                 _slowZoneLabel.text = $"{_slowZoneMaxCmS:0} cm/s";
             if (_startModeLabel != null)
                 _startModeLabel.text = _scenarioStartMode == StartMode.NormalSignal ? "Normal Signal" : "Immediate";
+            if (_baseScoreLabel != null)
+                _baseScoreLabel.text = $"{_baseScore:0}";
+            if (_lineContactPenaltyLabel != null)
+                _lineContactPenaltyLabel.text = $"-{_lineContactPenalty:0}";
+            if (_courseDeparturePenaltyLabel != null)
+                _courseDeparturePenaltyLabel.text = $"-{_courseDeparturePenalty:0}";
+            if (_collisionPenaltyLabel != null)
+                _collisionPenaltyLabel.text = $"-{_collisionPenalty:0}";
+            if (_objectiveFailurePenaltyLabel != null)
+                _objectiveFailurePenaltyLabel.text = $"-{_objectiveFailurePenalty:0}";
         }
 
         private List<string> GetTriggerIds(TriggerType type)
@@ -642,6 +680,38 @@ namespace JajuchaSim.MapEditor
             RefreshScenarioLabels();
         }
 
+        // ---- Scoring cycles (Step 10.34) ----
+
+        private void CycleBaseScore()
+        {
+            _baseScore = _baseScore >= 200f ? 50f : _baseScore + 25f;
+            RefreshScenarioLabels();
+        }
+
+        private void CycleLineContactPenalty()
+        {
+            _lineContactPenalty = _lineContactPenalty >= 20f ? 0f : _lineContactPenalty + 5f;
+            RefreshScenarioLabels();
+        }
+
+        private void CycleCourseDeparturePenalty()
+        {
+            _courseDeparturePenalty = _courseDeparturePenalty >= 20f ? 0f : _courseDeparturePenalty + 5f;
+            RefreshScenarioLabels();
+        }
+
+        private void CycleCollisionPenalty()
+        {
+            _collisionPenalty = _collisionPenalty >= 20f ? 0f : _collisionPenalty + 5f;
+            RefreshScenarioLabels();
+        }
+
+        private void CycleObjectiveFailurePenalty()
+        {
+            _objectiveFailurePenalty = _objectiveFailurePenalty >= 30f ? 0f : _objectiveFailurePenalty + 5f;
+            RefreshScenarioLabels();
+        }
+
         /// <summary>Build the ScenarioDefinition from the editor fields (Step 8.5).</summary>
         private ScenarioDefinition BuildScenarioDefinition()
         {
@@ -660,6 +730,15 @@ namespace JajuchaSim.MapEditor
                 autoSaveResults = true,
                 runsDirectory = "Runs"
             };
+
+            // Step 10.34: apply the runtime-editable scoring values.
+            def.scoring.baseScore = _baseScore;
+            def.scoring.lineContactPenalty = _lineContactPenalty;
+            def.scoring.courseDeparturePenalty = _courseDeparturePenalty;
+            def.scoring.collisionPenalty = _collisionPenalty;
+            def.scoring.objectiveFailurePenalty = _objectiveFailurePenalty;
+            def.collisions.violationMode = _collisionPenalty > 0f ? ViolationMode.Penalty : ViolationMode.Informational;
+            def.collisions.penalty = _collisionPenalty;
 
             def.slowZones.Clear();
             foreach (var t in _session.Document.Triggers)

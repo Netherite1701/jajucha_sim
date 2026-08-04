@@ -112,6 +112,13 @@ namespace JajuchaSim.Scenario
         public readonly List<GateMeasurement> Measurements = new List<GateMeasurement>();
         public readonly List<SlowZoneMeasurement> SlowZones = new List<SlowZoneMeasurement>();
         public readonly List<CollisionIncident> Collisions = new List<CollisionIncident>();
+        public readonly List<ObjectiveResult> Objectives = new List<ObjectiveResult>();
+
+        /// <summary>Debounced line-contact episodes (Step 10.3).</summary>
+        public int LineContactCount;
+
+        /// <summary>Debounced course-departure episodes (Step 10.8).</summary>
+        public int CourseDepartureCount;
 
         /// <summary>Elapsed simulated seconds (0 until the run ends).</summary>
         public double ElapsedSec => EndTime >= StartTime ? EndTime - StartTime : 0.0;
@@ -130,6 +137,9 @@ namespace JajuchaSim.Scenario
             Measurements.Clear();
             SlowZones.Clear();
             Collisions.Clear();
+            Objectives.Clear();
+            LineContactCount = 0;
+            CourseDepartureCount = 0;
         }
     }
 }

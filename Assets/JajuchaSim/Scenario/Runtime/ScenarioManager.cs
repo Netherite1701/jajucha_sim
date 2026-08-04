@@ -209,6 +209,7 @@ namespace JajuchaSim.Scenario
 
             _score.Reset();
             _score.ScoringEnabled = definition.scoringEnabled;
+            _score.Configure(definition.scoring);
             _score.BindSession(Session);
             _timer.Reset();
             _timerStarted = false;
@@ -294,8 +295,15 @@ namespace JajuchaSim.Scenario
             {
                 if (MatchesConfiguredTrigger(_definition?.finishTriggerId, e.TriggerId))
                 {
-                    if (!RequiresFinishDirection() || CrossingInCorrectDirection())
+                    bool accept = !RequiresFinishDirection() || CrossingInCorrectDirection();
+                    if (accept)
+                    {
+                        // Let rules observe the finish before finalizing so e.g.
+                        // Finish/Trigger objectives can pass (Step 10).
+                        for (int i = 0; i < _rules.Count; i++)
+                            _rules[i].OnTriggerEntered(e);
                         FinalizeRun(RunResultStatus.Completed);
+                    }
                 }
                 return;
             }
@@ -463,7 +471,7 @@ namespace JajuchaSim.Scenario
                 _rules[i].Finalize();
 
             // Mirror raw measurements into the score result (raw data first,
-            // points later — Step 8.42).
+            // points later — Step 8.42 / Step 10).
             var r = _score.Result;
             r.SlowZones.Clear();
             r.SlowZones.AddRange(Session.SlowZones);
@@ -472,6 +480,12 @@ namespace JajuchaSim.Scenario
             r.Collisions.Clear();
             r.Collisions.AddRange(Session.Collisions);
             r.CollisionCount = Session.Collisions.Count;
+            r.LineContactCount = Session.LineContactCount;
+            r.CourseDepartureCount = Session.CourseDepartureCount;
+            r.Objectives.Clear();
+            r.Objectives.AddRange(Session.Objectives);
+            r.SpeedMeasurements.Clear();
+            r.SpeedMeasurements.AddRange(CollectSpeedMeasurements());
 
             _score.FinalizeScore();
 
@@ -522,6 +536,14 @@ namespace JajuchaSim.Scenario
                 aborted = Session.Status == RunResultStatus.Aborted,
                 falseStart = Session.FalseStart || Session.Status == RunResultStatus.FalseStart,
                 collisions = Session.Collisions.Count,
+                lineContacts = Session.LineContactCount,
+                courseDepartures = Session.CourseDepartureCount,
+                violations = new ViolationsJson
+                {
+                    lineContacts = Session.LineContactCount,
+                    collisions = Session.Collisions.Count
+                },
+                baseScore = r.BaseScore,
                 totalPenalty = r.TotalPenalty,
                 score = r.Score
             };
@@ -570,11 +592,89 @@ namespace JajuchaSim.Scenario
                     ruleId = p.RuleId,
                     reason = p.Reason,
                     value = p.Value,
-                    simulationTime = p.SimulationTime
+                    simulationTime = p.SimulationTime,
+                    eventType = p.EventType,
+                    targetId = p.TargetId
                 });
             json.penalties = pens.ToArray();
 
+            var objs = new List<ObjectiveJson>();
+            foreach (var o in Session.Objectives)
+                objs.Add(new ObjectiveJson
+                {
+                    id = o.Id,
+                    type = o.Type.ToString().ToLowerInvariant(),
+                    targetId = o.TargetId,
+                    status = o.State.ToString().ToLowerInvariant(),
+                    passed = o.Passed,
+                    penalty = o.Penalty
+                });
+            json.objectives = objs.ToArray();
+
+            var speeds = new List<SpeedMeasurementJson>();
+            foreach (var s in r.SpeedMeasurements)
+                speeds.Add(new SpeedMeasurementJson
+                {
+                    pairId = s.PairId,
+                    distanceCm = s.DistanceCm,
+                    t1 = s.T1,
+                    t2 = s.T2,
+                    speedCmS = s.SpeedCmS,
+                    result = SpeedWithinLimit(s.PairId, s.SpeedCmS) ? "pass" : "fail"
+                });
+            json.speedMeasurements = speeds.ToArray();
+
+            var evts = new List<EventJson>();
+            foreach (var ev in Session.Events)
+                evts.Add(new EventJson
+                {
+                    time = ev.SimulationTime,
+                    tick = ev.SimulationTick,
+                    message = ev.Message
+                });
+            json.events = evts.ToArray();
+
             return json;
+        }
+
+        /// <summary>
+        /// Collect official two-terminal measurements into a compact list.
+        /// A GateMeasurement may lack the official SpeedCmS when only raw
+        /// gates were crossed; the authoritative value comes from
+        /// <see cref="SpeedMeasuredEvent"/> results kept in the session.
+        /// </summary>
+        private List<SpeedMeasurementResult> CollectSpeedMeasurements()
+        {
+            var list = new List<SpeedMeasurementResult>();
+            if (Session == null) return list;
+            foreach (var g in Session.Measurements)
+            {
+                list.Add(new SpeedMeasurementResult(
+                    g.PairId,
+                    g.FirstGate,
+                    g.SecondGate,
+                    g.StartTime,
+                    g.EndTime,
+                    g.DistanceCm,
+                    g.AverageSpeedCmS));
+            }
+            return list;
+        }
+
+        private bool SpeedWithinLimit(string pairId, float speedCmS)
+        {
+            if (_definition == null) return true;
+            foreach (var d in _definition.objectives)
+            {
+                if (d.type == ObjectiveType.SpeedPair &&
+                    string.Equals(d.pairId, pairId, StringComparison.Ordinal))
+                {
+                    if (d.maxSpeedCmS <= 0f) return true;
+                    return speedCmS <= d.maxSpeedCmS + 0.001f;
+                }
+            }
+            // No configured limit → no violation.
+            return true;
         }
 
         /// <summary>
@@ -628,6 +728,10 @@ namespace JajuchaSim.Scenario
             _rules.Add(new FalseStartRule());
             _rules.Add(new SpeedGateRule());
             _rules.Add(new CompletionRule());
+            // Step 10: competition scoring rules.
+            _rules.Add(new LineContactRule());
+            _rules.Add(new CourseDepartureRule());
+            _rules.Add(new ObjectiveRule());
         }
 
         private void UpdateTelemetry()

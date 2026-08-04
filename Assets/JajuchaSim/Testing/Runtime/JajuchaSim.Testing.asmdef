@@ -1,0 +1,19 @@
+{
+    "name": "JajuchaSim.Testing",
+    "rootNamespace": "JajuchaSim.Testing",
+    "references": [
+        "JajuchaSim.Core",
+        "JajuchaSim.Course",
+        "JajuchaSim.Scenario",
+        "JajuchaSim.Vehicle"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

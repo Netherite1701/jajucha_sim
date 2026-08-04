@@ -143,9 +143,21 @@ namespace JajuchaSim.Scenario
         public float randomStartDelayMinSec = 0f;
         public float randomStartDelayMaxSec = 0f;
 
-        // ---- Scoring ----
+        // ---- Scoring (Step 10.18) ----
         /// <summary>When false: timing/events still work, no final points/penalties.</summary>
         public bool scoringEnabled = true;
+
+        /// <summary>Competition scoring rules (base score + penalty values).</summary>
+        public ScoringConfig scoring = new ScoringConfig();
+
+        /// <summary>Objectives evaluated for this scenario (Step 10.4/10.19).</summary>
+        public List<ObjectiveDefinition> objectives = new List<ObjectiveDefinition>();
+
+        /// <summary>
+        /// Optional automated-test pass criteria (Step 10.27/10.28). Distinct
+        /// from the competition score; used by TestRunner/BatchRunner.
+        /// </summary>
+        public PassCriteria passCriteria = new PassCriteria();
 
         /// <summary>Optionally require the finish to be crossed in the drive direction.</summary>
         public bool requireFinishDirection = false;
@@ -194,6 +206,7 @@ namespace JajuchaSim.Scenario
                 randomStartDelayMinSec = randomStartDelayMinSec,
                 randomStartDelayMaxSec = randomStartDelayMaxSec,
                 scoringEnabled = scoringEnabled,
+                scoring = scoring?.Clone() ?? new ScoringConfig(),
                 requireFinishDirection = requireFinishDirection,
                 requireGateDirection = requireGateDirection,
                 autoSaveResults = autoSaveResults,
@@ -209,10 +222,13 @@ namespace JajuchaSim.Scenario
                     enabled = falseStart.enabled,
                     violationMode = falseStart.violationMode,
                     penalty = falseStart.penalty
-                }
+                },
+                passCriteria = passCriteria?.Clone() ?? new PassCriteria()
             };
             foreach (var z in slowZones)
                 copy.slowZones.Add(z.Clone());
+            foreach (var o in objectives)
+                copy.objectives.Add(o?.Clone() ?? new ObjectiveDefinition());
             return copy;
         }
 

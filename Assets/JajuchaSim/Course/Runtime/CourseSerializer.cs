@@ -69,6 +69,10 @@ namespace JajuchaSim.Course
     {
         public float tileSizeCm = 20f;
         public CoordPair[] road = Array.Empty<CoordPair>();
+
+        /// <summary>Boundary-line tiles painted on the road (Step 10).</summary>
+        public CoordPair[] lines = Array.Empty<CoordPair>();
+
         public StructureEntry[] structures = Array.Empty<StructureEntry>();
         public ObjectEntry[] objects = Array.Empty<ObjectEntry>();
         public TriggerEntry[] triggers = Array.Empty<TriggerEntry>();
@@ -193,6 +197,9 @@ namespace JajuchaSim.Course
             // Road tiles
             data.road = grid.AllRoadTiles().Select(CoordPair.FromGrid).ToArray();
 
+            // Boundary-line tiles (Step 10)
+            data.lines = grid.AllLineTiles().Select(CoordPair.FromGrid).ToArray();
+
             // Structures — individual entries with auto-generated IDs
             var structList = new List<CourseData.StructureEntry>();
             foreach (var kv in grid.AllStructures())
@@ -265,6 +272,13 @@ namespace JajuchaSim.Course
             {
                 foreach (var pair in data.road)
                     grid.SetRoad(pair.ToGrid());
+            }
+
+            // Boundary-line tiles (Step 10)
+            if (data.lines != null)
+            {
+                foreach (var pair in data.lines)
+                    grid.SetLine(pair.ToGrid());
             }
 
             // Structures — individual entries with region
