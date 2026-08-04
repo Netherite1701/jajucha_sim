@@ -23,16 +23,54 @@ Assets/JajuchaSim/
   Course/      Shared tile grid + structures/objects/triggers (Steps 6–7)
   MapEditor/   Runtime map editor HUD (Step 7 — implemented)
   Structures/  (geometry lives under Course; folder reserved)
-  Scenario/    Objectives + scenario (later)
-  Scoring/     Penalty records + ScoreManager (later)
-  Testing/     Controller-agnostic test/batch runner (later)
-  Debug/       Runtime debug panels (later)
-  UI/          Driving view + HUD (later)
+  Scenario/    Objectives + scenario (Steps 8–10)
+  Scoring/     Penalty records + ScoreManager (Steps 8–10)
+  Testing/     Controller-agnostic test/batch runner (Steps 10)
+  App/         Authoritative scene bootstrap, modes, data paths, logs (Step 11)
+  Debug/       Runtime debug panels
+  UI/          Driving view + HUD (map editor HUD under MapEditor)
 ```
 
 Each subsystem owns its code and exposes explicit interfaces. No giant manager
 classes, no `GameObject.Find`, no `FindObjectOfType`, no hidden globals, no
-uncontrolled singletons.
+uncontrolled singletons. (The single exception: `ApplicationBootstrap` and a
+few App-level components use `FindFirstObjectByType` to *resolve optional
+scene wiring*, never to drive simulation behavior; the authoritative scene
+serializes the references so resolution is deterministic.)
+
+## Authoritative scene and startup
+
+`Assets/JajuchaSim/Scenes/JajuchaSimulator.unity` is the **one** runtime scene
+(Step 11). It contains configuration (roots, managers, vehicle behaviour,
+observer camera, runtime UI, services) — the course itself is loaded from
+`Courses/template_course.json` and generated at runtime (Step 11.29).
+
+Fixed hierarchy (stable, validated by `SceneHierarchyValidationTests`):
+
+```text
+JajuchaSimulator
+├─ _Core      SimulationManager, SimulationClock, SimulationRunner,
+│             SimulationEventBus, ApplicationBootstrap
+├─ _Course    CourseManager, CourseRuntimeRoot, RoadLayerRoot,
+│             StructureLayerRoot, ObjectLayerRoot, TriggerLayerRoot,
+│             RuntimeOverlayRoot
+├─ _Vehicle   JajuchaVehicle (VehicleSystemBehaviour)
+├─ _Sensors   SensorRuntimeRoot (CameraSensorSystemBehaviour)
+├─ _Bridge    JajuchaBridgeServer
+├─ _Scenario  ScenarioManager, ScoreManager, TestRunner
+├─ _Observer  ObserverCamera, ObserverCameraController
+├─ _RuntimeUI MainViewport, MinimalHUD, DebugUI, MapEditorUI, ScoringUI,
+│             TestingUI
+└─ _Services  SaveLoadService, RuntimeFileDialogService, ScreenshotService,
+              ApplicationShutdownService
+```
+
+`ApplicationBootstrap` (in `JajuchaSim.App`) runs the ordered startup:
+config → kernel → data paths → course → runtime course → vehicle → sensors →
+bridge → scenario → UI → READY. Every step returns an explicit
+`BootstrapResult` (Success / FailedSystem / ErrorCode / Message); failures are
+shown on screen, never left as a NullReferenceException (Step 11.4/11.5).
+Random `Awake`/`Start` ordering never defines system initialization.
 
 ## Dependency direction (one way, upward)
 

@@ -1,0 +1,14 @@
+{
+  "defaultCourse": "template_course",
+  "bridgePort": 8765,
+  "debugUiEnabled": true,
+  "observerMode": "chase",
+  "simulationSpeed": 1.0,
+  "mode": "drive",
+  "coursesDirectory": "Courses",
+  "runsDirectory": "Runs",
+  "screenshotsDirectory": "Screenshots",
+  "logsDirectory": "Logs",
+  "userConfigDirectory": "UserConfig",
+  "batchConfig": ""
+}

@@ -46,6 +46,63 @@ duplicating the default asset. The active config is referenced by the
 | Course tile size (cm) | `CourseConfig` | 6 |
 | Bridge port / watchdog / protocol version | `BridgeConfig` | 3 |
 | Scoring penalties / base score | `ScoringConfig` | 8 |
+| Application (course, mode, speed, paths) | `ApplicationConfig` | 11 |
 
 All unspecified-by-manual values are marked APPROXIMATE/UNKNOWN in
 `docs/MANUAL_COMPATIBILITY.md`.
+
+## Application configuration (Step 11.41/11.42)
+
+`Config/default_simulator.json` (copied next to standalone builds) drives the
+application-level workflow:
+
+```json
+{
+  "defaultCourse": "template_course",
+  "bridgePort": 8765,
+  "debugUiEnabled": true,
+  "observerMode": "chase",
+  "simulationSpeed": 1.0,
+  "mode": "drive",
+  "coursesDirectory": "Courses",
+  "runsDirectory": "Runs",
+  "screenshotsDirectory": "Screenshots",
+  "logsDirectory": "Logs",
+  "userConfigDirectory": "UserConfig",
+  "batchConfig": ""
+}
+```
+
+Configuration hierarchy (highest wins):
+
+```text
+built-in defaults
+    ↓
+project/default config (Config/default_simulator.json)
+    ↓
+user config (writable UserConfig/default_simulator.json)
+    ↓
+command-line overrides (--course, --mode, --simulation-speed,
+                         --no-debug-ui, --batch-config)
+```
+
+### Fields
+
+| Field | Type | Default | Meaning |
+|---|---|---|---|
+| `defaultCourse` | string | `template_course` | Course name/path loaded at startup. |
+| `bridgePort` | int | 8765 | Python bridge TCP port. |
+| `debugUiEnabled` | bool | true | Whether the full debug UI is shown. |
+| `observerMode` | string | `chase` | Observer camera mode (chase/top/free). |
+| `simulationSpeed` | float | 1.0 | Simulation speed multiplier. |
+| `mode` | string | `drive` | Initial application mode (drive/edit/test/batch). |
+| `coursesDirectory` | string | `Courses` | Writable user-course folder name. |
+| `runsDirectory` | string | `Runs` | Run results / diagnostics folder name. |
+| `screenshotsDirectory` | string | `Screenshots` | Screenshot folder name. |
+| `logsDirectory` | string | `Logs` | Log folder name. |
+| `userConfigDirectory` | string | `UserConfig` | User-editable config folder name. |
+| `batchConfig` | string | `` | Optional batch configuration file for BatchTest. |
+
+Hardware-related approximations (camera FOV/resolution, speed mapping, steering
+mapping) are configuration-backed and documented in
+`docs/MANUAL_COMPATIBILITY.md`; they are NOT hidden Inspector-only settings.

@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/JajuchaSim/Scenes/JajuchaSimulator.unity
+    guid: a11b00000000000000000000000000dd
+  - enabled: 1
     path: Assets/JajuchaSim/Scenes/Simulation.unity
     guid: 44444444444444444444444444444444
   m_configObjects: {}

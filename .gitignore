@@ -10,7 +10,17 @@
 /python/.pytest_cache/
 /unity-*.log
 /test-results*.xml
+/TestResults-*.xml
 /nul
+
+# ---- Project-local virtualenv / distribution / staging ----
+/.venv/
+/dist/
+/build_staging/
+
+# ---- Python bytecode ----
+__pycache__/
+*.pyc
 
 # ---- Mono / IDE ----
 *.csproj

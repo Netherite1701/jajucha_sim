@@ -133,3 +133,13 @@ Scenario → ScoreManager → RunResult path.
 - `ResultsPanel` — final results (base score, penalty breakdown, final score,
   speed terminal, objectives) with Run Again / Details / Export.
 - Map editor SCORING section — runtime-editable base score and penalty values.
+
+## Template course scoring (Step 11)
+
+The shipped template course (`Courses/template_course.json`) documents the
+intended scoring configuration (EXAMPLE / SIMULATOR_ONLY — not a competition
+replica): base score 100; line contact 5; course departure 5; collision 5;
+objective failure 10; max run time 60 s; slow-zone max speed 20 cm/s. The
+runtime scenario is built from the map-editor SCENARIO/SCORING sections whose
+defaults match this block, and manual runs and automated tests share the same
+`ScoreManager` path (DD-024).

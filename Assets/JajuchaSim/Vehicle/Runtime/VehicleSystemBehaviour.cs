@@ -52,7 +52,7 @@ namespace JajuchaSim.Vehicle
                 }
             }
 
-            VehicleSystem = new VehicleSystem(vehicleConfig);
+            VehicleSystem = new VehicleSystem(vehicleConfig, gameObject);
             VehicleSystem.Initialize(context);
         }
 

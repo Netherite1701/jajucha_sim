@@ -1,0 +1,11 @@
+# Jajucha Simulator Python workspace requirements.
+#
+# Install into the project-local virtual environment:
+#   Windows: .\scripts\setup_python.ps1
+#   Linux/macOS: ./scripts/setup_python.sh
+#
+# The simulator itself does not require a global Python installation.
+
+numpy>=1.21
+opencv-python>=4.5
+pytest>=7.0

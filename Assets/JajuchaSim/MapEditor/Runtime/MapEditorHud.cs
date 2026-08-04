@@ -41,6 +41,7 @@ namespace JajuchaSim.MapEditor
         private Text _eventsText;
         private Text _previewText;
         private bool _uiBuilt;
+        private bool _worldEnsured;
         private string _savePath;
 
         // ---- Scenario configuration (Step 8.44–8.46) ----
@@ -93,6 +94,10 @@ namespace JajuchaSim.MapEditor
 
         private void EnsureWorld()
         {
+            if (_worldEnsured)
+                return;
+            _worldEnsured = true;
+
             _sim = FindFirstObjectByType<SimulationManager>();
 
             var overlayGo = new GameObject("CourseOverlay");
@@ -452,8 +457,87 @@ namespace JajuchaSim.MapEditor
             }
         }
 
+        // ================================================================
+        //  Public API for the ApplicationBootstrap / CourseManager
+        //  (Step 11: the authoritative scene loads a course from a file and
+        //   switches modes explicitly instead of through raw clicks).
+        // ================================================================
+
+        /// <summary>Load a course from a JSON string. Returns false on failure.</summary>
+        public bool LoadCourseJson(string json)
+        {
+            if (string.IsNullOrEmpty(json) || _session == null)
+                return false;
+            try
+            {
+                if (!_session.LoadJson(json))
+                    return false;
+                RefreshVisuals();
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[MapEditor] LoadCourseJson failed: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>Load a course from a JSON file. Returns false when missing/invalid.</summary>
+        public bool LoadCourseFromFile(string path)
+        {
+            if (string.IsNullOrEmpty(path) || !File.Exists(path))
+                return false;
+            try
+            {
+                return LoadCourseJson(File.ReadAllText(path));
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[MapEditor] LoadCourseFromFile failed: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>Enter Drive mode (wires triggers/scenario/scoring, starts simulation).</summary>
+        public void EnterDriveMode()
+        {
+            EnterDrive();
+        }
+
+        /// <summary>Enter Edit Map mode (pauses simulation, enables editor tools).</summary>
+        public void EnterEditMode()
+        {
+            EnterEdit();
+        }
+
+        /// <summary>
+        /// Auto-configure the scenario from the loaded course: pick the first
+        /// Start/Finish trigger ids, keep the default slow-zone speed, and
+        /// (re)build the scenario definition. Used by the ApplicationBootstrap
+        /// so the template course works without manual trigger picking.
+        /// </summary>
+        public void AutoConfigureScenario()
+        {
+            if (_session?.Document == null)
+                return;
+
+            foreach (var t in _session.Document.Triggers)
+            {
+                if (t.Type == TriggerType.Start && string.IsNullOrEmpty(_startTriggerId))
+                    _startTriggerId = t.Id;
+                if (t.Type == TriggerType.Finish && string.IsNullOrEmpty(_finishTriggerId))
+                    _finishTriggerId = t.Id;
+            }
+            if (_slowZoneMaxCmS <= 0f)
+                _slowZoneMaxCmS = 20f;
+
+            RefreshScenarioLabels();
+            EnsureScenarioPanel();
+        }
+
         private void EnterDrive()
         {
+            EnsureWorld();
             _session.Mode = MapEditorMode.Drive;
             _session.Tool = MapEditorTool.None;
 
@@ -546,6 +630,7 @@ namespace JajuchaSim.MapEditor
 
         private void EnterEdit()
         {
+            EnsureWorld();
             _session.Mode = MapEditorMode.Edit;
             if (_sim != null && _sim.State == SimulationState.Running)
                 _sim.Pause();

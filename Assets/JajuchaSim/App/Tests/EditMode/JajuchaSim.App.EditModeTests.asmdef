@@ -1,0 +1,29 @@
+{
+    "name": "JajuchaSim.App.EditModeTests",
+    "rootNamespace": "JajuchaSim.App.Tests",
+    "references": [
+        "JajuchaSim.App",
+        "JajuchaSim.Core",
+        "JajuchaSim.Course",
+        "JajuchaSim.Vehicle",
+        "JajuchaSim.Bridge",
+        "JajuchaSim.Sensors",
+        "JajuchaSim.Scenario",
+        "JajuchaSim.MapEditor",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

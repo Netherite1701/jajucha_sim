@@ -93,3 +93,40 @@ snapshot undo/redo, event log panel, and sensor-camera debug-layer exclusion.
 
 Manual runs and batch runs produce identical official results (same
 Scenario → ScoreManager → RunResult path).
+## Step 11 — Workflow / scene / bootstrap tests
+
+New assembly `JajuchaSim.App` (runtime) + `JajuchaSim.App.EditModeTests` +
+`JajuchaSim.App.PlayModeTests`:
+
+**EditMode**
+- `BootstrapResultTests` — Success/FailedSystem/ErrorCode/Message + readable
+  display.
+- `ApplicationConfigTests` — defaults, JSON load, normalization, command-line
+  overrides (`--course/--mode/--simulation-speed/--no-debug-ui/--batch-config`),
+  mode parsing.
+- `RuntimeDataPathsTests` — writable data root, sub-directories, course
+  resolution (finds `Courses/template_course.json` next to the project root).
+- `TemplateCourseTests` — template course loads, has straight+curve road,
+  boundary lines, tunnel/ramp/obstacle/slow sign/start signal, start/finish/
+  slow-zone triggers, two speed terminals, and zero validation errors.
+- `SceneHierarchyValidationTests` — loads `JajuchaSimulator.unity` and verifies
+  the fixed hierarchy, exactly-one SimulationManager / observer camera / bridge
+  / vehicle / sensors / map editor, wired references, and required layers
+  (Step 11.28).
+
+**PlayMode**
+- `WorkflowIntegrationTests` — programmatic bootstrap: success + course load,
+  missing-course readable failure, vehicle spawn, bridge readiness, first
+  camera frame, reset lifecycle, explicit mode transitions, scene validation
+  (Step 11.51).
+- `SceneBootstrapPlayModeTests` — loads the authoritative scene and verifies
+  bootstrap reaches READY, Drive mode starts the simulation, observer + bridge
+  exist, and MapEditor mode pauses (Step 11.51).
+
+**Python**
+- `python/tests/test_examples.py` — `jchm`/`jchm_sim` imports, all examples and
+  `python/user/main.py` compile (`py_compile`), and a readable connection-error
+  behavior check (Step 11.52).
+
+Verification (Step 11): Unity EditMode **473/473**, PlayMode **48/48**, Python
+**29/29**, 0 project-code warnings.
