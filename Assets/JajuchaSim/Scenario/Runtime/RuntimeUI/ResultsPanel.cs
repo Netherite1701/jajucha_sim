@@ -148,16 +148,62 @@ namespace JajuchaSim.Scenario
                 speedLine = $"Speed Measurement    {g.AverageSpeedCmS:0.0} cm/s";
             }
 
-            _contentText.text =
-                "RUN COMPLETE\n\n" +
-                $"Status               {status}\n" +
-                $"Time                 {session.ElapsedSec:0.00} s\n" +
-                $"Collisions           {session.Collisions.Count}\n" +
-                $"False Start          {(session.FalseStart ? "YES" : "No")}\n\n" +
-                zoneLine + "\n" +
-                zoneMax + "\n" +
-                speedLine + "\n" +
-                finishLine;
+            var sb = new System.Text.StringBuilder();
+            sb.AppendLine($"Status               {status}");
+            sb.AppendLine($"Time                 {session.ElapsedSec:0.00} s");
+            sb.AppendLine();
+            sb.AppendLine($"Base Score           {score.BaseScore:0.#}");
+
+            // Penalties breakdown (Step 10.22).
+            if (session.Penalties.Count == 0)
+            {
+                sb.AppendLine("Penalties            0");
+            }
+            else
+            {
+                foreach (var p in session.Penalties)
+                {
+                    string label = LabelForPenalty(p);
+                    sb.AppendLine($"{label,-20} -{p.Value:0.#}");
+                }
+            }
+
+            sb.AppendLine();
+            sb.AppendLine($"Final Score          {score.Score:0.##}");
+
+            // Speed terminal official result (Step 10.11/10.22).
+            foreach (var m in session.Measurements)
+            {
+                sb.AppendLine();
+                sb.AppendLine($"Speed Terminal       {m.AverageSpeedCmS:0.00} cm/s");
+                sb.AppendLine($"(d={m.DistanceCm:0.0} cm, t1={m.StartTime:0.000}, t2={m.EndTime:0.000})");
+            }
+
+            sb.AppendLine();
+            sb.AppendLine($"Collisions           {session.Collisions.Count}");
+            sb.AppendLine($"Line Contacts        {session.LineContactCount}");
+            sb.AppendLine($"Course Departures    {session.CourseDepartureCount}");
+            sb.AppendLine($"False Start          {(session.FalseStart ? "YES" : "No")}");
+
+            sb.AppendLine();
+            sb.AppendLine(zoneLine);
+            sb.AppendLine(zoneMax);
+            sb.AppendLine(speedLine);
+            sb.AppendLine(finishLine);
+
+            // Objectives (Step 10.22: Start/Slow Zone/Tunnel/Obstacle/Speed Test/Finish).
+            if (session.Objectives.Count > 0)
+            {
+                sb.AppendLine();
+                sb.AppendLine("OBJECTIVES");
+                foreach (var o in session.Objectives)
+                {
+                    string suffix = o.Failed ? $"   -{o.Penalty:0.#}" : "";
+                    sb.AppendLine($"{o.Id,-20} {o.StatusText}{suffix}");
+                }
+            }
+
+            _contentText.text = "RUN COMPLETE\n\n" + sb.ToString();
 
             _detailsText.text = _detailsVisible ? BuildDetails() : "";
         }
@@ -192,10 +238,29 @@ namespace JajuchaSim.Scenario
             {
                 sb.AppendLine("PENALTIES");
                 foreach (var p in session.Penalties)
-                    sb.AppendLine($"  {p.RuleId}: {p.Reason} ({p.Value:0.#})");
+                    sb.AppendLine($"  {p.SimulationTime:0.00}  {LabelForPenalty(p)}          -{p.Value:0.#}");
             }
 
             return sb.Length == 0 ? "(no raw measurements)" : sb.ToString();
+        }
+
+        /// <summary>Human label for a penalty record (Step 10.23 detailed log).</summary>
+        private static string LabelForPenalty(PenaltyRecord p)
+        {
+            if (!string.IsNullOrEmpty(p.EventType))
+            {
+                switch (p.EventType)
+                {
+                    case "line_contact": return "Line Contact";
+                    case "collision": return $"Collision {p.TargetId}";
+                    case "course_departure": return "Course Departure";
+                    case "false_start": return "False Start";
+                    case "objective_failure": return $"{p.TargetId} Objective";
+                    case "timeout": return "Timeout";
+                    case "speed_violation": return "Speed Violation";
+                }
+            }
+            return string.IsNullOrEmpty(p.TargetId) ? p.RuleId : $"{p.RuleId} {p.TargetId}";
         }
 
         // ---- UI helpers ------------------------------------------------

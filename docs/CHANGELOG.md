@@ -2,6 +2,43 @@
 
 ## [Unreleased]
 
+### Step 10 — Competition Scoring + Automated Testing
+
+Combined Competition Evaluation System: scoring + batch testing + reproducible
+runs. Manual runs and automated tests use exactly the same scoring path.
+
+- `ScoringConfig` — configurable base score + penalties (line contact, course
+  departure, collision, false start, objective failure, timeout);
+  Final Score = Base Score − Penalties
+- Road grid gained a boundary-line layer (`SetLine`/`HasLine`, JSON `lines`)
+  for footprint-based line-contact detection
+- `LineContactRule` — 4-corner + centre footprint sampling, debounced
+  violation episodes (not one penalty per tick)
+- `CourseDepartureRule` — majority-of-footprint-outside-road → debounced
+  COURSE_DEPARTURE
+- Objective system — `ObjectiveDefinition`/`ObjectiveRule` with states
+  Pending/Active/Passed/Failed/Skipped; Trigger/PassStructure/AvoidObject/
+  SlowZone/SpeedPair/Finish types; per-objective penalty overrides; missing
+  terminal measurement fails the objective at finish/timeout
+- Structured `PenaltyRecord` (RuleId, EventType, Points, SimulationTime,
+  TargetId, Description)
+- `RunResultJson` extended — baseScore, objectives, speedMeasurements
+  (pass/fail), lineContacts, courseDepartures, nested `violations`, event log
+- New `JajuchaSim.Testing` assembly:
+  `TestRunner`, `BatchRunner`, `BatchSummary`, `PassCriteria`,
+  `RegressionReport`, `CommandRecorder`/`CommandReplay`, `FailureDiagnostics`,
+  `ScenarioRunSnapshot`, `DebugReRun`, `ScenarioRunDriver`
+- `ScoringPanel` runtime HUD (current score, penalties, objective states,
+  penalty toast); `ResultsPanel` upgraded with base/final score, penalty
+  breakdown, speed terminal, objectives
+- Map editor SCORING section (runtime-editable base score + penalty values)
+- Tests: LineContact/CourseDeparture/Objective/ScoringConfig/ScoringPanel +
+  TestRunner/BatchRunner/CommandRecorder/FailureDiagnostics/ScenarioRunSnapshot/
+  DebugReRun (EditMode); ScoreResultExport extended
+
+Verification: EditMode **434/434**, PlayMode **37/37**, Python **23/23**,
+0 project-code warnings.
+
 ### Step 8 — Scenario, Timing, and Scoring System
 
 Turned the simulator into a complete competition/test environment. The

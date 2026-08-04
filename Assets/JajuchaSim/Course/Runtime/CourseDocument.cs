@@ -46,6 +46,15 @@ namespace JajuchaSim.Course
         public bool HasRoad(GridCoordinate coord) => Grid.HasRoad(coord);
 
         // ================================================================
+        //  Boundary lines (Step 10 — road-surface markings)
+        // ================================================================
+
+        public void SetLine(GridCoordinate coord) => Grid.SetLine(coord);
+        public void SetLine(IEnumerable<GridCoordinate> coords) => Grid.SetLine(coords);
+        public void ClearLine(GridCoordinate coord) => Grid.ClearLine(coord);
+        public bool HasLine(GridCoordinate coord) => Grid.HasLine(coord);
+
+        // ================================================================
         //  Structures
         // ================================================================
 
@@ -346,10 +355,12 @@ namespace JajuchaSim.Course
         /// </summary>
         public void RebuildGridLayers()
         {
-            // Preserve road
+            // Preserve road + boundary lines
             var roads = Grid.AllRoadTiles().ToList();
+            var lines = Grid.AllLineTiles().ToList();
             Grid.ClearAll();
             foreach (var r in roads) Grid.SetRoad(r);
+            foreach (var l in lines) Grid.SetLine(l);
 
             foreach (var s in _structures)
                 foreach (var c in s.Region.ToCoordinates())
@@ -374,6 +385,7 @@ namespace JajuchaSim.Course
             {
                 tileSizeCm = Grid.TileSizeCm,
                 road = Grid.AllRoadTiles().Select(CoordPair.FromGrid).ToArray(),
+                lines = Grid.AllLineTiles().Select(CoordPair.FromGrid).ToArray(),
                 structures = _structures.Select(ToStructureEntry).ToArray(),
                 objects = _objects.Select(ToObjectEntry).ToArray(),
                 triggers = _triggers.Select(ToTriggerEntry).ToArray()
@@ -390,6 +402,12 @@ namespace JajuchaSim.Course
             {
                 foreach (var p in data.road)
                     doc.Grid.SetRoad(p.ToGrid());
+            }
+
+            if (data.lines != null)
+            {
+                foreach (var p in data.lines)
+                    doc.Grid.SetLine(p.ToGrid());
             }
 
             if (data.structures != null)
@@ -521,6 +539,8 @@ namespace JajuchaSim.Course
             var doc = new CourseDocument(grid.TileSizeCm);
             foreach (var r in grid.AllRoadTiles())
                 doc.Grid.SetRoad(r);
+            foreach (var l in grid.AllLineTiles())
+                doc.Grid.SetLine(l);
 
             foreach (var kv in grid.AllStructures())
             {

@@ -107,7 +107,9 @@ namespace JajuchaSim.Scenario
                     $"Slow zone {m.TriggerId} exceeded {m.AllowedMaxCmS:0.#} cm/s (max {m.MaxSpeedCmS:0.#})",
                     penalty,
                     Ctx.Tick,
-                    Ctx.Time));
+                    Ctx.Time,
+                    "speed_violation",
+                    m.TriggerId));
             }
             // Fail mode: recorded as FAIL in the result (no immediate abort).
         }

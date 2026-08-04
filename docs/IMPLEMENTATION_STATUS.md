@@ -214,7 +214,7 @@ round-trip, legacy load, rule + event log + debug panel).
 
 ## Steps 9–10 (Scenario/scoring, testing/batch)
 
-**Status: Scenario/scoring complete; testing/batch not started.**
+**Status: Scenario/scoring complete; testing/batch NOT STARTED.**
 
 ### Step 8 — Scenario, Timing, and Scoring System (this task)
 
@@ -252,8 +252,60 @@ Tests: `RunTimerTests`, `ScenarioManagerTests`, `SlowZoneRuleTests`,
 `ScenarioPanelTests` (EditMode). Verification: EditMode 381/381, PlayMode
 37/37, Python 23/23.
 
-### Testing/batch
+## Step 10 — Competition Scoring + Automated Testing
 
-Not started. See `docs/SCORING.md`, `docs/TESTING.md`.
-Step 9 builds on Step-7/8 triggers (start signal, slow-zone rules, terminal
-speed results, collisions, course completion, results panel).
+**Status: Complete**
+
+Built the combined Competition Evaluation System on top of Steps 8/9:
+
+- **ScoringConfig** — configurable base score + penalty values
+  (line contact, collision, false start, objective failure, course departure,
+  timeout). Final Score = Base Score − Penalties (Step 10.1/10.18).
+- **Road/line distinction** — `CourseGrid` gained a boundary-line layer
+  (`SetLine/HasLine`, serialized as `lines`); a line tile is still road, but
+  scoring can detect contact with it (Step 10.2/10.35).
+- **LineContactRule** — footprint (centre + 4 corners) sampling against line
+  tiles; debounced violation episodes (not touching → touching = one
+  violation; staying = same; leaving = episode ends) (Step 10.3).
+- **CourseDepartureRule** — footprint majority-outside-road → debounced
+  COURSE_DEPARTURE episode (Step 10.8).
+- **Objective system** — `ObjectiveDefinition` (id/type/targetId/pairId/
+  maxSpeed/failurePenalty/required), states Pending/Active/Passed/Failed/
+  Skipped, `ObjectiveRule` evaluating Trigger / PassStructure / AvoidObject /
+  SlowZone / SpeedPair / Finish objectives; per-objective penalty overrides;
+  missing terminal measurement → objective FAILED at finish/timeout
+  (Step 10.4–10.7, 10.13, 10.19, 10.37).
+- **Structured PenaltyRecord** — RuleId, EventType, Points, SimulationTime,
+  TargetId, Description (Step 10.16).
+- **RunResult / per-run JSON** — baseScore, final score, objectives,
+  speedMeasurements with pass/fail result, lineContacts, courseDepartures,
+  nested `violations`, full event log (Step 10.30).
+- **TestRunner / BatchRunner** — single automated test and batch runs that use
+  the exact same Scenario → ScoreManager → RunResult path; deterministic seeds;
+  BatchSummary (avg/best/worst, perfect runs, completed, timeouts, line
+  violations, collisions, objective failures); pass criteria SEPARATE from the
+  competition score (Step 10.25–10.28); RegressionReport (Step 10.29); batch
+  CSV export (Step 10.31).
+- **CommandRecorder/CommandReplay** — motor-command trace + replay (Step
+  10.32/10.33).
+- **FailureDiagnostics** — event log, penalty log, motor trace, final pose,
+  objective states, camera/depth frame slots; JSON save/load (Step 10.32).
+- **ScenarioRunSnapshot / DebugReRun** — same course + scenario + seed re-run
+  at 1× speed (Step 10.33).
+- **ScoringPanel** — live runtime scoring HUD (current score, penalties,
+  objective states, penalty toast) (Step 10.20/10.21); ResultsPanel upgraded
+  to show base/final score, penalty breakdown, speed terminal, objectives
+  (Step 10.22/10.23).
+- **Map editor SCORING section** — runtime-editable base score and penalty
+  values wired into `BuildScenarioDefinition` (Step 10.34).
+
+New assembly `JajuchaSim.Testing` (runtime) + `JajuchaSim.Testing.EditModeTests`.
+
+Tests (EditMode, added for Step 10): `LineContactRuleTests`,
+`CourseDepartureRuleTests`, `ObjectiveRuleTests`, `ScoringConfigTests`,
+`ScoringPanelTests`, `TestRunnerTests`, `BatchRunnerTests`,
+`CommandRecorderTests`, `FailureDiagnosticsTests`, `ScenarioRunSnapshotTests`,
+`DebugReRunTests`; `ScoreResultExportTests` extended for the new JSON fields.
+
+Verification: EditMode 434/434, PlayMode 37/37, Python 23/23, 0 project-code
+warnings.

@@ -39,7 +39,9 @@ namespace JajuchaSim.Scenario
                     $"Collision with {e.ObjectId}",
                     cfg.penalty,
                     e.SimulationTick,
-                    e.SimulationTime));
+                    e.SimulationTime,
+                    "collision",
+                    e.ObjectId));
             }
         }
 

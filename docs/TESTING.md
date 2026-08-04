@@ -66,11 +66,30 @@ snapshot undo/redo, event log panel, and sensor-camera debug-layer exclusion.
 
 ## Planned (Steps 9–10)
 
+**Step 10 implemented** — the combined Competition Evaluation System:
+
 - Controller-agnostic `RunResult` (status, elapsed time, base/final score,
   penalties, line violations, collisions, objective results, two-terminal
-  speed, timeout/disconnect reason).
-- Batch runner (single/batch, deterministic seed, timeout, export, rerun).
-- Failure diagnostics (latest frames, event/penalty/motor history, final pose).
-- Manual run and batch run produce identical official results (same
-  Scenario → ScoreManager → RunResult path).
-- Command recording/replay of `jchm.control.set_motor(left, right, speed)`.
+  speed with pass/fail, timeout reason).
+- `TestRunner.RunSingle` — Reset → Start → external controller drives →
+  Scenario ends → ScoreManager finalizes → RunResult → TEST PASS/FAIL from
+  pass criteria. Uses the same scoring path as manual runs.
+- `BatchRunner` — deterministic seed per run (baseSeed+i), `BatchSummary`
+  (runs, average/best/worst score, perfect runs, completed, timeouts, line
+  violations, collisions, objective failures, pass rate), batch CSV export.
+- `PassCriteria` — `mustComplete`, `minimumScore`, `maximumCollisions`,
+  `maximumLineContacts`, `requiredObjectives`; SEPARATE from the competition
+  score (a run can score 85 and still FAIL a test with minimumScore=90).
+- `RegressionReport` — baseline vs current batch comparison from official
+  RunResults only (no controller internals).
+- `CommandRecorder`/`CommandReplay` — motor-command trace (`set_motor(left,
+  right, speed)`) + replay.
+- `FailureDiagnostics` — event log, penalty log, motor trace, final pose,
+  objective states, camera/depth frame slots; JSON save/load.
+- `ScenarioRunSnapshot`/`DebugReRun` — same course + scenario + seed re-run
+  at 1× speed with full runtime UI.
+- Per-run JSON (`RunResultJson`) with objectives/speedMeasurements/base score,
+  and batch CSV (Step 10.31).
+
+Manual runs and batch runs produce identical official results (same
+Scenario → ScoreManager → RunResult path).

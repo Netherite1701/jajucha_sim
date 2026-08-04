@@ -111,6 +111,15 @@ namespace JajuchaSim.Scenario.Tests
             Assert.AreEqual(manager.Session.Collisions.Count, json.collisions);
             Assert.AreEqual(manager.Score.Result.TotalPenalty, json.totalPenalty, 1e-4f);
             Assert.AreEqual(manager.Score.Result.Score, json.score, 1e-4f);
+
+            // Step 10.30: nested violations counters + speed measurements.
+            Assert.IsNotNull(json.violations);
+            Assert.AreEqual(manager.Session.Collisions.Count, json.violations.collisions);
+            Assert.AreEqual(manager.Session.LineContactCount, json.violations.lineContacts);
+            Assert.AreEqual(manager.Session.Measurements.Count, json.speedMeasurements.Length);
+            Assert.AreEqual("speed_pair_01", json.speedMeasurements[0].pairId);
+            Assert.AreEqual("pass", json.speedMeasurements[0].result); // no configured limit
+            Assert.AreEqual(manager.Session.Objectives.Count, json.objectives.Length);
         }
 
         // ---- 8.5: scenario definition JSON round-trip -------------------

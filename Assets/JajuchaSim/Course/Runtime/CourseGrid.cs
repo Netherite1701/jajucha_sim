@@ -20,6 +20,15 @@ namespace JajuchaSim.Course
     public sealed class CourseGrid
     {
         private readonly HashSet<GridCoordinate> _road = new HashSet<GridCoordinate>();
+
+        /// <summary>
+        /// Boundary-line tiles (Step 10): painted on top of the road surface.
+        /// A line tile is still road (drivable); it also carries a forbidden
+        /// line used by line-contact scoring. Map geometry ≠ competition rules:
+        /// the scorer decides what a line contact costs.
+        /// </summary>
+        private readonly HashSet<GridCoordinate> _lines = new HashSet<GridCoordinate>();
+
         private readonly Dictionary<GridCoordinate, StructureType> _structures =
             new Dictionary<GridCoordinate, StructureType>();
         private readonly Dictionary<GridCoordinate, ObjectType> _objects =
@@ -60,6 +69,32 @@ namespace JajuchaSim.Course
         public IEnumerable<GridCoordinate> AllRoadTiles() => _road;
 
         public int RoadTileCount => _road.Count;
+
+        // ================================================================
+        //  Boundary-line layer (Step 10 — part of the road surface)
+        // ================================================================
+
+        /// <summary>Mark one or more tiles as carrying a boundary line.</summary>
+        public void SetLine(GridCoordinate coord) => _lines.Add(coord);
+        public void SetLine(IEnumerable<GridCoordinate> coords)
+        {
+            foreach (var c in coords) _lines.Add(c);
+        }
+
+        /// <summary>Remove the boundary line from one or more tiles.</summary>
+        public void ClearLine(GridCoordinate coord) => _lines.Remove(coord);
+        public void ClearLine(IEnumerable<GridCoordinate> coords)
+        {
+            foreach (var c in coords) _lines.Remove(c);
+        }
+
+        /// <summary>Does the given tile carry a boundary line?</summary>
+        public bool HasLine(GridCoordinate coord) => _lines.Contains(coord);
+
+        /// <summary>All tiles that carry a boundary line.</summary>
+        public IEnumerable<GridCoordinate> AllLineTiles() => _lines;
+
+        public int LineTileCount => _lines.Count;
 
         // ================================================================
         //  Structure layer
@@ -180,6 +215,7 @@ namespace JajuchaSim.Course
         public void ClearAll()
         {
             _road.Clear();
+            _lines.Clear();
             _structures.Clear();
             _objects.Clear();
             _triggers.Clear();
@@ -225,13 +261,15 @@ namespace JajuchaSim.Course
         }
 
         /// <summary>
-        /// Returns a compact summary of all four layers at the given tile.
+        /// Returns a compact summary of all four layers (plus boundary line)
+        /// at the given tile.
         /// </summary>
         public TileInfo GetTileInfo(GridCoordinate coord)
         {
             return new TileInfo(
                 coord,
                 HasRoad(coord),
+                HasLine(coord),
                 GetStructure(coord),
                 GetObject(coord),
                 GetTrigger(coord)
@@ -246,6 +284,10 @@ namespace JajuchaSim.Course
     {
         public GridCoordinate Coordinate { get; }
         public bool Road { get; }
+
+        /// <summary>True when the tile carries a boundary line (Step 10).</summary>
+        public bool Line { get; }
+
         public StructureType Structure { get; }
         public ObjectType Object { get; }
         public TriggerType Trigger { get; }
@@ -256,15 +298,27 @@ namespace JajuchaSim.Course
             StructureType structure,
             ObjectType obj,
             TriggerType trigger)
+            : this(coordinate, road, false, structure, obj, trigger)
+        {
+        }
+
+        public TileInfo(
+            GridCoordinate coordinate,
+            bool road,
+            bool line,
+            StructureType structure,
+            ObjectType obj,
+            TriggerType trigger)
         {
             Coordinate = coordinate;
             Road = road;
+            Line = line;
             Structure = structure;
             Object = obj;
             Trigger = trigger;
         }
 
         public override string ToString()
-            => $"Tile{Coordinate}: Road={Road}, Struct={Structure}, Obj={Object}, Trig={Trigger}";
+            => $"Tile{Coordinate}: Road={Road}, Line={Line}, Struct={Structure}, Obj={Object}, Trig={Trigger}";
     }
 }
