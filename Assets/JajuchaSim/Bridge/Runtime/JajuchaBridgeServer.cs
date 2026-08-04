@@ -1,4 +1,5 @@
 using JajuchaSim.Core;
+using JajuchaSim.Scenario;
 using JajuchaSim.Sensors;
 using JajuchaSim.Vehicle;
 using UnityEngine;
@@ -112,6 +113,15 @@ namespace JajuchaSim.Bridge
 
         private void Update()
         {
+            // Lazily bind the scenario manager once a ScenarioPanel exists
+            // (panel may create its manager in Start, after this Awake).
+            if (_dispatcher != null && _dispatcher.Scenario == null)
+            {
+                var panel = FindFirstObjectByType<ScenarioPanel>();
+                if (panel != null && panel.Manager != null)
+                    _dispatcher.Scenario = panel.Manager;
+            }
+
             if (_dispatcher != null)
             {
                 _dispatcher.ProcessQueue();

@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.IO;
 using JajuchaSim.Core;
 using JajuchaSim.Course;
+using JajuchaSim.Scenario;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -40,6 +42,20 @@ namespace JajuchaSim.MapEditor
         private Text _previewText;
         private bool _uiBuilt;
         private string _savePath;
+
+        // ---- Scenario configuration (Step 8.44–8.46) ----
+        private ScenarioPanel _scenarioPanel;
+        private ScenarioDefinition _scenarioDefinition;
+        private string _startTriggerId = "";
+        private string _finishTriggerId = "";
+        private float _maxTimeSec = 180f;
+        private float _slowZoneMaxCmS = 20f;
+        private StartMode _scenarioStartMode = StartMode.NormalSignal;
+        private Text _startTriggerLabel;
+        private Text _finishTriggerLabel;
+        private Text _maxTimeLabel;
+        private Text _slowZoneLabel;
+        private Text _startModeLabel;
 
         public MapEditorSession Session => _session;
         public CourseDocument Document => _session?.Document;
@@ -249,6 +265,8 @@ namespace JajuchaSim.MapEditor
                     "EVENTS\n" + string.Join("\n", lines) +
                     "\n\n" + speedBlock;
             }
+
+            RefreshScenarioLabels();
         }
 
         private string BuildInspector()
@@ -384,6 +402,8 @@ namespace JajuchaSim.MapEditor
             Toggle(canvasGo.transform, "Triggers", _session.ShowTriggers, v => { _session.ShowTriggers = v; RefreshVisuals(); }, ref lx, ref ly);
             Toggle(canvasGo.transform, "Trigger Overlay (Drive)", _session.ShowTriggerOverlay, v => { _session.ShowTriggerOverlay = v; RefreshVisuals(); }, ref lx, ref ly);
 
+            BuildScenarioSection(canvasGo.transform);
+
             _uiBuilt = true;
         }
 
@@ -443,6 +463,7 @@ namespace JajuchaSim.MapEditor
                 }
 
                 WireVehiclePose();
+                EnsureScenarioPanel();
 
                 if (_sim.State == SimulationState.Ready || _sim.State == SimulationState.Paused)
                     _sim.StartSimulation();
@@ -518,6 +539,242 @@ namespace JajuchaSim.MapEditor
                 _sim.Pause();
             _overlay.ShowTriggers = _session.ShowTriggers;
             RefreshVisuals();
+        }
+
+        // ================================================================
+        //  Scenario section (Step 8.44–8.46, 8.56)
+        // ================================================================
+
+        /// <summary>
+        /// Build the SCENARIO configuration panel (right side): trigger
+        /// selectors (from IDs already placed on the map — Step 8.45), max
+        /// time, slow-zone speed, start mode, and run controls.
+        /// </summary>
+        private void BuildScenarioSection(Transform canvasParent)
+        {
+            float y = -300f;
+            float x = -10f;
+            const float width = 250f;
+
+            var header = MakeText(canvasParent, "SCENARIO", new Vector2(x, y), new Vector2(width, 20), TextAnchor.UpperRight, 13);
+            var hrt = header.GetComponent<RectTransform>();
+            hrt.anchorMin = new Vector2(1, 0);
+            hrt.anchorMax = new Vector2(1, 0);
+            hrt.pivot = new Vector2(1, 0);
+            hrt.anchoredPosition = new Vector2(x, y);
+            header.fontStyle = FontStyle.Bold;
+            y -= 24;
+
+            _startTriggerLabel = ValueRow(canvasParent, "Start Trigger", x, ref y, width, CycleStartTrigger);
+            _finishTriggerLabel = ValueRow(canvasParent, "Finish Trigger", x, ref y, width, CycleFinishTrigger);
+            _maxTimeLabel = ValueRow(canvasParent, "Max Time", x, ref y, width, CycleMaxTime);
+            _slowZoneLabel = ValueRow(canvasParent, "Slow Max Speed", x, ref y, width, CycleSlowZoneSpeed);
+            _startModeLabel = ValueRow(canvasParent, "Start Mode", x, ref y, width, CycleStartMode);
+
+            y -= 6;
+            SmallButton(canvasParent, "Start Run", new Vector2(x - width + 90, y), new Vector2(84, 26), () => OnScenarioStartRun());
+            SmallButton(canvasParent, "Abort Run", new Vector2(x - 90, y), new Vector2(84, 26), () => OnScenarioAbortRun());
+            y -= 30;
+            SmallButton(canvasParent, "RED", new Vector2(x - width + 66, y), new Vector2(54, 22), () => OnScenarioSignalPreview(StartSignalState.Red));
+            SmallButton(canvasParent, "YELLOW", new Vector2(x - width + 126, y), new Vector2(62, 22), () => OnScenarioSignalPreview(StartSignalState.Yellow));
+            SmallButton(canvasParent, "GREEN", new Vector2(x - 56, y), new Vector2(54, 22), () => OnScenarioSignalPreview(StartSignalState.Green));
+
+            RefreshScenarioLabels();
+        }
+
+        private void RefreshScenarioLabels()
+        {
+            if (_startTriggerLabel != null)
+                _startTriggerLabel.text = string.IsNullOrEmpty(_startTriggerId) ? "—" : _startTriggerId;
+            if (_finishTriggerLabel != null)
+                _finishTriggerLabel.text = string.IsNullOrEmpty(_finishTriggerId) ? "—" : _finishTriggerId;
+            if (_maxTimeLabel != null)
+                _maxTimeLabel.text = $"{_maxTimeSec:0} s";
+            if (_slowZoneLabel != null)
+                _slowZoneLabel.text = $"{_slowZoneMaxCmS:0} cm/s";
+            if (_startModeLabel != null)
+                _startModeLabel.text = _scenarioStartMode == StartMode.NormalSignal ? "Normal Signal" : "Immediate";
+        }
+
+        private List<string> GetTriggerIds(TriggerType type)
+        {
+            var ids = new List<string>();
+            if (_session?.Document == null) return ids;
+            foreach (var t in _session.Document.Triggers)
+                if (t.Type == type && !ids.Contains(t.Id))
+                    ids.Add(t.Id);
+            return ids;
+        }
+
+        private void CycleStartTrigger()
+        {
+            var ids = GetTriggerIds(TriggerType.Start);
+            if (ids.Count == 0) { _startTriggerId = ""; return; }
+            int idx = ids.IndexOf(_startTriggerId);
+            _startTriggerId = ids[(idx + 1) % ids.Count];
+            RefreshScenarioLabels();
+        }
+
+        private void CycleFinishTrigger()
+        {
+            var ids = GetTriggerIds(TriggerType.Finish);
+            if (ids.Count == 0) { _finishTriggerId = ""; return; }
+            int idx = ids.IndexOf(_finishTriggerId);
+            _finishTriggerId = ids[(idx + 1) % ids.Count];
+            RefreshScenarioLabels();
+        }
+
+        private void CycleMaxTime()
+        {
+            _maxTimeSec = _maxTimeSec >= 240f ? 30f : _maxTimeSec + 30f;
+            RefreshScenarioLabels();
+        }
+
+        private void CycleSlowZoneSpeed()
+        {
+            _slowZoneMaxCmS = _slowZoneMaxCmS >= 50f ? 5f : _slowZoneMaxCmS + 5f;
+            RefreshScenarioLabels();
+        }
+
+        private void CycleStartMode()
+        {
+            _scenarioStartMode = _scenarioStartMode == StartMode.NormalSignal ? StartMode.Immediate : StartMode.NormalSignal;
+            RefreshScenarioLabels();
+        }
+
+        /// <summary>Build the ScenarioDefinition from the editor fields (Step 8.5).</summary>
+        private ScenarioDefinition BuildScenarioDefinition()
+        {
+            var def = new ScenarioDefinition
+            {
+                name = "Competition Run",
+                courseId = "course",
+                scenarioId = "scenario",
+                startTriggerId = _startTriggerId,
+                finishTriggerId = _finishTriggerId,
+                maxRunTimeSec = _maxTimeSec,
+                startMode = _scenarioStartMode,
+                startTimingMode = StartTimingMode.SignalGreen,
+                redDurationSec = 2f,
+                yellowDurationSec = 1f,
+                autoSaveResults = true,
+                runsDirectory = "Runs"
+            };
+
+            def.slowZones.Clear();
+            foreach (var t in _session.Document.Triggers)
+                if (t.Type == TriggerType.SlowZone)
+                    def.slowZones.Add(new SlowZoneConfig { triggerId = t.Id, maxSpeedCmS = _slowZoneMaxCmS });
+            if (def.slowZones.Count == 0)
+                def.slowZones.Add(new SlowZoneConfig { triggerId = "slow_zone_01", maxSpeedCmS = _slowZoneMaxCmS });
+
+            foreach (var o in _session.Document.Objects)
+                if (o.Type == ObjectType.StartSignal)
+                {
+                    def.startSignalObjectId = o.Id;
+                    break;
+                }
+
+            return def;
+        }
+
+        /// <summary>Create (once) and wire the ScenarioPanel for the current course.</summary>
+        private void EnsureScenarioPanel()
+        {
+            if (_scenarioPanel == null)
+            {
+                var go = new GameObject("ScenarioPanel");
+                go.transform.SetParent(transform, false);
+                _scenarioPanel = go.AddComponent<ScenarioPanel>();
+                _scenarioPanel.ShowControls = true;
+                _scenarioPanel.ShowSignalOverride = true;
+            }
+            _scenarioDefinition = BuildScenarioDefinition();
+            _scenarioPanel.Configure(_scenarioDefinition, _session.Document);
+        }
+
+        private void OnScenarioStartRun()
+        {
+            EnsureScenarioPanel();
+            if (_scenarioPanel == null || _scenarioPanel.Manager == null) return;
+            _scenarioPanel.StartRun();
+        }
+
+        private void OnScenarioAbortRun()
+        {
+            if (_scenarioPanel?.Manager == null) return;
+            _scenarioPanel.AbortRun();
+            // Safety: stop vehicle propulsion (Step 8.50).
+            StopVehiclePropulsion();
+        }
+
+        private void OnScenarioSignalPreview(StartSignalState state)
+        {
+            if (_scenarioPanel?.Manager == null) return;
+            _scenarioPanel.SetSignalDebug(state);
+        }
+
+        private void StopVehiclePropulsion()
+        {
+            var rbs = FindObjectsByType<Rigidbody>(FindObjectsSortMode.None);
+            foreach (var rb in rbs)
+            {
+                var n = rb.gameObject.name;
+                if (n.IndexOf("Jajucha", System.StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    n.IndexOf("Vehicle", System.StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    rb.linearVelocity = Vector3.zero;
+                    rb.angularVelocity = Vector3.zero;
+                }
+            }
+        }
+
+        // ---- Scenario UI helpers ---------------------------------------
+
+        /// <summary>A labeled value row with ◀/▶ cycle buttons.</summary>
+        private Text ValueRow(Transform parent, string label, float x, ref float y, float width, System.Action onCycle)
+        {
+            var rowGo = new GameObject("Row_" + label);
+            rowGo.transform.SetParent(parent, false);
+            var rrt = rowGo.AddComponent<RectTransform>();
+            rrt.anchorMin = new Vector2(1, 0);
+            rrt.anchorMax = new Vector2(1, 0);
+            rrt.pivot = new Vector2(1, 0);
+            rrt.anchoredPosition = new Vector2(x, y);
+            rrt.sizeDelta = new Vector2(width, 20);
+
+            var labelText = MakeText(rowGo.transform, "Label", new Vector2(-width, 0), new Vector2(width - 100, 20), TextAnchor.MiddleLeft, 11);
+            labelText.text = label + ":";
+            var lrt = labelText.GetComponent<RectTransform>();
+            lrt.anchorMin = new Vector2(1, 0);
+            lrt.anchorMax = new Vector2(1, 0);
+            lrt.pivot = new Vector2(1, 0);
+            lrt.anchoredPosition = new Vector2(-width, 0);
+
+            var prev = SmallButton(rowGo.transform, "◀", new Vector2(-78, 0), new Vector2(22, 18), onCycle);
+            var next = SmallButton(rowGo.transform, "▶", new Vector2(-10, 0), new Vector2(22, 18), onCycle);
+
+            var valueText = MakeText(rowGo.transform, "Value", new Vector2(-52, 0), new Vector2(40, 18), TextAnchor.MiddleCenter, 11);
+            var vrt = valueText.GetComponent<RectTransform>();
+            vrt.anchorMin = new Vector2(1, 0);
+            vrt.anchorMax = new Vector2(1, 0);
+            vrt.pivot = new Vector2(1, 0);
+            vrt.anchoredPosition = new Vector2(-52, 0);
+
+            y -= 24;
+            return valueText;
+        }
+
+        /// <summary>A small button anchored to the bottom-right of a canvas/panel.</summary>
+        private static GameObject SmallButton(Transform parent, string label, Vector2 pos, Vector2 size, System.Action onClick)
+        {
+            var go = MakeButton(parent, label, pos, size, onClick);
+            var rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(1, 0);
+            rt.anchorMax = new Vector2(1, 0);
+            rt.pivot = new Vector2(1, 0);
+            rt.anchoredPosition = pos;
+            return go;
         }
 
         // ---- UI helpers ------------------------------------------------

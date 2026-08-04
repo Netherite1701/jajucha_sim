@@ -214,6 +214,46 @@ round-trip, legacy load, rule + event log + debug panel).
 
 ## Steps 9–10 (Scenario/scoring, testing/batch)
 
+**Status: Scenario/scoring complete; testing/batch not started.**
+
+### Step 8 — Scenario, Timing, and Scoring System (this task)
+
+Built the competition/test environment on top of the Step-7 triggers:
+
+- `ScenarioManager` — explicit state machine (Idle → Ready → Countdown →
+  Running → Finished/Aborted), listens to trigger/terminal/collision events,
+  controls the start-signal sequence (RED → YELLOW → GREEN), starts/stops the
+  timer, finalizes results; never drives the vehicle or runs the ANN/FSM
+- `ScenarioDefinition` (JSON) — course-independent rules: start/finish
+  triggers, max run time, start-signal durations, start timing mode
+  (signal-green vs start-gate-crossing), slow-zone configs with
+  Fail/Penalty/Informational violation modes, false-start rule, scoring
+  enable, auto-save results
+- `RunSession` — per-run record (run id, course/scenario ids, start/end times,
+  events with SimulationTick+SimulationTime, slow-zone measurements, gate
+  measurements, penalties, collisions, final status)
+- Modular rules (`IRunRule`): `SlowZoneRule`, `CollisionRule`,
+  `FalseStartRule`, `SpeedGateRule`, `CompletionRule`
+- `RunTimer` driven by `SimulationClock` ticks (deterministic at 0.5×/2×/8×)
+- Collision recording with per-object debounce (`CollisionSessionTracker`,
+  physics callbacks → `VehicleCollisionEvent`)
+- Speed-gate pair measurements via Step-7 `SpeedMeasuredEvent`
+- Runtime `ScenarioPanel` (state/signal/elapsed/zone/collisions/last gate) +
+  `ResultsPanel` (RUN COMPLETE overlay with Run Again / Details / Export,
+  driving view stays visible)
+- Result JSON export + auto-save to `Runs/run_XXXX.json`, reload support
+- Map-editor SCENARIO section (start/finish trigger pickers from placed ids,
+  max time, slow-zone speed, start mode, signal preview RED/YELLOW/GREEN)
+- jchm_sim automation API: `start_run`, `abort_run`, `get_run_status`,
+  `get_result`, `wait_for_result(timeout)` (simulator-only, not student jchm)
+
+Tests: `RunTimerTests`, `ScenarioManagerTests`, `SlowZoneRuleTests`,
+`CollisionRuleTests`, `SpeedGateRuleTests`, `ScoreResultExportTests`,
+`ScenarioPanelTests` (EditMode). Verification: EditMode 381/381, PlayMode
+37/37, Python 23/23.
+
+### Testing/batch
+
 Not started. See `docs/SCORING.md`, `docs/TESTING.md`.
 Step 9 builds on Step-7/8 triggers (start signal, slow-zone rules, terminal
 speed results, collisions, course completion, results panel).

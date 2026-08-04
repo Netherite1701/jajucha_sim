@@ -104,6 +104,42 @@ class SimulatorBackend:
         self._ensure_connected()
         self._send_command("sim_reset", {})
 
+    # --- Scenario automation API (Step 8.36) ---
+
+    def sim_start_run(self):
+        """Start the scenario run (begin start signal sequence)."""
+        self._ensure_connected()
+        self._send_command("start_run", {})
+
+    def sim_abort_run(self):
+        """Abort the active scenario run."""
+        self._ensure_connected()
+        self._send_command("abort_run", {})
+
+    def sim_get_run_status(self) -> Dict[str, Any]:
+        """Get the current scenario run status."""
+        self._ensure_connected()
+        return self._send_command("get_run_status", {})
+
+    def sim_get_result(self) -> Dict[str, Any]:
+        """
+        Get the final run result.
+
+        Returns:
+            A dict containing the serialized result JSON under the "result"
+            key (already parsed). Raises RuntimeError if the run has not
+            finished yet.
+        """
+        self._ensure_connected()
+        response = self._send_command("get_result", {})
+        if not response.get("ok", False):
+            error = response.get("error", {})
+            code = error.get("code", "UNKNOWN")
+            msg = error.get("message", "No details")
+            raise RuntimeError(f"get_result failed: [{code}] {msg}")
+        result_json = response.get("payload", {}).get("result", "{}")
+        return json.loads(result_json)
+
     # --- Public API called by jchm.camera ---
 
     def get_image(self, location: str) -> np.ndarray:

@@ -1,12 +1,11 @@
 {
-    "name": "JajuchaSim.MapEditor",
-    "rootNamespace": "JajuchaSim.MapEditor",
+    "name": "JajuchaSim.Scenario",
+    "rootNamespace": "JajuchaSim.Scenario",
     "references": [
         "JajuchaSim.Core",
         "JajuchaSim.Course",
-        "JajuchaSim.Scenario",
-        "UnityEngine.UI",
-        "Unity.InputSystem"
+        "JajuchaSim.Vehicle",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
