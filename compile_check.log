@@ -1,0 +1,367 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/staging' branch; Version is '6000.3.20f1 (c9ba695d4f07) revision 13220457'; Using compiler version '194234433'; Build Type 'Release'
+OS: 'Windows 11  (10.0.26200) Core' Language: 'ko' Physical Memory: 32375 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+[Licensing::IpcConnector] Channel LicenseClient-user doesn't exist
+System  architecture: x64
+Process architecture: x64
+Date: 2026-08-04T08:22:47Z
+[Licensing::Module] Successfully launched the LicensingClient (PId: 8852)
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.20f1\Editor\Unity.exe
+-batchmode
+-quit
+-projectPath
+C:/tmp/agentctl-jajucha-friendly/runs/01KZ41ACZ4PKKH152VCY3FAGGE/tasks/task-11
+-logFile
+compile_check.log
+Successfully changed project path to: C:/tmp/agentctl-jajucha-friendly/runs/01KZ41ACZ4PKKH152VCY3FAGGE/tasks/task-11
+C:/tmp/agentctl-jajucha-friendly/runs/01KZ41ACZ4PKKH152VCY3FAGGE/tasks/task-11
+[UnityMemory] Configuration Parameters - Can be set up in boot.config
+    "memorysetup-temp-allocator-size-nav-mesh-worker=65536"
+    "memorysetup-temp-allocator-size-audio-worker=65536"
+    "memorysetup-temp-allocator-size-gfx=262144"
+    "memorysetup-allocator-temp-initial-block-size-main=262144"
+    "memorysetup-allocator-temp-initial-block-size-worker=262144"
+    "memorysetup-temp-allocator-size-background-worker=32768"
+    "memorysetup-temp-allocator-size-job-worker=262144"
+    "memorysetup-temp-allocator-size-preload-manager=33554432"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-temp-allocator-size-gi-baking-worker=262144"
+    "memorysetup-bucket-allocator-granularity=16"
+    "memorysetup-bucket-allocator-bucket-count=8"
+    "memorysetup-bucket-allocator-block-size=33554432"
+    "memorysetup-bucket-allocator-block-count=8"
+    "memorysetup-main-allocator-block-size=16777216"
+    "memorysetup-thread-allocator-block-size=16777216"
+    "memorysetup-gfx-main-allocator-block-size=16777216"
+    "memorysetup-gfx-thread-allocator-block-size=16777216"
+    "memorysetup-cache-allocator-block-size=4194304"
+    "memorysetup-typetree-allocator-block-size=2097152"
+    "memorysetup-profiler-bucket-allocator-granularity=16"
+    "memorysetup-profiler-bucket-allocator-bucket-count=8"
+    "memorysetup-profiler-bucket-allocator-block-size=33554432"
+    "memorysetup-profiler-bucket-allocator-block-count=8"
+    "memorysetup-profiler-allocator-block-size=16777216"
+    "memorysetup-profiler-editor-allocator-block-size=1048576"
+    "memorysetup-temp-allocator-size-main=16777216"
+    "memorysetup-job-temp-allocator-block-size=2097152"
+    "memorysetup-job-temp-allocator-block-size-background=1048576"
+    "memorysetup-job-temp-allocator-reduction-small-platforms=262144"
+    "memorysetup-temp-allocator-size-cloud-worker=32768"
+Player connection [20096]  Target information:
+
+Player connection [20096]  * "[IP] 192.168.219.104 [Port] 55504 [Flags] 2 [Guid] 2685492404 [EditorId] 2685492404 [Version] 1048832 [Id] WindowsEditor(7,DESKTOP-NETHERITE) [Debug] 1 [PackageName] WindowsEditor [ProjectName] Editor" 
+
+Player connection [20096] Host joined multi-casting on [225.0.0.222:54997]...
+Player connection [20096] Host joined alternative multi-casting on [225.0.0.222:34997]...
+Input System module state changed to: Initialized.
+[Physics::Module] Initialized fallback backend.
+[Physics::Module] Id: 0xdecafbad
+[Package Manager] Connected to IPC stream "Upm-15808" after 0.2 seconds.
+[Licensing::Module] Licensing is not yet initialized.
+Starting IPC server.
+Waiting for clients to connect on \\.\pipe\Unity-LicenseClient-user, press Ctrl-C to exit.
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-user" at "2026-08-04T08:22:48.0765657Z"
+[Licensing::Client] Code 10 while verifying Licensing Client signature (process Id: 8852, path: "C:/Program Files/Unity/Hub/Editor/6000.3.20f1/Editor/Data/Resources/Licensing/Client/Unity.Licensing.Client.exe")
+[Licensing::Module] LicensingClient has failed validation; ignoring
+[Licensing::Client] Handshaking with LicensingClient:
+  Version:                 1.18.1+9fbee8e
+  Session Id:              bac58bfb31f54f3b96ab292f16efc8ff
+  Correlation Id:          679fb77172539d810cd6a4fdbe2a2bb1
+  External correlation Id: 3766785485821313344
+  Machine Id:              HIomqeaMmaSjAmUYNPM/lbRmfqQ=
+[Licensing::Module] Successfully connected to LicensingClient on channel: "LicenseClient-user" (connect: 0.37s, validation: 0.04s, handshake: 0.02s)
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-user-notifications" at "2026-08-04T08:22:48.1383456Z"
+[Licensing::Module] Connected to LicensingClient (PId: 8852, launch time: 0.00, total connection time: 0.43s)
+[Licensing::Module] Error: Access token is unavailable; failed to update
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] License group:
+  Id: 14568778374004-UnityPersXXXX
+  Product: Unity Personal
+  Type: Assigned
+  Expiration: Unlimited
+[Licensing::Client] Successfully updated license, isAsync: True, time: 0.01
+[Licensing::Client] Successfully resolved entitlement details
+[Licensing::Module] Licensing Background thread has ended after 0.47s
+[Licensing::Module] Licensing is initialized (took 0.21s).
+[Licensing::Client] Successfully resolved entitlement details
+Library Redirect Path: Library/
+[Physics::Module] Selected backend.
+[Physics::Module] Name: PhysX
+[Physics::Module] Id: 0xf2b8ea05
+[Physics::Module] SDK Version: 4.1.2
+[Physics::Module] Integration Version: 1.0.0
+[Physics::Module] Threading Mode: Multi-Threaded
+Refreshing native plugins compatible for Editor in 0.31 ms, found 0 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Initialize engine version: 6000.3.20f1 (c9ba695d4f07)
+[Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/6000.3.20f1/Editor/Data/Resources/UnitySubsystems
+[Subsystems] Discovering subsystems at path C:/tmp/agentctl-jajucha-friendly/runs/01KZ41ACZ4PKKH152VCY3FAGGE/tasks/task-11/Assets
+GfxDevice: creating device client; kGfxThreadingModeNonThreaded
+d3d12: failed to query info queue interface (0x80004002).
+Direct3D:
+    Version:         Direct3D 12 [level 12.2]
+    Renderer:        NVIDIA GeForce RTX 4070 SUPER (ID=0x2783)
+    Vendor:          NVIDIA
+    VRAM:            11997 MB
+    App VRAM Budget: 11229 MB
+    Driver:          32.0.15.9186
+Initialize mono
+Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/6000.3.20f1/Editor/Data/Managed'
+Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/6000.3.20f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit-win32'
+Mono config path = 'C:/Program Files/Unity/Hub/Editor/6000.3.20f1/Editor/Data/MonoBleedingEdge/etc'
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56808
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+Using cacheserver namespaces - metadata:defaultmetadata, artifacts:defaultartifacts
+ImportWorker Server TCP listen port: 0
+AcceleratorClientConnectionCallback - disconnected - :0
+Begin MonoManager ReloadAssembly
+Registering precompiled unity dll's ...
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.20f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
+Register platform support module: C:/Program Files/Unity/Hub/Editor/6000.3.20f1/Editor/Data/PlaybackEngines/LinuxStandaloneSupport/UnityEditor.LinuxStandalone.Extensions.dll
+Registered in 0.001974 seconds.
+- Loaded All Assemblies, in  0.278 seconds
+Native extension for LinuxStandalone target not found
+Native extension for WindowsStandalone target not found
+Package Manager log level set to [2]
+[Licensing::Client] Successfully resolved entitlement details
+ScheduleIndexationOnStartup MainProcess:False IndexOnStartup:False
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  1.306 seconds
+Domain Reload Profiling: 1582ms
+	BeginReloadAssembly (97ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (0ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (9ms)
+	RebuildCommonClasses (24ms)
+	RebuildNativeTypeToScriptingClass (9ms)
+	initialDomainReloadingComplete (34ms)
+	LoadAllAssembliesAndSetupDomain (112ms)
+		LoadAssemblies (86ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (110ms)
+			TypeCache.Refresh (108ms)
+				TypeCache.ScanAssembly (99ms)
+			BuildScriptInfoCaches (0ms)
+			ResolveRequiredComponents (0ms)
+	FinalizeReload (1306ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (1281ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (33ms)
+			SetLoadedEditorAssemblies (3ms)
+			BeforeProcessingInitializeOnLoad (52ms)
+			ProcessInitializeOnLoadAttributes (88ms)
+			ProcessInitializeOnLoadMethodAttributes (1107ms)
+			AfterProcessingInitializeOnLoad (0ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (0ms)
+[Licensing::Client] Successfully resolved entitlement details
+Application.AssetDatabase Initial Refresh Start
+[Package Manager] Restoring resolved packages state from cache
+[Licensing::Client] Successfully resolved entitlement details
+[Package Manager] Registered 51 packages:
+  Packages from [https://packages.unity.com]:
+    com.unity.collab-proxy@2.12.4 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.collab-proxy@0b1559bcd34e)
+    com.unity.inputsystem@1.19.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.inputsystem@21a28c3a6c83)
+    com.unity.timeline@1.8.12 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.timeline@8cd8509afae5)
+    com.unity.visualscripting@1.9.11 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.visualscripting@8bed5ad90189)
+    com.unity.ide.visualstudio@2.0.26 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.ide.visualstudio@a99d56dec63f)
+    com.unity.ide.rider@3.0.40 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.ide.rider@e4950c6d131b)
+    com.unity.editorcoroutines@1.1.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.editorcoroutines@87a15ed012c2)
+    com.unity.performance.profile-analyzer@1.4.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.performance.profile-analyzer@2bb26871883c)
+    com.unity.testtools.codecoverage@1.3.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.testtools.codecoverage@19a841221620)
+    com.unity.settings-manager@2.1.1 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.settings-manager@0b8638c5ce86)
+  Built-in packages:
+    com.unity.feature.development@1.0.2 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.feature.development@767aadbc6eb7)
+    com.unity.multiplayer.center@1.0.1 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.multiplayer.center@f01f4ba8d00a)
+    com.unity.ugui@2.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.ugui@e20f1880fa04)
+    com.unity.modules.accessibility@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.accessibility)
+    com.unity.modules.adaptiveperformance@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.adaptiveperformance)
+    com.unity.modules.ai@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.ai)
+    com.unity.modules.androidjni@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.androidjni)
+    com.unity.modules.animation@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.animation)
+    com.unity.modules.assetbundle@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.assetbundle)
+    com.unity.modules.audio@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.audio)
+    com.unity.modules.cloth@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.cloth)
+    com.unity.modules.director@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.director)
+    com.unity.modules.imageconversion@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.imageconversion)
+    com.unity.modules.imgui@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.imgui)
+    com.unity.modules.jsonserialize@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.jsonserialize)
+    com.unity.modules.particlesystem@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.particlesystem)
+    com.unity.modules.physics@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.physics)
+    com.unity.modules.physics2d@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.physics2d)
+    com.unity.modules.screencapture@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.screencapture)
+    com.unity.modules.terrain@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.terrain)
+    com.unity.modules.terrainphysics@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.terrainphysics)
+    com.unity.modules.tilemap@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.tilemap)
+    com.unity.modules.ui@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.ui)
+    com.unity.modules.uielements@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.uielements)
+    com.unity.modules.umbra@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.umbra)
+    com.unity.modules.unityanalytics@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.unityanalytics)
+    com.unity.modules.unitywebrequest@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.unitywebrequest)
+    com.unity.modules.unitywebrequestassetbundle@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.unitywebrequestassetbundle)
+    com.unity.modules.unitywebrequestaudio@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.unitywebrequestaudio)
+    com.unity.modules.unitywebrequesttexture@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.unitywebrequesttexture)
+    com.unity.modules.unitywebrequestwww@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.unitywebrequestwww)
+    com.unity.modules.vectorgraphics@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.vectorgraphics)
+    com.unity.modules.vehicles@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.vehicles)
+    com.unity.modules.video@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.video)
+    com.unity.modules.vr@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.vr)
+    com.unity.modules.wind@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.wind)
+    com.unity.modules.xr@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.xr)
+    com.unity.modules.subsystems@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.subsystems)
+    com.unity.modules.hierarchycore@1.0.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.modules.hierarchycore)
+    com.unity.test-framework@1.6.0 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.test-framework@bd7f943e9647)
+    com.unity.ext.nunit@2.0.5 (location: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\Library\PackageCache\com.unity.ext.nunit@d8c07649098d)
+[Subsystems] No new subsystems found in resolved package list.
+[Package Manager] Done registering packages in 0.01 seconds
+The GUID inside 'Assets/JajuchaSim/Prefabs/Vehicle.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+The GUID inside 'Assets/JajuchaSim/Prefabs/UI.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+The GUID inside 'Assets/JajuchaSim/Prefabs/Core.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+The GUID inside 'Assets/JajuchaSim/Prefabs/Course.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+The GUID inside 'Assets/JajuchaSim/Prefabs/Objects.meta' cannot be extracted by the YAML Parser. Attempting to extract it via string matching instead. Please verify the file does not contain unexpected data.
+The .meta file Assets/JajuchaSim/Prefabs/Core.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+The .meta file Assets/JajuchaSim/Prefabs/Course.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+The .meta file Assets/JajuchaSim/Prefabs/Objects.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+The .meta file Assets/JajuchaSim/Prefabs/UI.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+The .meta file Assets/JajuchaSim/Prefabs/Vehicle.meta does not have a valid GUID and its corresponding Asset file will be ignored. If this file is not malformed, please add a GUID, or delete the .meta file and it will be recreated correctly
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: http://localhost:80
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Production
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: C:\tmp\agentctl-jajucha-friendly\runs\01KZ41ACZ4PKKH152VCY3FAGGE\tasks\task-11\
+info: Microsoft.AspNetCore.Hosting.Diagnostics[1]
+      Request starting HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc -
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[0]
+      Executing endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
+info: Microsoft.AspNetCore.Routing.EndpointMiddleware[1]
+      Executed endpoint 'gRPC - /UnityILPP.PostProcessing/Ping'
+info: Microsoft.AspNetCore.Hosting.Diagnostics[2]
+      Request finished HTTP/2 POST http://ilpp/UnityILPP.PostProcessing/Ping application/grpc - - 200 - application/grpc 25.2222ms
+Starting: C:\Program Files\Unity\Hub\Editor\6000.3.20f1\Editor\Data\Tools\BuildPipeline\bee_backend.exe --ipc --defer-dag-verification --dagfile="Library/Bee/1900b0aE.dag" --continue-on-failure --profile="Library/Bee/backend1.traceevents" ScriptAssemblies
+WorkingDir: C:/tmp/agentctl-jajucha-friendly/runs/01KZ41ACZ4PKKH152VCY3FAGGE/tasks/task-11
+DisplayProgressbar: Compiling Scripts
+ExitCode: 0 Duration: 0s121ms
+*** Tundra build success (0.10 seconds), 0 items updated, 637 evaluated
+AssetDatabase: script compilation time: 0.414438s
+Begin MonoManager ReloadAssembly
+- Loaded All Assemblies, in  0.583 seconds
+Refreshing native plugins compatible for Editor in 1.83 ms, found 4 plugins.
+Native extension for LinuxStandalone target not found
+Native extension for WindowsStandalone target not found
+ScheduleIndexationOnStartup MainProcess:True IndexOnStartup:True
+Mono: successfully reloaded assembly
+- Finished resetting the current domain, in  0.482 seconds
+Domain Reload Profiling: 1062ms
+	BeginReloadAssembly (241ms)
+		ExecutionOrderSort (0ms)
+		DisableScriptedObjects (16ms)
+		BackupInstance (0ms)
+		ReleaseScriptingObjects (0ms)
+		CreateAndSetChildDomain (131ms)
+	RebuildCommonClasses (24ms)
+	RebuildNativeTypeToScriptingClass (9ms)
+	initialDomainReloadingComplete (19ms)
+	LoadAllAssembliesAndSetupDomain (287ms)
+		LoadAssemblies (213ms)
+		RebuildTransferFunctionScriptingTraits (0ms)
+		AnalyzeDomain (141ms)
+			TypeCache.Refresh (102ms)
+				TypeCache.ScanAssembly (95ms)
+			BuildScriptInfoCaches (34ms)
+			ResolveRequiredComponents (3ms)
+	FinalizeReload (482ms)
+		ReleaseScriptCaches (0ms)
+		RebuildScriptCaches (0ms)
+		SetupLoadedEditorAssemblies (365ms)
+			LogAssemblyErrors (0ms)
+			InitializePlatformSupportModulesInManaged (16ms)
+			SetLoadedEditorAssemblies (2ms)
+			BeforeProcessingInitializeOnLoad (96ms)
+			ProcessInitializeOnLoadAttributes (209ms)
+			ProcessInitializeOnLoadMethodAttributes (35ms)
+			AfterProcessingInitializeOnLoad (6ms)
+			EditorAssembliesLoaded (0ms)
+		ExecutionOrderSort2 (0ms)
+		AwakeInstancesAfterBackupRestoration (14ms)
+Asset Pipeline Refresh (id=99fa5c8b00c9b68478fa108b4c3fb4a5): Total: 1.739 seconds - Initiated by InitialRefreshV2(ForceSynchronousImport)
+	Summary:
+		Imports: total=0 (actual=0, local cache=0, cache server=0)
+		Asset DB Process Time: managed=0 ms, native=686 ms
+		Asset DB Callback time: managed=10 ms, native=13 ms
+		Scripting: domain reloads=1, domain reload time=583 ms, compile time=416 ms, other=29 ms
+		Project Asset Count: scripts=879, non-scripts=919
+		Asset File Changes: new=0, changed=0, moved=0, deleted=0
+		Scan Filter Count: 0
+	InvokeCustomDependenciesCallbacks: 0.001ms
+	InvokePackagesCallback: 15.421ms
+	ApplyChangesToAssetFolders: 0.487ms
+	Scan: 46.110ms
+	OnSourceAssetsModified: 0.003ms
+	CategorizeAssetsWithTransientArtifact: 25.023ms
+	ProcessAssetsWithTransientArtifactChanges: 31.200ms
+	CategorizeAssets: 9.582ms
+	ImportOutOfDateAssets: 489.173ms (72.971ms without children)
+		CompileScripts: 415.683ms
+		ReloadNativeAssets: 0.000ms
+		UnloadImportedAssets: 0.091ms
+		EnsureUptoDateAssetsAreRegisteredWithGuidPM: 0.205ms
+		InitializingProgressBar: 0.000ms
+		PostProcessAllAssetNotificationsAddChangedAssets: 0.001ms
+		OnDemandSchedulerStart: 0.223ms
+	PostProcessAllAssets: 10.377ms
+	GatherAllCurrentPrimaryArtifactRevisions: 0.003ms
+	UnloadStreamsBegin: 0.853ms
+	PersistCurrentRevisions: 0.035ms
+	UnloadStreamsEnd: 0.001ms
+	GenerateScriptTypeHashes: 0.834ms
+	Untracked: 1110.539ms
+
+Application.AssetDatabase Initial Refresh End
+Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+Scanning for USB devices : 0.850ms
+Initializing Unity extensions:
+[MODES] ModeService[none].Initialize
+[MODES] ModeService[none].LoadModes
+[MODES] Loading mode Default (0) for mode-current-id-jajucha-sim
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 4327 unused Assets / (1.6 MB). Loaded Objects now: 4937.
+Memory consumption went from 133.4 MB to 131.8 MB.
+Total: 5.558900 ms (FindLiveObjects: 0.431300 ms CreateObjectMapping: 0.168200 ms MarkObjects: 4.132700 ms  DeleteObjects: 0.826100 ms)
+
+Batchmode quit successfully invoked - shutting down!
+Curl error 42: Callback aborted
+[Physics::Module] Cleanup current backend.
+[Physics::Module] Id: 0xf2b8ea05
+Input System module state changed to: ShutdownInProgress.
+Input System polling thread exited.
+Input System module state changed to: Shutdown.
+[Licensing::IpcConnector] LicenseClient-user-notifications channel disconnected successfully.
+[Licensing::IpcConnector] LicenseClient-user channel disconnected successfully.
+AcceleratorClientConnectionCallback - disconnected - :0
+Cleanup mono
+Shut down.
+abort_threads: Failed aborting id: 00000000000032B0, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 0000000000001BDC, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 00000000000032B0, mono_thread_manage will ignore it
+
+abort_threads: Failed aborting id: 0000000000001BDC, mono_thread_manage will ignore it
+
+debugger-agent: Unable to listen on 4620
+Exiting batchmode successfully now!
+Exiting without the bug reporter. Application will terminate with return code 0

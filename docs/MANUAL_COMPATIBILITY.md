@@ -51,3 +51,23 @@ Classification:
 
 > Rule: temporary values are clearly marked. Code never hides an unknown as a
 > silent literal — config values are used and documented here.
+## Step 11 — Example scripts and user workflow verified against the manual
+
+Every public compatibility API used by the shipped example scripts
+(`python/examples/01…06`, `python/user/main.py`) is verified against the
+manual-derived behavior recorded above:
+
+| Script | API used | Manual-derived semantics | Status |
+|---|---|---|---|
+| `01_motor_test.py` | `jchm.control.set_motor(l, r, s)` | left/right ∈ [-10,10], speed ∈ [-30,30]; `speed==0` ⇒ no propulsion; steering independent of propulsion | IMPLEMENTED (Step 2) + verified by `MotorCommandTests` / `ZeroSpeedNeverPropelsTest` |
+| `02_center_camera.py` | `jchm.camera.get_image("center")`, `show_image` | BGR uint8 (h,w,3) OpenCV-compatible frame | IMPLEMENTED (Step 4); resolution 640×480 APPROXIMATE |
+| `03_three_cameras.py` | `jchm.camera.get_image("left"/"center"/"right")` | three independent physical cameras; calibration NOT assumed identical | IMPLEMENTED (Step 4); per-camera configs APPROXIMATE |
+| `04_depth_view.py` | `jchm.camera.get_depth()` | grayscale uint8 (h,w), near=bright/far=dark — NOT metric depth | IMPLEMENTED (Step 4); depth curve APPROXIMATE |
+| `05_drive_and_view.py` | `get_image` + `set_motor` | normal user workflow; low-speed safe command; stop on interrupt | IMPLEMENTED |
+| `06_test_run.py` | `jchm_sim.*` | simulator-only lifecycle (reset/start_run/get_run_status/get_result) | SIMULATOR_ONLY |
+| `user/main.py` | `get_image` + `set_motor` | real-compatible driving loop; `speed=0` on shutdown | IMPLEMENTED |
+
+> Rule (Step 11.46): when simulator behavior and the Jajucha manual disagree,
+> inspect the manual first. No compatibility claim is made based only on
+> existing code; each claim above is tied to a test or an APPROXIMATE value
+> recorded in this document.

@@ -1,0 +1,27 @@
+{
+    "name": "JajuchaSim.App.PlayModeTests",
+    "rootNamespace": "JajuchaSim.App.Tests",
+    "references": [
+        "JajuchaSim.App",
+        "JajuchaSim.Core",
+        "JajuchaSim.Course",
+        "JajuchaSim.Vehicle",
+        "JajuchaSim.Bridge",
+        "JajuchaSim.Sensors",
+        "JajuchaSim.Scenario",
+        "JajuchaSim.MapEditor",
+        "UnityEngine.UI"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false,
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ]
+}

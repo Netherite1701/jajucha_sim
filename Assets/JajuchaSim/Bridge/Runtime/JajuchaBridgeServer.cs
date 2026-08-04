@@ -49,32 +49,13 @@ namespace JajuchaSim.Bridge
             if (simulationManager == null)
             {
                 Debug.LogError("[BRIDGE] No SimulationManager found. Bridge cannot function without it.");
-                return;
             }
 
             if (vehicleBehaviour == null)
                 vehicleBehaviour = FindFirstObjectByType<VehicleSystemBehaviour>();
             if (vehicleBehaviour == null)
             {
-                Debug.LogError("[BRIDGE] No VehicleSystemBehaviour found. Bridge cannot function without it.");
-                return;
-            }
-
-            // Extract VehicleSystem from the behaviour
-            if (vehicleBehaviour is VehicleSystemBehaviour vsb)
-            {
-                _vehicle = vsb.VehicleSystem;
-            }
-            else
-            {
-                Debug.LogError("[BRIDGE] Vehicle behaviour is not a VehicleSystemBehaviour.");
-                return;
-            }
-
-            if (_vehicle == null)
-            {
-                Debug.LogError("[BRIDGE] VehicleSystem is null. Cannot proceed.");
-                return;
+                Debug.LogWarning("[BRIDGE] No VehicleSystemBehaviour found yet; binding deferred.");
             }
 
             // Find CameraSensorSystem
@@ -92,7 +73,67 @@ namespace JajuchaSim.Bridge
             // Create the connection
             _connection = new BridgeConnection(config.host, config.port, config.maxMessageBytes);
 
-            // Create the dispatcher
+            // Wire events
+            _connection.ClientConnected += OnClientConnected;
+            _connection.ClientDisconnected += OnClientDisconnected;
+
+            // Best-effort early bind; the ApplicationBootstrap calls
+            // TryBindSystems() again once the simulation kernel has spawned
+            // the vehicle, so system initialization ordering is explicit and
+            // does not depend on MonoBehaviour Awake order.
+            TryBindSystems();
+
+            if (config.autoStart)
+            {
+                _connection.StartListening();
+            }
+        }
+
+        /// <summary>
+        /// Assign a bridge configuration before the component is activated
+        /// (used by tests and automated harnesses that must avoid port
+        /// conflicts). Must be called before Awake runs.
+        /// </summary>
+        public void SetBridgeConfig(BridgeConfig cfg)
+        {
+            config = cfg;
+        }
+
+        /// <summary>
+        /// Resolve the vehicle/sensor systems and create the command dispatcher
+        /// once the simulation kernel is initialized. Safe to call repeatedly;
+        /// returns true when the dispatcher is ready. The ApplicationBootstrap
+        /// calls this explicitly during ordered startup (Step 11.4).
+        /// </summary>
+        public bool TryBindSystems()
+        {
+            if (_dispatcher != null)
+                return true;
+
+            if (simulationManager == null)
+                simulationManager = FindFirstObjectByType<SimulationManager>();
+            if (simulationManager == null)
+                return false;
+
+            if (vehicleBehaviour == null)
+                vehicleBehaviour = FindFirstObjectByType<VehicleSystemBehaviour>();
+            if (vehicleBehaviour == null)
+                return false;
+
+            if (_vehicle == null && vehicleBehaviour is VehicleSystemBehaviour vsb)
+                _vehicle = vsb.VehicleSystem;
+            if (_vehicle == null)
+                return false; // vehicle not spawned yet (kernel not initialized)
+
+            // Re-read sensor system if it became available after kernel init.
+            if (cameraBehaviour == null)
+                cameraBehaviour = FindFirstObjectByType<CameraSensorSystemBehaviour>();
+            if (cameraBehaviour != null && _sensors == null)
+                _sensors = cameraBehaviour.SensorSystem;
+
+            if (_connection == null)
+                _connection = new BridgeConnection(config.host, config.port, config.maxMessageBytes);
+
             _dispatcher = new CommandDispatcher(
                 simulationManager,
                 _vehicle,
@@ -101,18 +142,13 @@ namespace JajuchaSim.Bridge
                 config.protocolVersion,
                 config.commandTimeoutMs / 1000f);
 
-            // Wire events
-            _connection.ClientConnected += OnClientConnected;
-            _connection.ClientDisconnected += OnClientDisconnected;
-
-            if (config.autoStart)
-            {
-                _connection.StartListening();
-            }
+            return true;
         }
 
         private void Update()
         {
+            TryBindSystems();
+
             // Lazily bind the scenario manager once a ScenarioPanel exists
             // (panel may create its manager in Start, after this Awake).
             if (_dispatcher != null && _dispatcher.Scenario == null)

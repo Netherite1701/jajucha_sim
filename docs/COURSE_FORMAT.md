@@ -221,3 +221,50 @@ by `TriggerDetectionSystem`.
 - Road mesh generation from neighbour connectivity (smooth continuous roads).
 - Course image import (pixel→grid projection).
 - Full scenario/scoring stack consuming `SpeedMeasuredEvent` (Step 9).
+
+## Template course (Step 11)
+
+`Courses/template_course.json` is the shipped default course. It is an
+**EXAMPLE / SIMULATOR_ONLY** course — it is NOT a replica of any competition
+layout. Its purpose is to verify that vehicle, cameras, bridge, runtime map,
+structures, triggers, scoring, speed measurement, and testing all work
+together in one short run.
+
+Layout (tile size 20 cm):
+
+```text
+START (z=0)
+  │  straight (x=0..3)
+SLOW SIGN (object)
+  │
+SLOW ZONE (trigger region)
+  │
+SPEED TERMINAL A (z=6) / B (z=7)   → pair "speed_zone_01"
+  │
+CURVE (road widens to x=0..5, z=9..12)
+  │
+TUNNEL (region x=0..3, z=10..11)
+  │
+RAMP (region x=2..5, z=14..15)
+  │
+OBSTACLE (x=3, z=16)
+  │
+FINISH (z=16)
+```
+
+Contents:
+
+* start trigger (`start_01`) + finish trigger (`finish_01`)
+* straight + curve road tiles and boundary `lines`
+* one tunnel, one ramp, one obstacle, one slow sign, one start signal
+* one slow-zone objective, two speed terminals (pair A→B)
+* a `scenario` documentation block (EXAMPLE) with the intended scoring
+  configuration (base 100; line contact 5; course departure 5; collision 5;
+  objective failure 10; max time 60 s; slow-zone max 20 cm/s)
+
+The runtime scenario is built from the map-editor SCENARIO/SCORING sections
+whose defaults match the documented block; the `scenario` key in the JSON is a
+documentation convenience and is not parsed by the runtime.
+
+Validation: `TemplateCourseTests` loads the file, checks every required feature,
+and asserts `CourseValidator.ValidateDocument` has zero errors.

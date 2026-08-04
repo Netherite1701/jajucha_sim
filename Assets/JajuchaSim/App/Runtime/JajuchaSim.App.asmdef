@@ -1,0 +1,25 @@
+{
+    "name": "JajuchaSim.App",
+    "rootNamespace": "JajuchaSim.App",
+    "references": [
+        "JajuchaSim.Core",
+        "JajuchaSim.Vehicle",
+        "JajuchaSim.Course",
+        "JajuchaSim.Bridge",
+        "JajuchaSim.Sensors",
+        "JajuchaSim.Scenario",
+        "JajuchaSim.Testing",
+        "JajuchaSim.MapEditor",
+        "UnityEngine.UI",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
