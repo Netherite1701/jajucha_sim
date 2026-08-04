@@ -36,7 +36,9 @@ namespace JajuchaSim.Scenario
                     "Crossed start line before GREEN",
                     cfg.penalty,
                     Ctx.Tick,
-                    Ctx.Time));
+                    Ctx.Time,
+                    "false_start",
+                    ""));
             }
             else if (cfg.violationMode == ViolationMode.Fail)
             {
