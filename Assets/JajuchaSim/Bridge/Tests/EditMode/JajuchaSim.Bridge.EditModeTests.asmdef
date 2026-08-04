@@ -5,7 +5,9 @@
         "JajuchaSim.Bridge",
         "JajuchaSim.Vehicle",
         "JajuchaSim.Sensors",
-        "JajuchaSim.Core"
+        "JajuchaSim.Core",
+        "JajuchaSim.Scenario",
+        "JajuchaSim.Course"
     ],
     "includePlatforms": [
         "Editor"

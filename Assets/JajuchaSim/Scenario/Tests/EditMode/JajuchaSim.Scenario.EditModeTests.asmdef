@@ -1,15 +1,14 @@
 {
-    "name": "JajuchaSim.Bridge.PlayModeTests",
-    "rootNamespace": "JajuchaSim.Bridge.Tests",
+    "name": "JajuchaSim.Scenario.EditModeTests",
+    "rootNamespace": "JajuchaSim.Scenario.Tests",
     "references": [
-        "JajuchaSim.Bridge",
-        "JajuchaSim.Vehicle",
-        "JajuchaSim.Sensors",
-        "JajuchaSim.Core",
         "JajuchaSim.Scenario",
+        "JajuchaSim.Core",
         "JajuchaSim.Course"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,

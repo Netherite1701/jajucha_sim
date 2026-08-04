@@ -6,9 +6,10 @@ source of truth for all real-vehicle behavior and APIs.
 
 ## Status
 
-Steps **1–7** are implemented (core kernel, vehicle, bridge, sensors, shared
-tile grid, structures/objects/triggers, runtime map editor). See
-`docs/IMPLEMENTATION_STATUS.md` for details. Next: Step 8 scenario/scoring.
+Steps **1–8** are implemented (core kernel, vehicle, bridge, sensors, shared
+tile grid, structures/objects/triggers, runtime map editor, scenario/timing/
+scoring). See `docs/IMPLEMENTATION_STATUS.md` for details. Next: Step 9 ANN
+perception + FSM integration/debugging support.
 
 ## World scale
 
@@ -36,7 +37,7 @@ $u = "C:\Program Files\Unity\Hub\Editor\6000.3.20f1\Editor\Unity.exe"
     -testPlatform playmode -testResults test-results-playmode.xml -logFile unity-playmode.log
 ```
 
-Expected (Step 7): EditMode 318/318, PlayMode 37/37, 0 project-code warnings.
+Expected (Step 8): EditMode 381/381, PlayMode 37/37, 0 project-code warnings.
 
 ## Documentation
 

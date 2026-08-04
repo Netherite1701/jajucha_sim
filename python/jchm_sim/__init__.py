@@ -23,6 +23,11 @@ from .simulation import (
     start,
     pause,
     step,
+    start_run,
+    abort_run,
+    get_run_status,
+    get_result,
+    wait_for_result,
 )
 
 __all__ = [
@@ -34,4 +39,9 @@ __all__ = [
     "start",
     "pause",
     "step",
+    "start_run",
+    "abort_run",
+    "get_run_status",
+    "get_result",
+    "wait_for_result",
 ]

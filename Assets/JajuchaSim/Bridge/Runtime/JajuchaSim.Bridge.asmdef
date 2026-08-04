@@ -4,7 +4,9 @@
     "references": [
         "JajuchaSim.Core",
         "JajuchaSim.Vehicle",
-        "JajuchaSim.Sensors"
+        "JajuchaSim.Sensors",
+        "JajuchaSim.Scenario",
+        "JajuchaSim.Course"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using JajuchaSim.Core;
+using JajuchaSim.Scenario;
 using JajuchaSim.Sensors;
 using JajuchaSim.Vehicle;
 using UnityEngine;
@@ -42,7 +43,8 @@ namespace JajuchaSim.Bridge
             CameraSensorSystem sensors,
             BridgeConnection connection,
             int protocolVersion,
-            float commandTimeoutSec)
+            float commandTimeoutSec,
+            ScenarioManager scenario = null)
         {
             _simulation = simulation ?? throw new ArgumentNullException(nameof(simulation));
             _vehicle = vehicle ?? throw new ArgumentNullException(nameof(vehicle));
@@ -50,7 +52,15 @@ namespace JajuchaSim.Bridge
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
             _protocolVersion = protocolVersion;
             _commandTimeoutSec = commandTimeoutSec > 0 ? commandTimeoutSec : 1f;
+            Scenario = scenario;
         }
+
+        /// <summary>
+        /// Optional ScenarioManager (Step 8.36 simulator-only automation API).
+        /// Set by scene wiring when a scenario panel exists; null when no
+        /// scenario is active (scenario commands return SCENARIO_NOT_AVAILABLE).
+        /// </summary>
+        public ScenarioManager Scenario { get; set; }
 
         public bool HandshakeComplete => _handshakeComplete;
 
@@ -181,6 +191,22 @@ namespace JajuchaSim.Bridge
 
                 case "sim_reset":
                     HandleSimReset(msg);
+                    break;
+
+                case "start_run":
+                    HandleStartRun(msg);
+                    break;
+
+                case "abort_run":
+                    HandleAbortRun(msg);
+                    break;
+
+                case "get_run_status":
+                    HandleGetRunStatus(msg);
+                    break;
+
+                case "get_result":
+                    HandleGetResult(msg);
                     break;
 
                 default:
@@ -322,6 +348,118 @@ namespace JajuchaSim.Bridge
                 SendOk(msg.Id);
                 _lastMotorCommandRealtime = float.PositiveInfinity;
                 SimLog.Info("[BRIDGE] sim_reset");
+            }
+            catch (Exception ex)
+            {
+                SendError(msg.Id, "INTERNAL_ERROR", ex.Message);
+            }
+        }
+
+        // --- Scenario automation commands (Step 8.36) ---
+
+        private void HandleStartRun(BridgeMessage msg)
+        {
+            if (Scenario == null)
+            {
+                SendError(msg.Id, "SCENARIO_NOT_AVAILABLE", "No scenario manager is active.");
+                return;
+            }
+            try
+            {
+                var mode = Scenario.Definition != null ? Scenario.Definition.startMode : StartMode.NormalSignal;
+                Scenario.RequestStart(mode);
+                SendOk(msg.Id);
+                SimLog.Info("[BRIDGE] start_run");
+            }
+            catch (Exception ex)
+            {
+                SendError(msg.Id, "INTERNAL_ERROR", ex.Message);
+            }
+        }
+
+        private void HandleAbortRun(BridgeMessage msg)
+        {
+            if (Scenario == null)
+            {
+                SendError(msg.Id, "SCENARIO_NOT_AVAILABLE", "No scenario manager is active.");
+                return;
+            }
+            try
+            {
+                Scenario.AbortRun();
+                // Safety: stop vehicle propulsion (Step 8.50).
+                var current = _vehicle.CurrentCommand;
+                if (current.Speed != 0)
+                    _vehicle.SetMotorCommand(new MotorCommand(current.Left, current.Right, 0));
+                SendOk(msg.Id);
+                SimLog.Info("[BRIDGE] abort_run");
+            }
+            catch (Exception ex)
+            {
+                SendError(msg.Id, "INTERNAL_ERROR", ex.Message);
+            }
+        }
+
+        private void HandleGetRunStatus(BridgeMessage msg)
+        {
+            if (Scenario == null)
+            {
+                SendError(msg.Id, "SCENARIO_NOT_AVAILABLE", "No scenario manager is active.");
+                return;
+            }
+            try
+            {
+                var response = new BridgeMessage
+                {
+                    Type = "response",
+                    Id = msg.Id,
+                    Ok = true,
+                    Payload = new Dictionary<string, object>
+                    {
+                        ["state"] = Scenario.State.ToString(),
+                        ["signal"] = Scenario.Signal.ToString(),
+                        ["run_id"] = Scenario.Session?.RunId ?? "",
+                        ["elapsed_sec"] = Scenario.Timer.ElapsedSimulationTime,
+                        ["has_result"] = Scenario.HasResult,
+                        ["collisions"] = Scenario.CollisionCount,
+                        ["sim_time"] = _simulation.Clock.Time,
+                        ["tick"] = _simulation.Clock.Tick
+                    }
+                };
+                _connection.Send(BridgeProtocol.Serialize(response));
+            }
+            catch (Exception ex)
+            {
+                SendError(msg.Id, "INTERNAL_ERROR", ex.Message);
+            }
+        }
+
+        private void HandleGetResult(BridgeMessage msg)
+        {
+            if (Scenario == null)
+            {
+                SendError(msg.Id, "SCENARIO_NOT_AVAILABLE", "No scenario manager is active.");
+                return;
+            }
+            if (!Scenario.HasResult)
+            {
+                SendError(msg.Id, "NO_RESULT", "Run has not finished yet.");
+                return;
+            }
+            try
+            {
+                string resultJson = UnityEngine.JsonUtility.ToJson(Scenario.BuildResultJson(), true);
+                var response = new BridgeMessage
+                {
+                    Type = "response",
+                    Id = msg.Id,
+                    Ok = true,
+                    Payload = new Dictionary<string, object>
+                    {
+                        ["result"] = resultJson
+                    }
+                };
+                _connection.Send(BridgeProtocol.Serialize(response));
             }
             catch (Exception ex)
             {

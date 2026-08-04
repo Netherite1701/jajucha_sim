@@ -2,6 +2,35 @@
 
 ## [Unreleased]
 
+### Step 8 — Scenario, Timing, and Scoring System
+
+Turned the simulator into a complete competition/test environment. The
+simulator knows ground truth for scoring; the student's Python only sees the
+simulated cameras and jchm interface (never `STARTED` flags or scores):
+
+- `ScenarioManager` state machine Idle → Ready → Countdown → Running →
+  Finished/Aborted, start-signal sequence (RED → YELLOW → GREEN, configurable
+  durations), immediate or normal start mode, abort with propulsion stop
+- `ScenarioDefinition` JSON: start/finish triggers, max run time, start timing
+  mode (signal-green vs start-gate-crossing), slow-zone rules with
+  Fail/Penalty/Informational modes, false-start rule, scoring enable, result
+  auto-save
+- `RunTimer` derived from `SimulationClock` ticks — deterministic at any
+  simulation speed; max-run-time → TIME_LIMIT
+- Slow-zone speed measurement from Rigidbody-derived forward speed (never the
+  jchm motor command); overlapping zones tracked independently by id
+- Collision recording with per-object debounce (one incident per contact
+  session, not one per physics callback)
+- Speed-gate pair measurements from Step-7 `SpeedMeasuredEvent`
+- `RunSession` per run: events with SimulationTick+SimulationTime, raw
+  measurements, penalties, final result; JSON export + reload
+- Runtime `ScenarioPanel` sidebar and `ResultsPanel` overlay (Run Again /
+  Details / Export Result), driving view stays visible
+- Map-editor SCENARIO section: start/finish trigger pickers from placed ids,
+  max time, slow-zone speed, start mode, signal preview (RED/YELLOW/GREEN)
+- jchm_sim automation API: `start_run`, `abort_run`, `get_run_status`,
+  `get_result`, `wait_for_result(timeout)` (simulator-only test harness)
+
 ### Step 8 — Two-Terminal Competition Speed Measurement
 
 Replaced the generic single speed-gate concept with paired terminals that match
