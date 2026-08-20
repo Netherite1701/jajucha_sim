@@ -54,7 +54,16 @@ def build_masks(track: Image.Image) -> tuple[list[dict], list[dict]]:
         for x in range(GRID_W):
             cell = im.crop((x*6, source_row*6, (x+1)*6, (source_row+1)*6))
             pixels = list(cell.getdata())
-            dark = sum(1 for r,g,b in pixels if max(r,g,b) < 115 and abs(r-g) < 55)
+            # Asphalt is near-neutral dark gray.  The old `abs(r-g) < 55`
+            # test also classified the green infield (roughly 62,105,48) as
+            # road, filling the U/S-turn openings in the logical mask even
+            # though the printed artwork showed a hole.  Require all channels
+            # to be close before counting a road pixel.
+            dark = sum(1 for r,g,b in pixels
+                       if max(r,g,b) < 95
+                       and abs(r-g) < 18
+                       and abs(g-b) < 18
+                       and abs(r-b) < 18)
             red = sum(1 for r,g,b in pixels if r > 130 and r > g*1.35 and r > b*1.25)
             if dark >= 7:
                 road.append({"x": x, "z": z})
@@ -167,19 +176,29 @@ def course(stage: str, road: list[dict], lines: list[dict]) -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("rendered_manual_page_2", type=Path)
+    parser.add_argument(
+        "--already-cropped-track", action="store_true",
+        help="Treat the input as the 1980x1080 cropped artwork (useful when "
+             "rebuilding masks after a decorative texture cleanup).")
     parser.add_argument("--root", type=Path, default=Path(__file__).resolve().parents[1])
     args = parser.parse_args()
 
-    track = crop_track(Image.open(args.rendered_manual_page_2).convert("RGB"))
+    source = Image.open(args.rendered_manual_page_2).convert("RGB")
+    track = source if args.already_cropped_track else crop_track(source)
     road, lines = build_masks(track)
 
     texture = track.resize((1980,1080), Image.Resampling.LANCZOS)
-    pixels = texture.load()
-    for y in range(texture.height):
-        for x in range(texture.width):
-            r,g,b = pixels[x,y]
-            if r > 238 and g > 238 and b > 238:
-                pixels[x,y] = (62,105,48)
+    # The PDF crop contains white panel/background pixels that should blend
+    # into the infield.  A cleaned, already-cropped runtime texture has
+    # intentional white lane/curb markings, so never recolor those pixels in
+    # that mode.
+    if not args.already_cropped_track:
+        pixels = texture.load()
+        for y in range(texture.height):
+            for x in range(texture.width):
+                r,g,b = pixels[x,y]
+                if r > 238 and g > 238 and b > 238:
+                    pixels[x,y] = (62,105,48)
 
     asset_dir = args.root / "Assets/JajuchaSim/Resources/Competition2026"
     course_dir = args.root / "Courses"

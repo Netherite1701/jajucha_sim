@@ -171,6 +171,44 @@ namespace JajuchaSim.Course
                 return output;
             }
 
+            // The final S-tunnel is authored as a handful of construction
+            // points.  Sweeping walls directly through those points creates
+            // oversized miter spikes at each 45/90-degree corner. Round each
+            // corner with a short quadratic transition while keeping the
+            // sampled 5 cm spacing used by collision and sensor geometry.
+            if (string.Equals(tunnel.Profile, "s_tunnel", StringComparison.OrdinalIgnoreCase)
+                && source.Length >= 3)
+            {
+                const float cornerTrimCm = 18f;
+                Vector3 last = new Vector3(source[0].xCm, 0f, source[0].zCm);
+                output.Add(last);
+                for (int i = 1; i < source.Length - 1; i++)
+                {
+                    Vector3 previous = new Vector3(source[i - 1].xCm, 0f, source[i - 1].zCm);
+                    Vector3 current = new Vector3(source[i].xCm, 0f, source[i].zCm);
+                    Vector3 next = new Vector3(source[i + 1].xCm, 0f, source[i + 1].zCm);
+                    float incomingLength = Vector3.Distance(previous, current);
+                    float outgoingLength = Vector3.Distance(current, next);
+                    float trim = Mathf.Min(cornerTrimCm, incomingLength * 0.35f,
+                        outgoingLength * 0.35f);
+                    Vector3 enter = Vector3.Lerp(current, previous, trim / Mathf.Max(0.001f, incomingLength));
+                    Vector3 exit = Vector3.Lerp(current, next, trim / Mathf.Max(0.001f, outgoingLength));
+                    AddLine(last, enter);
+
+                    int steps = Mathf.Max(2, Mathf.CeilToInt(Vector3.Distance(enter, exit) / PathSampleCm));
+                    for (int step = 1; step <= steps; step++)
+                    {
+                        float t = step / (float)steps;
+                        float u = 1f - t;
+                        output.Add(u * u * enter + 2f * u * t * current + t * t * exit);
+                    }
+                    last = exit;
+                }
+                AddLine(last, new Vector3(source[source.Length - 1].xCm, 0f,
+                    source[source.Length - 1].zCm));
+                return output;
+            }
+
             for (int i = 0; i < source.Length - 1; i++)
             {
                 var a = source[i];
@@ -213,6 +251,78 @@ namespace JajuchaSim.Course
             return best;
         }
 
+        /// <summary>
+        /// Computes a continuous left/right ribbon around a sampled centreline.
+        /// The previous implementation offset each segment independently. At
+        /// a bend that leaves triangular gaps between adjacent segments, so
+        /// the road texture (and the white curb underneath) leaked through the
+        /// tunnel as repeated wedge-shaped holes. Mitered joins keep the wall,
+        /// roof, and black interior mask closed while preserving the authored
+        /// opening width.
+        /// </summary>
+        private static void BuildMiteredBoundaries(
+            List<Vector3> centerline,
+            float halfWidth,
+            out List<Vector3> left,
+            out List<Vector3> right)
+        {
+            left = new List<Vector3>();
+            right = new List<Vector3>();
+            if (centerline == null || centerline.Count == 0) return;
+
+            for (int i = 0; i < centerline.Count; i++)
+            {
+                Vector3 tangent;
+                if (i == 0)
+                    tangent = centerline[1] - centerline[0];
+                else if (i == centerline.Count - 1)
+                    tangent = centerline[i] - centerline[i - 1];
+                else
+                    tangent = centerline[i + 1] - centerline[i - 1];
+                tangent.y = 0f;
+                if (tangent.sqrMagnitude < 0.0001f)
+                    tangent = Vector3.forward;
+                tangent.Normalize();
+
+                Vector3 side = new Vector3(-tangent.z, 0f, tangent.x);
+                float offset = halfWidth;
+                if (i > 0 && i < centerline.Count - 1)
+                {
+                    Vector3 prev = centerline[i] - centerline[i - 1];
+                    Vector3 next = centerline[i + 1] - centerline[i];
+                    prev.y = 0f;
+                    next.y = 0f;
+                    if (prev.sqrMagnitude > 0.0001f && next.sqrMagnitude > 0.0001f)
+                    {
+                        prev.Normalize();
+                        next.Normalize();
+                        Vector3 prevSide = new Vector3(-prev.z, 0f, prev.x);
+                        Vector3 nextSide = new Vector3(-next.z, 0f, next.x);
+                        Vector3 miter = prevSide + nextSide;
+                        if (miter.sqrMagnitude > 0.0001f)
+                        {
+                            miter.Normalize();
+                            float denominator = Vector3.Dot(miter, nextSide);
+                            // A near-reversal is not present in the official
+                            // paths; clamp defensively so malformed practice
+                            // data cannot create an infinite spike.
+                            if (Mathf.Abs(denominator) > 0.25f)
+                                // A tight S-turn can reverse the miter
+                                // direction. Keep joins close to the authored
+                                // opening width; an oversized miter becomes a
+                                // roof polygon that visually blocks the lane.
+                                offset = Mathf.Clamp(halfWidth / denominator,
+                                    -halfWidth * 1.35f, halfWidth * 1.35f);
+                            side = miter;
+                        }
+                    }
+                }
+
+                left.Add(centerline[i] - side * offset);
+                right.Add(centerline[i] + side * offset);
+            }
+        }
+
         public static StructureMeshData BuildTunnel(StructureInstance tunnel)
         {
             var mesh = new StructureMeshData { Name = tunnel?.Id ?? "competition_tunnel" };
@@ -221,6 +331,7 @@ namespace JajuchaSim.Course
             float height = tunnel.HeightCm > 0f ? tunnel.HeightCm : 22f;
             float thickness = tunnel.WallThicknessCm > 0f ? tunnel.WallThicknessCm : 0.5f;
             var centerline = BuildTunnelCenterline(tunnel);
+            BuildMiteredBoundaries(centerline, width * 0.5f, out var left, out var right);
 
             for (int i = 0; i < centerline.Count - 1; i++)
             {
@@ -231,12 +342,10 @@ namespace JajuchaSim.Course
                 if (forward.sqrMagnitude < 0.001f) continue;
                 forward.Normalize();
                 var side = new Vector3(-forward.z, 0f, forward.x);
-                float half = width * 0.5f;
-
-                Vector3 l0 = p0 - side * half;
-                Vector3 l1 = p1 - side * half;
-                Vector3 r0 = p0 + side * half;
-                Vector3 r1 = p1 + side * half;
+                Vector3 l0 = left[i];
+                Vector3 l1 = left[i + 1];
+                Vector3 r0 = right[i];
+                Vector3 r1 = right[i + 1];
                 Vector3 up = Vector3.up * height;
 
                 mesh.AddQuad(l0, l1, l1 + up, l0 + up, -side);
@@ -287,16 +396,14 @@ namespace JajuchaSim.Course
             if (tunnel?.PathPoints == null || tunnel.PathPoints.Length < 2) return mesh;
             float half = (tunnel.OpeningWidthCm > 0f ? tunnel.OpeningWidthCm : 39f) * 0.5f;
             var centerline = BuildTunnelCenterline(tunnel);
+            BuildMiteredBoundaries(centerline, half, out var left, out var right);
             for (int i = 0; i < centerline.Count - 1; i++)
             {
-                var p0 = centerline[i] + Vector3.up * 0.09f;
-                var p1 = centerline[i + 1] + Vector3.up * 0.09f;
-                var forward = p1 - p0;
-                forward.y = 0f;
-                if (forward.sqrMagnitude < 0.001f) continue;
-                forward.Normalize();
-                var side = new Vector3(-forward.z, 0f, forward.x) * half;
-                mesh.AddQuad(p0 - side, p1 - side, p1 + side, p0 + side, Vector3.up);
+                var p0 = left[i] + Vector3.up * 0.09f;
+                var p1 = left[i + 1] + Vector3.up * 0.09f;
+                var p2 = right[i + 1] + Vector3.up * 0.09f;
+                var p3 = right[i] + Vector3.up * 0.09f;
+                mesh.AddQuad(p0, p1, p2, p3, Vector3.up);
             }
             return mesh;
         }

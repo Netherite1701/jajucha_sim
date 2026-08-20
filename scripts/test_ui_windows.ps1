@@ -13,6 +13,8 @@ param(
     [int]$TimeoutSec = 30,
     [switch]$KeepOpen,
     [switch]$CaptureOnly,
+    [switch]$CameraViews,
+    [switch]$FinalCameraViews,
     [switch]$DumpControls,
     [switch]$ProbeCourseCopy,
     [switch]$EditSmoke,
@@ -350,6 +352,51 @@ try {
     # Give the first capture a deterministic post-splash settle window.
     Start-Sleep -Seconds 2
     Capture-Screenshot $process.MainWindowHandle "01_ready" | Out-Null
+    if ($CameraViews) {
+        # Capture the authoritative world without the dashboard overlay from
+        # several real camera modes. F3 is the same physical key used by a
+        # student: Chase -> TopDown -> Free. The screenshots are intentionally
+        # kept as separate artifacts so geometry/holes can be inspected at
+        # different projection angles.
+        $cameraClient = Get-ClientInfo $process.MainWindowHandle
+        $cameraScale = [Math]::Min($cameraClient.Width / 1600.0, $cameraClient.Height / 900.0)
+        if ($FinalCameraViews) {
+            # Drive's first action button is the official preliminary/final
+            # selector. Exercise it with a real click before taking the
+            # camera views, then restore preliminary so this diagnostic does
+            # not change the user's remembered default.
+            $stageX = [int]((18.0 + 638.0) * $cameraScale)
+            $stageY = [int](158.0 * $cameraScale)
+            Click-ClientPixels $process.MainWindowHandle $stageX $stageY
+            Wait-Trace { param($s) $s.course.stage -eq "final" } "final course selection" | Out-Null
+        }
+        $collapseX = [int]((18.0 + 760.0 - 12.0 - 28.0) * $cameraScale)
+        $collapseY = [int]((18.0 + 21.0) * $cameraScale)
+        Click-ClientPixels $process.MainWindowHandle $collapseX $collapseY
+        Wait-Trace { param($s) $s.ui.collapsed -eq $true } "dashboard collapse for camera views" | Out-Null
+        Start-Sleep -Milliseconds 500
+        Capture-Screenshot $process.MainWindowHandle "02_chase_world" | Out-Null
+        Send-Key 0x72 # F3 -> TopDown
+        Start-Sleep -Milliseconds 700
+        Capture-Screenshot $process.MainWindowHandle "03_topdown_world" | Out-Null
+        Send-Key 0x72 # F3 -> Free
+        Start-Sleep -Milliseconds 700
+        Capture-Screenshot $process.MainWindowHandle "04_free_world" | Out-Null
+        Send-Key 0x72 # F3 -> Chase (leave app in its default view)
+        Start-Sleep -Milliseconds 250
+        if ($FinalCameraViews) {
+            # The dashboard is collapsed; expand it, cycle back to
+            # preliminary, and leave the persisted preference unchanged.
+            Click-ClientPixels $process.MainWindowHandle $collapseX $collapseY
+            Wait-Trace { param($s) $s.ui.collapsed -eq $false } "dashboard expand after final views" | Out-Null
+            $stageX = [int]((18.0 + 638.0) * $cameraScale)
+            $stageY = [int](158.0 * $cameraScale)
+            Click-ClientPixels $process.MainWindowHandle $stageX $stageY
+            Wait-Trace { param($s) $s.course.stage -eq "preliminary" } "preliminary restore after final views" | Out-Null
+        }
+        Write-Host "Camera view capture passed." -ForegroundColor Green
+        return
+    }
     if ($DumpControls) {
         $rootElement = [System.Windows.Automation.AutomationElement]::FromHandle($process.MainWindowHandle)
         $all = $rootElement.FindAll([System.Windows.Automation.TreeScope]::Descendants, [System.Windows.Automation.Condition]::TrueCondition)
