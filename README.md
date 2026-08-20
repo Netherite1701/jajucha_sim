@@ -99,6 +99,7 @@ Unity EditMode/PlayMode 테스트는 Unity가 설치된 개발자 PC에서 실�
 
 ## 문서
 
+- `docs/STUDENT_QUICKSTART_KO.md` — 학생용 버튼·키보드·카메라 조작법
 - `docs/USER_WORKFLOW.md` — 주행·코스 편집·시험 주행
 - `docs/COMPETITION_2026.md` — 2026 규격과 연습 기본값
 - `docs/VSCODE_WORKFLOW.md` — VS Code 개발 흐름

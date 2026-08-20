@@ -30,6 +30,9 @@ A new user does **not** need to:
 
 The standalone build provides the complete normal workflow.
 
+학생 배포본에서 실제로 누르는 버튼과 카메라 조작은
+`docs/STUDENT_QUICKSTART_KO.md`를 먼저 읽으세요.
+
 ---
 
 ## First setup
