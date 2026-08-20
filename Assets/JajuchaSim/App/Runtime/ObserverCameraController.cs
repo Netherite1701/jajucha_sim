@@ -159,7 +159,7 @@ namespace JajuchaSim.App
             if (kb.aKey.isPressed || kb.leftArrowKey.isPressed) vertical -= 1f;
 
             float lift = 0f;
-            if (kb.eKey.isPressed || kb.spaceKey.isPressed) lift += 1f;
+            if (kb.eKey.isPressed) lift += 1f;
             if (kb.qKey.isPressed || kb.leftCtrlKey.isPressed || kb.rightCtrlKey.isPressed) lift -= 1f;
 
             var rotation = Quaternion.Euler(_freePitch, _freeYaw, 0f);
