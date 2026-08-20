@@ -80,7 +80,8 @@ Replace the loop body with your own algorithm (see `python/user/README.md`).
 ## View the simulation
 
 * The main viewport shows the observer camera (chase mode by default; `F3`
-  cycles chase / top-down / free).
+  cycles chase / top-down / free-fly). In free-fly, WASD/arrow keys move,
+  Q/E move vertically, Shift accelerates, and right-mouse drag looks around.
 * The single dark `SimulatorDashboardUI` shows application mode, bridge state,
   stage, and run status. Its tabs are `주행 / 코스 편집 / 채점 / 센서 / 디버그`.
 * The dashboard owns the controls; scenario, scoring, and debug components
@@ -92,7 +93,7 @@ Replace the loop body with your own algorithm (see `python/user/README.md`).
 |---|---|
 | `F1` | Toggle full debug UI |
 | `F2` | Toggle map editor (Drive ↔ Edit Map) |
-| `F3` | Switch observer camera mode (chase / top-down / free) |
+| `F3` | Switch observer camera mode (chase / top-down / free-fly) |
 | `Space` | Pause / resume simulation (Drive mode) |
 | `.` (period) | Single simulation step while paused (Drive mode) |
 | `R` | Rotate selected map item (Map Editor) |
