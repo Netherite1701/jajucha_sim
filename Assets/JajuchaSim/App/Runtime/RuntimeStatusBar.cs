@@ -12,6 +12,7 @@ namespace JajuchaSim.App
     public sealed class RuntimeStatusBar : MonoBehaviour
     {
         [SerializeField] private ApplicationBootstrap bootstrap;
+        [SerializeField] private bool buildStandaloneUi = false;
 
         private GUIStyle _style;
         private GUIStyle _bg;
@@ -24,6 +25,8 @@ namespace JajuchaSim.App
 
         private void OnGUI()
         {
+            if (!buildStandaloneUi)
+                return;
             if (_style == null)
             {
                 _style = new GUIStyle(GUI.skin.label)

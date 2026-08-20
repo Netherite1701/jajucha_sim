@@ -14,7 +14,7 @@ namespace JajuchaSim.App
     ///   - enters Drive mode (wires triggers, scenario, scoring)
     ///   - places the vehicle at the course start trigger
     ///
-    /// The course itself is loaded from <c>Courses/template_course.json</c> and
+    /// The course itself is loaded from a 2026 preliminary/final course JSON and
     /// generated at runtime; the scene only contains configuration (Step 11.29).
     /// </summary>
     public sealed class CourseManager : MonoBehaviour
@@ -36,6 +36,8 @@ namespace JajuchaSim.App
         {
             if (mapEditor == null)
                 mapEditor = FindFirstObjectByType<MapEditorHud>();
+            if (vehicleBehaviour == null)
+                vehicleBehaviour = FindFirstObjectByType<VehicleSystemBehaviour>();
             if (courseRuntimeRoot == null)
                 courseRuntimeRoot = transform;
         }
@@ -89,9 +91,15 @@ namespace JajuchaSim.App
         public bool PlaceVehicleAtStart()
         {
             var doc = Document;
+            if (vehicleBehaviour == null)
+                vehicleBehaviour = FindFirstObjectByType<VehicleSystemBehaviour>();
             var vehicle = vehicleBehaviour != null ? vehicleBehaviour.VehicleSystem : null;
             if (doc == null || vehicle == null || vehicle.VehicleRoot == null)
+            {
+                RuntimeFileLogger.Warning("CourseManager", "PlaceVehicleAtStart skipped: " +
+                    $"doc={(doc != null)} vehicle={(vehicle != null)} root={(vehicle?.VehicleRoot != null)}");
                 return false;
+            }
 
             TriggerInstance start = null;
             foreach (var t in doc.Triggers)
@@ -103,7 +111,10 @@ namespace JajuchaSim.App
                 }
             }
             if (start == null || !start.Region.IsValid)
+            {
+                RuntimeFileLogger.Warning("CourseManager", "PlaceVehicleAtStart skipped: start trigger missing/invalid.");
                 return false;
+            }
 
             float ts = doc.Grid.TileSizeCm;
             float cx = (start.Region.x + start.Region.width * 0.5f) * ts;
@@ -114,14 +125,55 @@ namespace JajuchaSim.App
             float height = rb != null ? root.transform.position.y : 0f;
             if (height <= 0f)
                 height = 2f; // chassis height default fallback
+            // WheelCollider suspension is authored in the same centimetre
+            // world units as the course.  A visual-prefab vehicle whose root
+            // starts at the 3.1 cm chassis offset leaves the tire ray just
+            // above the official 0 cm surface; use the configured suspension
+            // rest height when placing it on the course.
+            if (vehicle is VehicleSystem vehicleSystem && vehicleSystem.CourseRestHeightCm > height)
+                height = vehicleSystem.CourseRestHeightCm;
 
-            root.transform.position = new Vector3(cx, height, cz);
-            root.transform.rotation = Quaternion.identity;
+            var targetPosition = new Vector3(cx, height, cz);
+            // The official 2026 start line is not guaranteed to point along
+            // +Z.  Derive the initial heading from the first two authoritative
+            // checkpoints so the Rigidbody enters the same lane direction as
+            // the printed course (preliminary/final both begin westbound).
+            // Snap to the cardinal road direction: checkpoint centres describe
+            // the route, while the 5 cm road mask supplies the lane geometry.
+            float headingDeg = 0f;
+            var checkpoints = doc.Competition2026 != null ? doc.Competition2026.checkpoints : null;
+            if (checkpoints != null && checkpoints.Length > 1 && checkpoints[0] != null && checkpoints[1] != null)
+            {
+                float nextX = (checkpoints[1].region.x + checkpoints[1].region.width * 0.5f) * ts;
+                float nextZ = (checkpoints[1].region.z + checkpoints[1].region.height * 0.5f) * ts;
+                float dx = nextX - cx;
+                float dz = nextZ - cz;
+                if (Mathf.Abs(dx) >= Mathf.Abs(dz))
+                    headingDeg = dx < 0f ? -90f : 90f;
+                else
+                    headingDeg = dz < 0f ? 180f : 0f;
+            }
+            var targetRotation = Quaternion.Euler(0f, headingDeg, 0f);
+            if (vehicle is VehicleSystem typedVehicle)
+                typedVehicle.SetResetPose(targetPosition, targetRotation);
+            // Rigidbody.position is the authoritative physics pose. Updating
+            // only Transform leaves the body at its old origin until the next
+            // scripted physics step, which can snap the visible vehicle back
+            // to (0,0,0). Keep both views on the same checkpoint coordinate.
+            if (rb != null)
+            {
+                rb.position = targetPosition;
+                rb.rotation = targetRotation;
+            }
+            root.transform.position = targetPosition;
+            root.transform.rotation = targetRotation;
             if (rb != null)
             {
                 rb.linearVelocity = Vector3.zero;
                 rb.angularVelocity = Vector3.zero;
             }
+            RuntimeFileLogger.Info("CourseManager", $"Vehicle placed at start ({targetPosition.x:0.##},{targetPosition.y:0.##},{targetPosition.z:0.##}) " +
+                $"rb={(rb != null)} actual={(rb != null ? rb.position.ToString() : root.transform.position.ToString())}");
             return true;
         }
 

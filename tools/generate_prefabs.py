@@ -312,7 +312,8 @@ def build_simulator_core():
         "config": "{fileID: 11400000, guid: " + G_SIM_CONFIG + ", type: 2}",
         "simulationSystemBehaviours": "",
     })
-    p.mono(1140002, go_mgr, G_SIM_HUD, "JajuchaSim.Core::JajuchaSim.Core.SimulationDebugHud", {})
+    p.mono(1140002, go_mgr, G_SIM_HUD, "JajuchaSim.Core::JajuchaSim.Core.SimulationDebugHud", {
+        "buildStandaloneUi": "0"})
 
     p.go(go_runner, "SimulationRunner", components=[t_runner, 1140003])
     p.transform(t_runner, go_runner, father=t_root)
@@ -367,10 +368,12 @@ def build_vehicle():
 
     # Chassis visual + collision body.
     p.go(go_chassis, "Chassis", components=[t_chassis, 3300001, 2300001, 6500001])
-    p.transform(t_chassis, go_chassis, pos=(0, 2, 0), scale=(14, 4, 22), father=t_root)
+    # Confirmed overall body envelope: 17.76 cm wide x 24.5 cm long.
+    # Chassis width is the visual body only; wheel track remains provisional.
+    p.transform(t_chassis, go_chassis, pos=(0, 2, 0), scale=(12, 4, 22), father=t_root)
     p.mesh_filter(3300001, go_chassis)
     p.mesh_renderer(2300001, go_chassis)
-    p.box_collider(6500001, go_chassis, size=(14, 4, 22), center=(0, 0, 0))
+    p.box_collider(6500001, go_chassis, size=(12, 4, 22), center=(0, 0, 0))
 
     # Wheels (front-left / front-right steering wheels, rear-left / rear-right).
     # The runtime VehicleSystem.CreateWheel() adds the tuned WheelCollider +
@@ -378,10 +381,10 @@ def build_vehicle():
     # keeps the authoritative wheel nodes + visuals so there is exactly one
     # source for the hierarchy.
     wheels = [
-        (go_fl, t_fl, "FL_Wheel", (-10, 0, 11), (3310002, 2310002)),
-        (go_fr, t_fr, "FR_Wheel", (10, 0, 11), (3320002, 2320002)),
-        (go_rl, t_rl, "RL_Wheel", (-10, 0, -11), (3330002, 2330002)),
-        (go_rr, t_rr, "RR_Wheel", (10, 0, -11), (3340002, 2340002)),
+        (go_fl, t_fl, "FL_Wheel", (-7.33, 0, 9.1475), (3310002, 2310002)),
+        (go_fr, t_fr, "FR_Wheel", (7.33, 0, 9.1475), (3320002, 2320002)),
+        (go_rl, t_rl, "RL_Wheel", (-7.33, 0, -9.1475), (3330002, 2330002)),
+        (go_rr, t_rr, "RR_Wheel", (7.33, 0, -9.1475), (3340002, 2340002)),
     ]
     for go_w, t_w, name, pos, fids in wheels:
         mf_fid, mr_fid = fids
@@ -422,6 +425,7 @@ def build_runtime_ui():
     p.mono(11400020, go_root, G_MAP_EDITOR, "JajuchaSim.MapEditor::JajuchaSim.MapEditor.MapEditorHud", {
         "_tileSizeCm": "20",
         "_defaultSaveName": "course.json",
+        "_buildStandaloneUi": "0",
     })
 
     p.go(go_editor, "MapEditorUI", components=[t_editor])

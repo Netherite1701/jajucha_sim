@@ -10,6 +10,7 @@ Shader "Hidden/JajuchaSim/DepthGrayscale"
 
     SubShader
     {
+        Tags { "RenderType"="Opaque" "Queue"="Geometry" }
         Pass
         {
             Cull Back

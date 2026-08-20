@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using JajuchaSim.Core;
@@ -27,13 +28,24 @@ namespace JajuchaSim.MapEditor
     {
         [SerializeField] private float _tileSizeCm = 20f;
         [SerializeField] private string _defaultSaveName = "course.json";
+        [SerializeField] private Transform _roadLayerRoot;
+        [SerializeField] private Transform _structureLayerRoot;
+        [SerializeField] private Transform _objectLayerRoot;
+        [SerializeField] private Transform _triggerLayerRoot;
+        [SerializeField] private GameObject _obstaclePrefab;
+        [SerializeField] private GameObject _slowSignPrefab;
+        [SerializeField] private GameObject _startSignalPrefab;
+        [SerializeField] private GameObject _speedTerminalPrefab;
+        [SerializeField] private bool _buildStandaloneUi = false;
 
         private MapEditorSession _session;
         private EventLogSystem _eventLog;
         private TriggerDetectionSystem _triggers;
         private SpeedTerminalPairRule _speedRule;
         private CourseOverlayRenderer _overlay;
+        private RoadMeshBuilder _roads;
         private StructureMeshBuilder _meshes;
+        private ObjectMeshBuilder _objects;
         private SimulationManager _sim;
 
         private Text _statusText;
@@ -43,6 +55,11 @@ namespace JajuchaSim.MapEditor
         private bool _uiBuilt;
         private bool _worldEnsured;
         private string _savePath;
+        private string _practiceSavePath;
+        private CourseEditOrigin _editOrigin = CourseEditOrigin.PracticeCopy;
+        private string _testDriveDocumentJson;
+        private string _testDriveSettingsJson;
+        private bool _testDriveActive;
 
         // ---- Scenario configuration (Step 8.44–8.46) ----
         private ScenarioPanel _scenarioPanel;
@@ -70,25 +87,50 @@ namespace JajuchaSim.MapEditor
         private Text _collisionPenaltyLabel;
         private Text _objectiveFailurePenaltyLabel;
 
+        // ---- 2026 competition selection ----
+        private CompetitionMissionSettings _competitionSettings;
+        private CompetitionMissionAssignment _missionAssignment;
+        private bool _hasMissionAssignment;
+        private Text _courseStageLabel;
+        private Text _missionModeLabel;
+        private Text _missionTypeLabel;
+        private Text _missionCandidateLabel;
+        private Text _missionGuideLabel;
+        private Text _practiceSpeedLabel;
+        private Text _obstacleWaitLabel;
+        private Text _obstacleExitLabel;
+        private GameObject _startRunButton;
+
         public MapEditorSession Session => _session;
         public CourseDocument Document => _session?.Document;
+        public CourseEditOrigin EditOrigin => _editOrigin;
+        public bool IsPracticeCopy => _editOrigin == CourseEditOrigin.PracticeCopy;
+        public bool BuildsStandaloneUi => _buildStandaloneUi;
+        public CompetitionMissionSettings CompetitionSettings => _competitionSettings;
+        public ScenarioManager ScenarioManager => _scenarioPanel != null ? _scenarioPanel.Manager : null;
+        public ScenarioPanel ScenarioPanel => _scenarioPanel;
+        public string InspectorSummary => BuildInspector();
 
         private void Awake()
         {
             _savePath = Path.Combine(Application.persistentDataPath, _defaultSaveName);
             _session = new MapEditorSession(new CourseDocument(_tileSizeCm));
             _eventLog = new EventLogSystem();
+            _competitionSettings = CompetitionMissionPreferences.Load();
 
             // Seed a small default road so the user can place features immediately.
             for (int z = 0; z < 20; z++)
                 for (int x = 8; x <= 12; x++)
                     _session.Document.SetRoad(new GridCoordinate(x, z));
+
+            _session.DocumentChanged += RefreshVisuals;
         }
 
         private void Start()
         {
             EnsureWorld();
-            BuildUi();
+            if (_buildStandaloneUi)
+                BuildUi();
             RefreshVisuals();
         }
 
@@ -100,13 +142,40 @@ namespace JajuchaSim.MapEditor
 
             _sim = FindFirstObjectByType<SimulationManager>();
 
+            // Keep the MapEditor assembly independent from the App assembly
+            // (App already references MapEditor). The scene hierarchy gives
+            // us the same designated runtime root without introducing a cycle.
+            var courseRootObject = GameObject.Find("CourseRuntimeRoot");
+            var courseRoot = courseRootObject != null ? courseRootObject.transform : null;
+            var layerParent = courseRoot != null ? courseRoot.parent : null;
+            if (layerParent != null)
+            {
+                _roadLayerRoot ??= layerParent.Find("RoadLayerRoot");
+                _structureLayerRoot ??= layerParent.Find("StructureLayerRoot");
+                _objectLayerRoot ??= layerParent.Find("ObjectLayerRoot");
+                _triggerLayerRoot ??= layerParent.Find("RuntimeOverlayRoot");
+            }
+            _roadLayerRoot ??= transform;
+            _structureLayerRoot ??= transform;
+            _objectLayerRoot ??= transform;
+            _triggerLayerRoot ??= transform;
+
             var overlayGo = new GameObject("CourseOverlay");
-            overlayGo.transform.SetParent(transform, false);
+            overlayGo.transform.SetParent(_triggerLayerRoot, false);
             _overlay = overlayGo.AddComponent<CourseOverlayRenderer>();
 
+            var roadGo = new GameObject("RoadMeshes");
+            roadGo.transform.SetParent(_roadLayerRoot, false);
+            _roads = roadGo.AddComponent<RoadMeshBuilder>();
+
             var meshGo = new GameObject("StructureMeshes");
-            meshGo.transform.SetParent(transform, false);
+            meshGo.transform.SetParent(_structureLayerRoot, false);
             _meshes = meshGo.AddComponent<StructureMeshBuilder>();
+
+            var objectGo = new GameObject("CourseObjects");
+            objectGo.transform.SetParent(_objectLayerRoot, false);
+            _objects = objectGo.AddComponent<ObjectMeshBuilder>();
+            _objects.ConfigurePrefabs(_obstaclePrefab, _slowSignPrefab, _startSignalPrefab, _speedTerminalPrefab);
 
             // Observer camera sees everything including debug
             var cams = FindObjectsByType<Camera>(FindObjectsSortMode.None);
@@ -124,7 +193,7 @@ namespace JajuchaSim.MapEditor
 
         private void Update()
         {
-            if (!_uiBuilt) BuildUi();
+            if (_buildStandaloneUi && !_uiBuilt) BuildUi();
             HandleHotkeys();
             HandleMouseEdit();
             UpdateHudText();
@@ -247,12 +316,32 @@ namespace JajuchaSim.MapEditor
 
         private void RefreshVisuals()
         {
+            if (_session == null) return;
+            if (!_worldEnsured) EnsureWorld();
+            _roads?.Bind(_session.Document);
             _overlay?.Bind(_session.Document, _session);
             _meshes?.Bind(_session.Document);
+            _objects?.Bind(_session.Document);
+            if (_roads != null) _roads.gameObject.SetActive(_session.ShowRoad);
+            if (_meshes != null) _meshes.gameObject.SetActive(_session.ShowStructures);
+            if (_objects != null) _objects.gameObject.SetActive(_session.ShowObjects);
+            if (_overlay != null)
+            {
+                bool showOverlay = _session.ShowStructureIds || _session.ShowTriggers ||
+                    _session.ShowTriggerOverlay || _session.IsDragging ||
+                    !string.IsNullOrEmpty(_session.SelectedStructureId);
+                _overlay.gameObject.SetActive(showOverlay);
+            }
             if (_triggers != null)
                 _triggers.SetCourse(_session.Document);
             if (_speedRule != null)
                 _speedRule.SetDocument(_session.Document);
+        }
+
+        private void OnDestroy()
+        {
+            if (_session != null)
+                _session.DocumentChanged -= RefreshVisuals;
         }
 
         private void UpdateHudText()
@@ -351,7 +440,11 @@ namespace JajuchaSim.MapEditor
             var canvas = canvasGo.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 50;
-            canvasGo.AddComponent<CanvasScaler>().uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            var scaler = canvasGo.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(1600f, 900f);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
             canvasGo.AddComponent<GraphicRaycaster>();
 
             // Ensure an EventSystem exists for UI clicks (Input System package).
@@ -362,70 +455,91 @@ namespace JajuchaSim.MapEditor
                 es.AddComponent<InputSystemUIInputModule>();
             }
 
-            _statusText = MakeText(canvasGo.transform, "Status", new Vector2(10, -10), new Vector2(520, 90), TextAnchor.UpperLeft, 14);
-            _previewText = MakeText(canvasGo.transform, "Preview", new Vector2(10, -100), new Vector2(400, 30), TextAnchor.UpperLeft, 14);
-            _inspectorText = MakeText(canvasGo.transform, "Inspector", new Vector2(10, -280), new Vector2(280, 200), TextAnchor.UpperLeft, 13);
-            _eventsText = MakeText(canvasGo.transform, "Events", new Vector2(-10, -10), new Vector2(320, 280), TextAnchor.UpperRight, 13);
+            MakePanel(canvasGo.transform, "StatusPanel", new Vector2(18, -18), new Vector2(720, 92),
+                new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 1));
+            _statusText = MakeText(canvasGo.transform, "Status", new Vector2(30, -30), new Vector2(696, 72), TextAnchor.UpperLeft, 14);
+
+            MakePanel(canvasGo.transform, "PreviewPanel", new Vector2(18, -118), new Vector2(720, 34),
+                new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 1));
+            _previewText = MakeText(canvasGo.transform, "Preview", new Vector2(30, -126), new Vector2(696, 22), TextAnchor.UpperLeft, 13);
+
+            var inspectorPanel = MakePanel(canvasGo.transform, "InspectorPanel", new Vector2(18, 200), new Vector2(420, 145),
+                new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0));
+            _inspectorText = MakeText(inspectorPanel, "Inspector", new Vector2(12, -12), new Vector2(396, 121), TextAnchor.UpperLeft, 13);
+
+            var eventsPanel = MakePanel(canvasGo.transform, "EventsPanel", new Vector2(-18, -18), new Vector2(360, 260),
+                new Vector2(1, 1), new Vector2(1, 1), new Vector2(1, 1));
+            _eventsText = MakeText(eventsPanel, "Events", new Vector2(-12, -12), new Vector2(336, 236), TextAnchor.UpperRight, 13);
             var ert = _eventsText.GetComponent<RectTransform>();
             ert.anchorMin = new Vector2(1, 1);
             ert.anchorMax = new Vector2(1, 1);
             ert.pivot = new Vector2(1, 1);
-            ert.anchoredPosition = new Vector2(-10, -10);
+            ert.anchoredPosition = new Vector2(-12, -12);
 
-            float y = -140f;
-            float x = 10f;
-            Label(canvasGo.transform, "STRUCTURES", ref x, ref y);
-            ToolButton(canvasGo.transform, "Tunnel", MapEditorTool.PlaceTunnel, ref x, ref y);
-            ToolButton(canvasGo.transform, "Ramp", MapEditorTool.PlaceRamp, ref x, ref y);
+            var toolsPanel = MakePanel(canvasGo.transform, "EditorToolsPanel", new Vector2(18, -160), new Vector2(480, 330),
+                new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, 1));
 
-            x = 10f; y -= 8;
-            Label(canvasGo.transform, "OBJECTS", ref x, ref y);
-            ToolButton(canvasGo.transform, "Obstacle", MapEditorTool.PlaceObstacle, ref x, ref y);
-            ToolButton(canvasGo.transform, "Slow Sign", MapEditorTool.PlaceSlowSign, ref x, ref y);
-            ToolButton(canvasGo.transform, "Start Signal", MapEditorTool.PlaceStartSignal, ref x, ref y);
+            float y = -14f;
+            float x = 12f;
+            Label(toolsPanel, "STRUCTURES", ref x, ref y);
+            ToolButton(toolsPanel, "Tunnel", MapEditorTool.PlaceTunnel, ref x, ref y);
+            ToolButton(toolsPanel, "Ramp", MapEditorTool.PlaceRamp, ref x, ref y);
 
-            x = 10f; y -= 8;
-            Label(canvasGo.transform, "TRIGGERS", ref x, ref y);
-            ToolButton(canvasGo.transform, "Slow Zone", MapEditorTool.PaintSlowZone, ref x, ref y);
-            ToolButton(canvasGo.transform, "Start", MapEditorTool.PlaceStartTrigger, ref x, ref y);
-            ToolButton(canvasGo.transform, "Finish", MapEditorTool.PlaceFinishTrigger, ref x, ref y);
-            ToolButton(canvasGo.transform, "Speed A", MapEditorTool.PlaceSpeedTerminalA, ref x, ref y);
-            ToolButton(canvasGo.transform, "Speed B", MapEditorTool.PlaceSpeedTerminalB, ref x, ref y);
-            ToolButton(canvasGo.transform, "Event", MapEditorTool.PlaceEventTrigger, ref x, ref y);
+            x = 12f; y -= 8;
+            Label(toolsPanel, "OBJECTS", ref x, ref y);
+            ToolButton(toolsPanel, "Obstacle", MapEditorTool.PlaceObstacle, ref x, ref y);
+            ToolButton(toolsPanel, "Slow Sign", MapEditorTool.PlaceSlowSign, ref x, ref y);
+            ToolButton(toolsPanel, "Start Signal", MapEditorTool.PlaceStartSignal, ref x, ref y);
 
-            x = 10f; y -= 8;
-            Label(canvasGo.transform, "EDIT", ref x, ref y);
-            ToolButton(canvasGo.transform, "Select", MapEditorTool.Select, ref x, ref y);
-            ToolButton(canvasGo.transform, "Paint Road", MapEditorTool.PaintRoad, ref x, ref y);
-            ToolButton(canvasGo.transform, "Erase Road", MapEditorTool.EraseRoad, ref x, ref y);
+            x = 12f; y -= 8;
+            Label(toolsPanel, "TRIGGERS", ref x, ref y);
+            ToolButton(toolsPanel, "Slow Zone", MapEditorTool.PaintSlowZone, ref x, ref y);
+            ToolButton(toolsPanel, "Start", MapEditorTool.PlaceStartTrigger, ref x, ref y);
+            ToolButton(toolsPanel, "Finish", MapEditorTool.PlaceFinishTrigger, ref x, ref y);
+            ToolButton(toolsPanel, "Speed A", MapEditorTool.PlaceSpeedTerminalA, ref x, ref y);
+            ToolButton(toolsPanel, "Speed B", MapEditorTool.PlaceSpeedTerminalB, ref x, ref y);
+            ToolButton(toolsPanel, "Event", MapEditorTool.PlaceEventTrigger, ref x, ref y);
 
-            // Action buttons (right side bottom)
-            float ax = -10f;
-            float ay = 10f;
-            ActionButton(canvasGo.transform, "Save", new Vector2(ax - 240, ay), () => Save());
-            ActionButton(canvasGo.transform, "Load", new Vector2(ax - 160, ay), () => Load());
-            ActionButton(canvasGo.transform, "Test Drive", new Vector2(ax - 60, ay), () => EnterDrive());
-            ActionButton(canvasGo.transform, "Back to Editor", new Vector2(ax - 60, ay + 40), () => EnterEdit());
-            ActionButton(canvasGo.transform, "Undo", new Vector2(ax - 240, ay + 40), () => { if (_session.UndoLast()) RefreshVisuals(); });
-            ActionButton(canvasGo.transform, "Redo", new Vector2(ax - 160, ay + 40), () => { if (_session.RedoLast()) RefreshVisuals(); });
+            x = 12f; y -= 8;
+            Label(toolsPanel, "EDIT", ref x, ref y);
+            ToolButton(toolsPanel, "Select", MapEditorTool.Select, ref x, ref y);
+            ToolButton(toolsPanel, "Paint Road", MapEditorTool.PaintRoad, ref x, ref y);
+            ToolButton(toolsPanel, "Erase Road", MapEditorTool.EraseRoad, ref x, ref y);
 
-            // Layer toggles
-            float lx = 10f;
-            float ly = -520f;
-            Label(canvasGo.transform, "LAYERS", ref lx, ref ly);
-            Toggle(canvasGo.transform, "Road", _session.ShowRoad, v => { _session.ShowRoad = v; RefreshVisuals(); }, ref lx, ref ly);
-            Toggle(canvasGo.transform, "Structures", _session.ShowStructures, v => { _session.ShowStructures = v; RefreshVisuals(); }, ref lx, ref ly);
-            Toggle(canvasGo.transform, "Objects", _session.ShowObjects, v => { _session.ShowObjects = v; RefreshVisuals(); }, ref lx, ref ly);
-            Toggle(canvasGo.transform, "Triggers", _session.ShowTriggers, v => { _session.ShowTriggers = v; RefreshVisuals(); }, ref lx, ref ly);
-            Toggle(canvasGo.transform, "Trigger Overlay (Drive)", _session.ShowTriggerOverlay, v => { _session.ShowTriggerOverlay = v; RefreshVisuals(); }, ref lx, ref ly);
+            var actionsPanel = MakePanel(canvasGo.transform, "ActionsPanel", new Vector2(470, 18), new Vector2(330, 84),
+                new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0));
+            ActionButton(actionsPanel, "Save", new Vector2(10, -10), () => Save());
+            ActionButton(actionsPanel, "Load", new Vector2(105, -10), () => Load());
+            ActionButton(actionsPanel, "Test Drive", new Vector2(210, -10), () => EnterDrive());
+            ActionButton(actionsPanel, "Undo", new Vector2(10, -48), () => { if (_session.UndoLast()) RefreshVisuals(); });
+            ActionButton(actionsPanel, "Redo", new Vector2(105, -48), () => { if (_session.RedoLast()) RefreshVisuals(); });
+            ActionButton(actionsPanel, "Back to Editor", new Vector2(210, -48), () => EnterEdit());
 
-            BuildScenarioSection(canvasGo.transform);
+            var layersPanel = MakePanel(canvasGo.transform, "LayersPanel", new Vector2(18, 18), new Vector2(420, 170),
+                new Vector2(0, 0), new Vector2(0, 0), new Vector2(0, 0));
+            float lx = 12f;
+            float ly = -12f;
+            Label(layersPanel, "LAYERS", ref lx, ref ly);
+            Toggle(layersPanel, "Road", _session.ShowRoad, v => { _session.ShowRoad = v; RefreshVisuals(); }, ref lx, ref ly);
+            Toggle(layersPanel, "Structures", _session.ShowStructures, v => { _session.ShowStructures = v; RefreshVisuals(); }, ref lx, ref ly);
+            Toggle(layersPanel, "Objects", _session.ShowObjects, v => { _session.ShowObjects = v; RefreshVisuals(); }, ref lx, ref ly);
+            Toggle(layersPanel, "Triggers", _session.ShowTriggers, v => { _session.ShowTriggers = v; RefreshVisuals(); }, ref lx, ref ly);
+            Toggle(layersPanel, "Trigger Overlay (Drive)", _session.ShowTriggerOverlay, v => { _session.ShowTriggerOverlay = v; RefreshVisuals(); }, ref lx, ref ly);
+
+            var scenarioPanel = MakePanel(canvasGo.transform, "ScenarioPanel", new Vector2(-18, 18), new Vector2(330, 700),
+                new Vector2(1, 0), new Vector2(1, 0), new Vector2(1, 0));
+            BuildScenarioSection(scenarioPanel);
 
             _uiBuilt = true;
         }
 
         private void Save()
         {
+            if (!IsCourseEditable)
+            {
+                Debug.LogWarning("[MapEditor] Official 2026 courses are read-only. Create a practice copy before saving.");
+                return;
+            }
             try
             {
                 var json = _session.SaveJson(true);
@@ -472,7 +586,18 @@ namespace JajuchaSim.MapEditor
             {
                 if (!_session.LoadJson(json))
                     return false;
+                _session.IsReadOnly = true;
+                _editOrigin = CourseEditOrigin.OfficialReadOnly;
+                _practiceSavePath = null;
+                if (_session.Document.Competition2026 != null)
+                {
+                    _competitionSettings.lastStage = _session.Document.Competition2026.Stage == CourseStage.Final
+                        ? "final" : "preliminary";
+                    CompetitionMissionPreferences.Save(_competitionSettings);
+                    _hasMissionAssignment = false;
+                }
                 RefreshVisuals();
+                RefreshScenarioLabels();
                 return true;
             }
             catch (System.Exception ex)
@@ -514,7 +639,7 @@ namespace JajuchaSim.MapEditor
         /// Auto-configure the scenario from the loaded course: pick the first
         /// Start/Finish trigger ids, keep the default slow-zone speed, and
         /// (re)build the scenario definition. Used by the ApplicationBootstrap
-        /// so the template course works without manual trigger picking.
+        /// so the 2026 course works without manual trigger picking.
         /// </summary>
         public void AutoConfigureScenario()
         {
@@ -610,6 +735,8 @@ namespace JajuchaSim.MapEditor
             const float halfL = 15f;
             _triggers.GetVehiclePose = () =>
             {
+                if (tracked == null)
+                    return default(VehiclePose);
                 var p = tracked.position;
                 var f = tracked.transform.forward;
                 var r = tracked.transform.right;
@@ -649,9 +776,11 @@ namespace JajuchaSim.MapEditor
         /// </summary>
         private void BuildScenarioSection(Transform canvasParent)
         {
-            float y = -300f;
+            // This panel is bottom-right anchored. Positive y keeps the
+            // scenario controls inside the panel and above the bottom edge.
+            float y = 675f;
             float x = -10f;
-            const float width = 250f;
+            const float width = 300f;
 
             var header = MakeText(canvasParent, "SCENARIO", new Vector2(x, y), new Vector2(width, 20), TextAnchor.UpperRight, 13);
             var hrt = header.GetComponent<RectTransform>();
@@ -662,6 +791,17 @@ namespace JajuchaSim.MapEditor
             header.fontStyle = FontStyle.Bold;
             y -= 24;
 
+            _courseStageLabel = ValueRow(canvasParent, "2026 Course", x, ref y, width, CycleCompetitionStage);
+            _missionModeLabel = ValueRow(canvasParent, "Mission Mode", x, ref y, width, CycleMissionMode);
+            _missionTypeLabel = ValueRow(canvasParent, "Mission Type", x, ref y, width, CycleMissionType);
+            _missionCandidateLabel = ValueRow(canvasParent, "Candidate", x, ref y, width, CycleMissionCandidate);
+            _practiceSpeedLabel = ValueRow(canvasParent, "Speed Limit*", x, ref y, width, CyclePracticeSpeed);
+            _obstacleWaitLabel = ValueRow(canvasParent, "Obstacle Wait*", x, ref y, width, CycleObstacleWait);
+            _obstacleExitLabel = ValueRow(canvasParent, "Obstacle Exit*", x, ref y, width, CycleObstacleExit);
+            _missionGuideLabel = MakeText(canvasParent, "MissionGuide", new Vector2(x - width, y),
+                new Vector2(width, 30), TextAnchor.MiddleLeft, 10);
+            y -= 34;
+
             _startTriggerLabel = ValueRow(canvasParent, "Start Trigger", x, ref y, width, CycleStartTrigger);
             _finishTriggerLabel = ValueRow(canvasParent, "Finish Trigger", x, ref y, width, CycleFinishTrigger);
             _maxTimeLabel = ValueRow(canvasParent, "Max Time", x, ref y, width, CycleMaxTime);
@@ -670,7 +810,7 @@ namespace JajuchaSim.MapEditor
 
             // Step 10.34: SCORING configuration, runtime-build editable.
             y -= 8;
-            var scoringHeader = MakeText(canvasParent, "SCORING", new Vector2(x, y), new Vector2(width, 18), TextAnchor.UpperRight, 13);
+            var scoringHeader = MakeText(canvasParent, "PRACTICE SCORING (UNOFFICIAL)", new Vector2(x, y), new Vector2(width, 18), TextAnchor.UpperRight, 13);
             var shrt = scoringHeader.GetComponent<RectTransform>();
             shrt.anchorMin = new Vector2(1, 0);
             shrt.anchorMax = new Vector2(1, 0);
@@ -685,18 +825,44 @@ namespace JajuchaSim.MapEditor
             _objectiveFailurePenaltyLabel = ValueRow(canvasParent, "Obj Failure", x, ref y, width, CycleObjectiveFailurePenalty);
 
             y -= 6;
-            SmallButton(canvasParent, "Start Run", new Vector2(x - width + 90, y), new Vector2(84, 26), () => OnScenarioStartRun());
+            _startRunButton = SmallButton(canvasParent, "Start Run", new Vector2(x - width + 90, y), new Vector2(84, 26), () => OnScenarioStartRun());
             SmallButton(canvasParent, "Abort Run", new Vector2(x - 90, y), new Vector2(84, 26), () => OnScenarioAbortRun());
             y -= 30;
-            SmallButton(canvasParent, "RED", new Vector2(x - width + 66, y), new Vector2(54, 22), () => OnScenarioSignalPreview(StartSignalState.Red));
-            SmallButton(canvasParent, "YELLOW", new Vector2(x - width + 126, y), new Vector2(62, 22), () => OnScenarioSignalPreview(StartSignalState.Yellow));
-            SmallButton(canvasParent, "GREEN", new Vector2(x - 56, y), new Vector2(54, 22), () => OnScenarioSignalPreview(StartSignalState.Green));
+            SmallButton(canvasParent, "LAMP 1", new Vector2(x - width + 70, y), new Vector2(60, 22), () => OnScenarioSignalPreview(StartSignalState.Lamp1));
+            SmallButton(canvasParent, "LAMP 4", new Vector2(x - width + 136, y), new Vector2(60, 22), () => OnScenarioSignalPreview(StartSignalState.Lamp4));
+            SmallButton(canvasParent, "RELEASE", new Vector2(x - 58, y), new Vector2(58, 22), () => OnScenarioSignalPreview(StartSignalState.Released));
 
             RefreshScenarioLabels();
         }
 
         private void RefreshScenarioLabels()
         {
+            if (_courseStageLabel != null)
+                _courseStageLabel.text = _session?.Document?.Competition2026?.Stage == CourseStage.Final ? "Final" : "Preliminary";
+            if (_missionModeLabel != null)
+                _missionModeLabel.text = _competitionSettings?.mode.ToString() ?? "Unconfigured";
+            if (_missionTypeLabel != null)
+                _missionTypeLabel.text = _competitionSettings?.missionType.ToString() ?? "Unconfigured";
+            if (_missionCandidateLabel != null)
+                _missionCandidateLabel.text = string.IsNullOrEmpty(_competitionSettings?.candidateId)
+                    ? "Select 1-5" : _competitionSettings.candidateId;
+            if (_practiceSpeedLabel != null)
+                _practiceSpeedLabel.text = $"{_competitionSettings?.practiceSpeedLimitCmS ?? 20f:0} cm/s";
+            if (_obstacleWaitLabel != null)
+                _obstacleWaitLabel.text = $"{_competitionSettings?.obstacleWaitSec ?? 3f:0.0} s";
+            if (_obstacleExitLabel != null)
+                _obstacleExitLabel.text = $"{_competitionSettings?.obstacleExitSec ?? 1f:0.0} s";
+            if (_missionGuideLabel != null)
+                _missionGuideLabel.text = (_competitionSettings?.IsConfigured ?? false)
+                    ? "* 비공식 연습값 (official documents do not specify these values)"
+                    : "Select mission mode/type/candidate before Start Run.";
+            if (_startRunButton != null)
+            {
+                var button = _startRunButton.GetComponent<Button>();
+                if (button != null)
+                    button.interactable = _session?.Document?.Competition2026 == null ||
+                        (_competitionSettings?.IsConfigured ?? false);
+            }
             if (_startTriggerLabel != null)
                 _startTriggerLabel.text = string.IsNullOrEmpty(_startTriggerId) ? "—" : _startTriggerId;
             if (_finishTriggerLabel != null)
@@ -809,12 +975,31 @@ namespace JajuchaSim.MapEditor
                 finishTriggerId = _finishTriggerId,
                 maxRunTimeSec = _maxTimeSec,
                 startMode = _scenarioStartMode,
-                startTimingMode = StartTimingMode.SignalGreen,
-                redDurationSec = 2f,
-                yellowDurationSec = 1f,
+                startTimingMode = StartTimingMode.SignalRelease,
+                lampIntervalSec = 1.5f,
+                releaseDelayMinSec = 3f,
+                releaseDelayMaxSec = 6f,
+                buzzerDurationSec = 1f,
                 autoSaveResults = true,
                 runsDirectory = "Runs"
             };
+
+            if (_session.Document.Competition2026 != null)
+            {
+                def.courseId = _session.Document.Competition2026.courseId;
+                def.scenarioId = _session.Document.Competition2026.Stage == CourseStage.Final
+                    ? "2026_final" : "2026_preliminary";
+                def.competitionStage = _session.Document.Competition2026.stage;
+                if (_hasMissionAssignment)
+                {
+                    def.additionalMission = _missionAssignment.MissionType.ToString();
+                    def.missionCandidateId = _missionAssignment.CandidateId;
+                    def.missionRandomSeed = _missionAssignment.Seed;
+                }
+                def.falseStart.enabled = true;
+                def.falseStart.violationMode = ViolationMode.Penalty;
+                def.falseStart.penalty = 10f;
+            }
 
             // Step 10.34: apply the runtime-editable scoring values.
             def.scoring.baseScore = _baseScore;
@@ -839,6 +1024,19 @@ namespace JajuchaSim.MapEditor
                     break;
                 }
 
+            if (_hasMissionAssignment && _missionAssignment.MissionType == AdditionalMissionType.YellowFlagSpeed)
+            {
+                def.objectives.Add(new ObjectiveDefinition
+                {
+                    id = "practice_speed_limit",
+                    type = ObjectiveType.SpeedPair,
+                    pairId = "mission_speed_pair",
+                    maxSpeedCmS = _competitionSettings.practiceSpeedLimitCmS,
+                    failurePenalty = _objectiveFailurePenalty,
+                    required = true
+                });
+            }
+
             return def;
         }
 
@@ -852,16 +1050,49 @@ namespace JajuchaSim.MapEditor
                 _scenarioPanel = go.AddComponent<ScenarioPanel>();
                 _scenarioPanel.ShowControls = true;
                 _scenarioPanel.ShowSignalOverride = true;
+                _scenarioPanel.BuildStandaloneUi = _buildStandaloneUi;
             }
             _scenarioDefinition = BuildScenarioDefinition();
             _scenarioPanel.Configure(_scenarioDefinition, _session.Document);
+            _scenarioPanel.Manager.BeforeStart = PrepareMissionBeforeScenarioStart;
         }
 
         private void OnScenarioStartRun()
         {
             EnsureScenarioPanel();
             if (_scenarioPanel == null || _scenarioPanel.Manager == null) return;
-            _scenarioPanel.StartRun();
+            if (!_scenarioPanel.StartRun() && _statusText != null)
+                _statusText.text = "Select mission mode/type/candidate before Start Run";
+        }
+
+        /// <summary>
+        /// Resolve and apply the 2026 additional mission for every start entry
+        /// point (dashboard, legacy controller, and bridge). Re-preparing the
+        /// definition here ensures the result JSON contains the selected type,
+        /// candidate, and seed rather than a stale pre-selection definition.
+        /// </summary>
+        private bool PrepareMissionBeforeScenarioStart()
+        {
+            if (_session?.Document?.Competition2026 == null)
+                return true;
+            if (_competitionSettings == null || !_competitionSettings.IsConfigured)
+                return false;
+
+            _missionAssignment = CompetitionMissionPlanner.Resolve(
+                _competitionSettings, _session.Document.Competition2026);
+            _hasMissionAssignment = true;
+            CompetitionMissionPlanner.Apply(
+                _session.Document, _missionAssignment, _competitionSettings);
+            if (_competitionSettings.mode == AdditionalMissionMode.Random)
+            {
+                _competitionSettings.randomSeed++;
+                CompetitionMissionPreferences.Save(_competitionSettings);
+            }
+
+            _scenarioDefinition = BuildScenarioDefinition();
+            _scenarioPanel?.Configure(_scenarioDefinition, _session.Document);
+            RefreshVisuals();
+            return true;
         }
 
         private void OnScenarioAbortRun()
@@ -909,6 +1140,8 @@ namespace JajuchaSim.MapEditor
 
             var labelText = MakeText(rowGo.transform, "Label", new Vector2(-width, 0), new Vector2(width - 100, 20), TextAnchor.MiddleLeft, 11);
             labelText.text = label + ":";
+            labelText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            labelText.verticalOverflow = VerticalWrapMode.Truncate;
             var lrt = labelText.GetComponent<RectTransform>();
             lrt.anchorMin = new Vector2(1, 0);
             lrt.anchorMax = new Vector2(1, 0);
@@ -943,6 +1176,260 @@ namespace JajuchaSim.MapEditor
 
         // ---- UI helpers ------------------------------------------------
 
+        private static RectTransform MakePanel(Transform parent, string name, Vector2 pos, Vector2 size,
+            Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var rt = go.AddComponent<RectTransform>();
+            rt.anchorMin = anchorMin;
+            rt.anchorMax = anchorMax;
+            rt.pivot = pivot;
+            rt.anchoredPosition = pos;
+            rt.sizeDelta = size;
+
+            var image = go.AddComponent<Image>();
+            image.color = new Color(0.03f, 0.04f, 0.06f, 0.84f);
+            image.raycastTarget = false;
+            return rt;
+        }
+
+        private void CycleCompetitionStage()
+        {
+            string next = _session?.Document?.Competition2026?.Stage == CourseStage.Final ? "preliminary" : "final";
+            string root = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
+            string path = Path.Combine(root, "Courses", $"2026_{next}.json");
+            if (LoadCourseFromFile(path))
+            {
+                _competitionSettings.lastStage = next;
+                CompetitionMissionPreferences.Save(_competitionSettings);
+                AutoConfigureScenario();
+            }
+        }
+
+        /// <summary>Whether the current course can be mutated and saved as practice data.</summary>
+        public bool IsCourseEditable => _editOrigin == CourseEditOrigin.PracticeCopy &&
+            _session != null && !_session.IsReadOnly && !_testDriveActive;
+
+        /// <summary>Clone the official 2026 course in memory without touching the source JSON.</summary>
+        public bool CreatePracticeCopy()
+        {
+            if (_session?.Document == null || _session.Document.Competition2026 == null)
+            {
+                Debug.LogWarning("[MapEditor] CreatePracticeCopy rejected: no loaded 2026 document.");
+                return false;
+            }
+
+            var copy = CourseDocument.FromJson(_session.SaveJson(pretty: false));
+            if (copy == null)
+            {
+                Debug.LogWarning("[MapEditor] CreatePracticeCopy rejected: document clone failed.");
+                return false;
+            }
+
+            _session.SetDocument(copy);
+            _session.IsReadOnly = false;
+            _editOrigin = CourseEditOrigin.PracticeCopy;
+            _practiceSavePath = null;
+            _hasMissionAssignment = false;
+            EnterEdit();
+            RefreshVisuals();
+            Debug.Log("[MapEditor] CreatePracticeCopy succeeded.");
+            return true;
+        }
+
+        /// <summary>Load a previously saved practice course and keep it editable.</summary>
+        public bool LoadPracticeCourseFromFile(string path)
+        {
+            if (string.IsNullOrEmpty(path) || !File.Exists(path) || _session == null)
+                return false;
+            try
+            {
+                var document = CourseDocument.FromJson(File.ReadAllText(path));
+                if (document == null || document.Competition2026 == null)
+                    return false;
+                _session.SetDocument(document);
+                _session.IsReadOnly = false;
+                _editOrigin = CourseEditOrigin.PracticeCopy;
+                _practiceSavePath = path;
+                _hasMissionAssignment = false;
+                AutoConfigureScenario();
+                RefreshVisuals();
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[MapEditor] Practice course load failed: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>Save a practice copy, allocating a numbered name on first save.</summary>
+        public string SavePracticeCopy()
+        {
+            if (!IsCourseEditable || _session?.Document?.Competition2026 == null)
+                return null;
+
+            string practiceDirectory = Path.Combine(Application.persistentDataPath,
+                "JajuchaSim", "Courses", "Practice");
+            Directory.CreateDirectory(practiceDirectory);
+            if (string.IsNullOrEmpty(_practiceSavePath))
+            {
+                string stage = _session.Document.Competition2026.Stage == CourseStage.Final
+                    ? "final" : "preliminary";
+                string baseName = $"practice_2026_{stage}";
+                _practiceSavePath = Path.Combine(practiceDirectory, baseName + ".json");
+                int suffix = 2;
+                while (File.Exists(_practiceSavePath))
+                {
+                    _practiceSavePath = Path.Combine(practiceDirectory, $"{baseName}_{suffix}.json");
+                    suffix++;
+                }
+            }
+
+            File.WriteAllText(_practiceSavePath, _session.SaveJson(pretty: true));
+            return _practiceSavePath;
+        }
+
+        /// <summary>Return saved practice copies for the course picker.</summary>
+        public string[] ListPracticeCourses()
+        {
+            string directory = Path.Combine(Application.persistentDataPath, "JajuchaSim", "Courses", "Practice");
+            if (!Directory.Exists(directory)) return System.Array.Empty<string>();
+            var files = Directory.GetFiles(directory, "practice_2026_*.json");
+            System.Array.Sort(files, StringComparer.OrdinalIgnoreCase);
+            return files;
+        }
+
+        /// <summary>Load the most recently named practice copy, if present.</summary>
+        public bool LoadLatestPracticeCourse()
+        {
+            var files = ListPracticeCourses();
+            return files.Length > 0 && LoadPracticeCourseFromFile(files[files.Length - 1]);
+        }
+
+        public List<ValidationResult> ValidateActiveCourse()
+            => _session != null ? _session.Validate() : new List<ValidationResult>();
+
+        public void SelectTool(MapEditorTool tool)
+        {
+            if (_session == null) return;
+            _session.Tool = tool;
+            _session.Mode = MapEditorMode.Edit;
+        }
+
+        public void PreviewSignal(StartSignalState signal) => OnScenarioSignalPreview(signal);
+        public void StartScenarioRun() => OnScenarioStartRun();
+        public void AbortScenarioRun() => OnScenarioAbortRun();
+        /// <summary>Run the current practice copy without committing mission/runtime changes.</summary>
+        public bool BeginPracticeTestDrive()
+        {
+            if (!IsCourseEditable || _testDriveActive)
+                return false;
+            _testDriveDocumentJson = _session.SaveJson(pretty: false);
+            _testDriveSettingsJson = _competitionSettings != null
+                ? JsonUtility.ToJson(_competitionSettings, false) : null;
+            _testDriveActive = true;
+            EnterDrive();
+            return true;
+        }
+
+        /// <summary>Restore the unsaved practice edit after a test drive.</summary>
+        public bool EndPracticeTestDrive()
+        {
+            if (!_testDriveActive)
+                return false;
+            try
+            {
+                var snapshot = CourseDocument.FromJson(_testDriveDocumentJson);
+                if (snapshot != null)
+                {
+                    _session.SetDocument(snapshot);
+                    _session.IsReadOnly = false;
+                    _editOrigin = CourseEditOrigin.PracticeCopy;
+                }
+                if (!string.IsNullOrEmpty(_testDriveSettingsJson) && _competitionSettings != null)
+                {
+                    JsonUtility.FromJsonOverwrite(_testDriveSettingsJson, _competitionSettings);
+                    CompetitionMissionPreferences.Save(_competitionSettings);
+                }
+                _missionAssignment = default(CompetitionMissionAssignment);
+                _hasMissionAssignment = false;
+                _testDriveDocumentJson = null;
+                _testDriveSettingsJson = null;
+                _testDriveActive = false;
+                EnterEdit();
+                RefreshVisuals();
+                return true;
+            }
+            catch (System.Exception ex)
+            {
+                Debug.LogError($"[MapEditor] Test-drive restore failed: {ex.Message}");
+                return false;
+            }
+        }
+
+        public bool IsPracticeTestDriveActive => _testDriveActive;
+        public void CycleCourseStage() => CycleCompetitionStage();
+        public void CycleMissionModeValue() => CycleMissionMode();
+        public void CycleMissionTypeValue() => CycleMissionType();
+        public void CycleMissionCandidateValue() => CycleMissionCandidate();
+        public void CyclePracticeSpeedValue() => CyclePracticeSpeed();
+        public void CycleObstacleWaitValue() => CycleObstacleWait();
+        public void CycleObstacleExitValue() => CycleObstacleExit();
+
+        private void CycleMissionMode()
+        {
+            _competitionSettings.mode = _competitionSettings.mode == AdditionalMissionMode.Fixed
+                ? AdditionalMissionMode.Random : AdditionalMissionMode.Fixed;
+            SaveCompetitionSettings();
+        }
+
+        private void CycleMissionType()
+        {
+            _competitionSettings.missionType = _competitionSettings.missionType == AdditionalMissionType.YellowFlagSpeed
+                ? AdditionalMissionType.DynamicObstacle : AdditionalMissionType.YellowFlagSpeed;
+            SaveCompetitionSettings();
+        }
+
+        private void CycleMissionCandidate()
+        {
+            int current = 0;
+            if (!string.IsNullOrEmpty(_competitionSettings.candidateId))
+                int.TryParse(_competitionSettings.candidateId.Replace("candidate_", ""), out current);
+            current = current % Competition2026Specification.CandidateCount + 1;
+            _competitionSettings.candidateId = $"candidate_{current}";
+            SaveCompetitionSettings();
+        }
+
+        private void CyclePracticeSpeed()
+        {
+            _competitionSettings.practiceSpeedLimitCmS = _competitionSettings.practiceSpeedLimitCmS >= 50f
+                ? 5f : _competitionSettings.practiceSpeedLimitCmS + 5f;
+            SaveCompetitionSettings();
+        }
+
+        private void CycleObstacleWait()
+        {
+            _competitionSettings.obstacleWaitSec = _competitionSettings.obstacleWaitSec >= 10f
+                ? 0.5f : _competitionSettings.obstacleWaitSec + 0.5f;
+            SaveCompetitionSettings();
+        }
+
+        private void CycleObstacleExit()
+        {
+            _competitionSettings.obstacleExitSec = _competitionSettings.obstacleExitSec >= 5f
+                ? 0.5f : _competitionSettings.obstacleExitSec + 0.5f;
+            SaveCompetitionSettings();
+        }
+
+        private void SaveCompetitionSettings()
+        {
+            _hasMissionAssignment = false;
+            CompetitionMissionPreferences.Save(_competitionSettings);
+            RefreshScenarioLabels();
+        }
+
         private void ToolButton(Transform parent, string label, MapEditorTool tool, ref float x, ref float y)
         {
             var btn = MakeButton(parent, label, new Vector2(x, y), new Vector2(100, 28), () =>
@@ -958,9 +1445,9 @@ namespace JajuchaSim.MapEditor
         {
             var go = MakeButton(parent, label, anchoredPos, new Vector2(90, 32), onClick);
             var rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(1, 0);
-            rt.anchorMax = new Vector2(1, 0);
-            rt.pivot = new Vector2(1, 0);
+            rt.anchorMin = new Vector2(0, 1);
+            rt.anchorMax = new Vector2(0, 1);
+            rt.pivot = new Vector2(0, 1);
             rt.anchoredPosition = anchoredPos;
         }
 

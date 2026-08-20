@@ -1,0 +1,31 @@
+{
+  "python.defaultInterpreterPath": "${workspaceFolder}\\.venv\\Scripts\\python.exe",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}\\python"
+  ],
+  "python.testing.pytestEnabled": true,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestArgs": [
+    "python/tests"
+  ],
+  "python.terminal.activateEnvironment": true,
+  "jajuchaSim.unityPath": "C:\\Program Files\\Unity\\Hub\\Editor\\6000.3.20f1\\Editor\\Unity.exe",
+  "files.exclude": {
+    "**/.venv": true,
+    "**/.pytest_cache": true,
+    "**/Library": true,
+    "**/Temp": true,
+    "**/Logs": true,
+    "**/UserSettings": true
+  },
+  "search.exclude": {
+    "**/.venv": true,
+    "**/.pytest_cache": true,
+    "**/Library": true,
+    "**/Temp": true,
+    "**/Logs": true,
+    "**/UserSettings": true,
+    "**/*.csproj": true,
+    "**/*.sln": true
+  }
+}

@@ -1,0 +1,60 @@
+﻿{
+    "passed":  true,
+    "timestamp":  "2026-08-20T01:03:16.8171082+09:00",
+    "cameras":  {
+                    "left":  {
+                                 "frame_id":  null,
+                                 "width":  640,
+                                 "height":  480,
+                                 "format":  "rgb24",
+                                 "length":  921600,
+                                 "path":  "C:\\dev\\jajucha-sim\\test-artifacts\\sensors\\left_camera.png",
+                                 "nonzero":  true
+                             },
+                    "center":  {
+                                   "frame_id":  null,
+                                   "width":  640,
+                                   "height":  480,
+                                   "format":  "rgb24",
+                                   "length":  921600,
+                                   "path":  "C:\\dev\\jajucha-sim\\test-artifacts\\sensors\\center_camera.png",
+                                   "nonzero":  true
+                               },
+                    "right":  {
+                                  "frame_id":  null,
+                                  "width":  640,
+                                  "height":  480,
+                                  "format":  "rgb24",
+                                  "length":  921600,
+                                  "path":  "C:\\dev\\jajucha-sim\\test-artifacts\\sensors\\right_camera.png",
+                                  "nonzero":  true
+                              },
+                    "depth":  {
+                                  "frame_id":  null,
+                                  "width":  640,
+                                  "height":  480,
+                                  "format":  "gray8",
+                                  "length":  307200,
+                                  "path":  "C:\\dev\\jajucha-sim\\test-artifacts\\sensors\\center_depth.png",
+                                  "nonzero":  true
+                              },
+                    "lidar":  {
+                                  "frame_id":  94,
+                                  "ray_count":  360,
+                                  "angle_min_deg":  0,
+                                  "angle_max_deg":  359,
+                                  "angle_increment_deg":  1,
+                                  "max_distance_cm":  1000,
+                                  "format":  "float32_le",
+                                  "length":  1440,
+                                  "path":  "C:\\dev\\jajucha-sim\\test-artifacts\\sensors\\lidar.png"
+                              }
+                },
+    "lidar":  {
+                  "supported":  true,
+                  "ray_count":  360,
+                  "angle_range":  "0..360 degrees",
+                  "distance_unit":  "cm bridge / mm Python",
+                  "path":  "C:\\dev\\jajucha-sim\\test-artifacts\\sensors\\lidar.png"
+              }
+}

@@ -83,16 +83,44 @@ namespace JajuchaSim.Scenario
             if (Document != null)
             {
                 if (Document.FindObject(name) != null) return name;
-                if (Document.FindStructure(name) != null) return name;
+                var structure = Document.FindStructure(name);
+                if (structure != null)
+                    return IsSafeTunnelPassage(structure) ? null : name;
                 // Fall back to a stable id derived from the collider name if the
                 // object exists under a modified name (e.g. "(Clone)" suffix).
                 string trimmed = TrimCloneSuffix(name);
                 if (Document.FindObject(trimmed) != null) return trimmed;
-                if (Document.FindStructure(trimmed) != null) return trimmed;
+                structure = Document.FindStructure(trimmed);
+                if (structure != null)
+                    return IsSafeTunnelPassage(structure) ? null : trimmed;
                 return null;
             }
 
             return name;
+        }
+
+        /// <summary>
+        /// A tunnel wall MeshCollider is assembled from short quads. At a
+        /// curved seam, a vehicle centred in the authored opening can touch a
+        /// neighbouring quad even though its footprint is inside the 39 cm
+        /// opening. Use the same sampled centreline as the generated geometry
+        /// to suppress that seam false-positive; contacts outside the legal
+        /// centre corridor remain real collisions.
+        /// </summary>
+        private bool IsSafeTunnelPassage(StructureInstance structure)
+        {
+            if (structure == null || structure.Type != StructureType.Tunnel || transform == null)
+                return false;
+
+            float distance = CompetitionPathGeometry.DistanceToTunnelCenterline(
+                structure, transform.position);
+            float halfOpening = structure.OpeningWidthCm > 0f
+                ? structure.OpeningWidthCm * 0.5f
+                : 19.5f;
+            // The runtime chassis collider is 16 cm wide. Leave a 1 cm wall
+            // margin while allowing a centreline car to pass mesh seams.
+            float legalCenterDistance = Mathf.Max(0f, halfOpening - 8f - 1f);
+            return distance <= legalCenterDistance;
         }
 
         private static string TrimCloneSuffix(string name)

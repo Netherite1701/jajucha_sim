@@ -1,0 +1,105 @@
+﻿{
+    "passed":  false,
+    "timestamp":  "2026-08-19T23:47:54.3139902+09:00",
+    "error":  "Vehicle pose did not change after motor command; distance=0",
+    "checks":  {
+                   "handshake":  true,
+                   "initialState":  "Running",
+                   "initialPosition":  {
+                                           "x":  350,
+                                           "y":  6.02,
+                                           "z":  45
+                                       },
+                   "motorAccepted":  true,
+                   "positionChangedAfterMotor":  false
+               },
+    "responses":  [
+                      {
+                          "request":  "get_status",
+                          "id":  1,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  1,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Running",
+                                                           "tick":  188,
+                                                           "sim_time":  1.87999995797873,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  350,
+                                                                                               "y":  6.02,
+                                                                                               "z":  45
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  -4.856505E-08,
+                                                                                                "y":  -1.369898E-06,
+                                                                                                "z":  -1.026169E-07
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  4.052561E-08,
+                                                                                                 "y":  0,
+                                                                                                 "z":  -1.369679E-09
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  0,
+                                                                                           "right":  0,
+                                                                                           "speed":  0
+                                                                                       },
+                                                                           "driven_wheel_grounded":  false,
+                                                                           "ground_ray_hit":  "Chassis",
+                                                                           "ground_ray_y":  16.02
+                                                                       }
+                                                       }
+                                       }
+                      },
+                      {
+                          "request":  "set_motor",
+                          "id":  2,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  2,
+                                           "ok":  true
+                                       }
+                      },
+                      {
+                          "request":  "get_status",
+                          "id":  3,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  3,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Running",
+                                                           "tick":  283,
+                                                           "sim_time":  2.82999993674457,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  350,
+                                                                                               "y":  6.02,
+                                                                                               "z":  45
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  -4.917859E-08,
+                                                                                                "y":  -1.364927E-06,
+                                                                                                "z":  -6.357748E-08
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  -3.109343E-07,
+                                                                                                 "y":  -2.861023E-06,
+                                                                                                 "z":  2.763511E-08
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  8,
+                                                                                           "right":  8,
+                                                                                           "speed":  8
+                                                                                       },
+                                                                           "driven_wheel_grounded":  false,
+                                                                           "ground_ray_hit":  "Chassis",
+                                                                           "ground_ray_y":  16.02
+                                                                       }
+                                                       }
+                                       }
+                      }
+                  ]
+}

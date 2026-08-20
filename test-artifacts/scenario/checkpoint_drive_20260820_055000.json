@@ -1,0 +1,7993 @@
+{
+  "passed": false,
+  "course": "C:\\dev\\jajucha-sim\\Courses\\2026_preliminary.json",
+  "checkpoints": [
+    {
+      "id": "start",
+      "x_cm": 350.0,
+      "z_cm": 45.0
+    },
+    {
+      "id": "s_curve",
+      "x_cm": 220.0,
+      "z_cm": 175.0
+    },
+    {
+      "id": "right_angle",
+      "x_cm": 265.0,
+      "z_cm": 315.0
+    },
+    {
+      "id": "u_tunnel",
+      "x_cm": 130.0,
+      "z_cm": 175.0
+    },
+    {
+      "id": "straight_hill",
+      "x_cm": 45.0,
+      "z_cm": 450.0
+    },
+    {
+      "id": "hill_exit",
+      "x_cm": 365.0,
+      "z_cm": 495.0
+    },
+    {
+      "id": "zigzag",
+      "x_cm": 545.0,
+      "z_cm": 495.0
+    },
+    {
+      "id": "obstacle_section",
+      "x_cm": 860.0,
+      "z_cm": 355.0
+    },
+    {
+      "id": "curve",
+      "x_cm": 945.0,
+      "z_cm": 85.0
+    },
+    {
+      "id": "finish",
+      "x_cm": 630.0,
+      "z_cm": 45.0
+    }
+  ],
+  "visited": [],
+  "snapshots": [
+    {
+      "time": 1787172614.4065003,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 350.0,
+        "z": 45.0
+      },
+      "yaw_deg": 270.0,
+      "velocity_cm_s": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "distance_cm": 35.0,
+      "desired_yaw_deg": -90.0,
+      "steering": 0,
+      "speed": 4,
+      "route_index": 0,
+      "nearest_index": 0,
+      "lookahead_index": 7
+    },
+    {
+      "time": 1787172614.564497,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 347.3324,
+        "z": 45.0
+      },
+      "yaw_deg": 270.0,
+      "velocity_cm_s": {
+        "x": -20.52,
+        "y": 0,
+        "z": -2.446174e-06
+      },
+      "distance_cm": 37.33240000000001,
+      "desired_yaw_deg": -90.0,
+      "steering": 0,
+      "speed": 4,
+      "route_index": 1,
+      "nearest_index": 1,
+      "lookahead_index": 8
+    },
+    {
+      "time": 1787172614.7165313,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 344.0492,
+        "z": 45.0
+      },
+      "yaw_deg": 270.0,
+      "velocity_cm_s": {
+        "x": -20.52,
+        "y": 0,
+        "z": -2.446174e-06
+      },
+      "distance_cm": 34.049199999999985,
+      "desired_yaw_deg": -90.0,
+      "steering": 0,
+      "speed": 4,
+      "route_index": 1,
+      "nearest_index": 1,
+      "lookahead_index": 8
+    },
+    {
+      "time": 1787172614.8747456,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 340.9712,
+        "z": 45.0
+      },
+      "yaw_deg": 270.0,
+      "velocity_cm_s": {
+        "x": -20.52,
+        "y": 0,
+        "z": -2.446174e-06
+      },
+      "distance_cm": 35.51956308390359,
+      "desired_yaw_deg": -89.2667633054201,
+      "steering": 0,
+      "speed": 4,
+      "route_index": 2,
+      "nearest_index": 2,
+      "lookahead_index": 9
+    },
+    {
+      "time": 1787172615.025926,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 337.688,
+        "z": 45.0
+      },
+      "yaw_deg": 270.0,
+      "velocity_cm_s": {
+        "x": -20.52,
+        "y": 0,
+        "z": -2.446174e-06
+      },
+      "distance_cm": 32.236659310544766,
+      "desired_yaw_deg": -89.19208752514638,
+      "steering": 0,
+      "speed": 4,
+      "route_index": 2,
+      "nearest_index": 2,
+      "lookahead_index": 9
+    },
+    {
+      "time": 1787172615.189769,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 334.61,
+        "z": 45.0
+      },
+      "yaw_deg": 270.0,
+      "velocity_cm_s": {
+        "x": -20.52,
+        "y": 0,
+        "z": -2.446174e-06
+      },
+      "distance_cm": 33.27431741108379,
+      "desired_yaw_deg": -87.65126677108873,
+      "steering": 0,
+      "speed": 4,
+      "route_index": 3,
+      "nearest_index": 3,
+      "lookahead_index": 10
+    },
+    {
+      "time": 1787172615.3360472,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 331.3268,
+        "z": 45.0
+      },
+      "yaw_deg": 270.0,
+      "velocity_cm_s": {
+        "x": -20.52,
+        "y": 0,
+        "z": -2.446174e-06
+      },
+      "distance_cm": 33.710031881914134,
+      "desired_yaw_deg": -85.35947673212821,
+      "steering": 1,
+      "speed": 4,
+      "route_index": 4,
+      "nearest_index": 4,
+      "lookahead_index": 11
+    },
+    {
+      "time": 1787172615.540865,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 328.2488,
+        "z": 45.00535
+      },
+      "yaw_deg": 270.2135,
+      "velocity_cm_s": {
+        "x": -20.51986,
+        "y": 0,
+        "z": 0.07645885
+      },
+      "distance_cm": 30.642658017754894,
+      "desired_yaw_deg": -84.90381981043069,
+      "steering": 1,
+      "speed": 4,
+      "route_index": 4,
+      "nearest_index": 4,
+      "lookahead_index": 11
+    },
+    {
+      "time": 1787172615.692034,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 324.35,
+        "z": 45.03105
+      },
+      "yaw_deg": 270.5255,
+      "velocity_cm_s": {
+        "x": -20.51913,
+        "y": 0,
+        "z": 0.1882123
+      },
+      "distance_cm": 33.23227877429193,
+      "desired_yaw_deg": -78.21538996947424,
+      "steering": 1,
+      "speed": 4,
+      "route_index": 5,
+      "nearest_index": 5,
+      "lookahead_index": 13
+    },
+    {
+      "time": 1787172615.8441434,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 321.067,
+        "z": 45.06916
+      },
+      "yaw_deg": 270.7883,
+      "velocity_cm_s": {
+        "x": -20.51806,
+        "y": 0,
+        "z": 0.2823105
+      },
+      "distance_cm": 32.91516346845609,
+      "desired_yaw_deg": -73.26769171860491,
+      "steering": 2,
+      "speed": 4,
+      "route_index": 6,
+      "nearest_index": 6,
+      "lookahead_index": 14
+    },
+    {
+      "time": 1787172615.9963992,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 317.9895,
+        "z": 45.12393
+      },
+      "yaw_deg": 271.2486,
+      "velocity_cm_s": {
+        "x": -20.51513,
+        "y": 0,
+        "z": 0.4471411
+      },
+      "distance_cm": 29.963792259673184,
+      "desired_yaw_deg": -71.67357432360083,
+      "steering": 2,
+      "speed": 4,
+      "route_index": 6,
+      "nearest_index": 6,
+      "lookahead_index": 14
+    },
+    {
+      "time": 1787172616.1496074,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 314.7075,
+        "z": 45.21148
+      },
+      "yaw_deg": 271.7748,
+      "velocity_cm_s": {
+        "x": -20.51015,
+        "y": 0,
+        "z": 0.6355333
+      },
+      "distance_cm": 29.74185151062501,
+      "desired_yaw_deg": -65.11399952227545,
+      "steering": 3,
+      "speed": 4,
+      "route_index": 7,
+      "nearest_index": 7,
+      "lookahead_index": 15
+    },
+    {
+      "time": 1787172616.3056362,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 311.6316,
+        "z": 45.32632
+      },
+      "yaw_deg": 272.4832,
+      "velocity_cm_s": {
+        "x": -20.50073,
+        "y": 0,
+        "z": 0.8890437
+      },
+      "distance_cm": 33.11035794585132,
+      "desired_yaw_deg": -53.54544139335143,
+      "steering": 4,
+      "speed": 4,
+      "route_index": 8,
+      "nearest_index": 8,
+      "lookahead_index": 17
+    },
+    {
+      "time": 1787172616.4519749,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 308.3529,
+        "z": 45.49804
+      },
+      "yaw_deg": 273.4907,
+      "velocity_cm_s": {
+        "x": -20.48193,
+        "y": 0,
+        "z": 1.249374
+      },
+      "distance_cm": 30.425061746060578,
+      "desired_yaw_deg": -50.13481052511921,
+      "steering": 5,
+      "speed": 4,
+      "route_index": 8,
+      "nearest_index": 8,
+      "lookahead_index": 17
+    },
+    {
+      "time": 1787172616.6078596,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 305.283,
+        "z": 45.71926
+      },
+      "yaw_deg": 274.7009,
+      "velocity_cm_s": {
+        "x": -20.45098,
+        "y": 0,
+        "z": 1.681686
+      },
+      "distance_cm": 31.548988863793515,
+      "desired_yaw_deg": -42.19996449470266,
+      "steering": 5,
+      "speed": 4,
+      "route_index": 9,
+      "nearest_index": 9,
+      "lookahead_index": 18
+    },
+    {
+      "time": 1787172616.7555306,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 302.4225,
+        "z": 45.98575
+      },
+      "yaw_deg": 275.8618,
+      "velocity_cm_s": {
+        "x": -20.4127,
+        "y": 0,
+        "z": 2.095694
+      },
+      "distance_cm": 33.314110544611815,
+      "desired_yaw_deg": -35.2786536147272,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 10,
+      "nearest_index": 10,
+      "lookahead_index": 19
+    },
+    {
+      "time": 1787172616.9139338,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 299.3651,
+        "z": 46.34025
+      },
+      "yaw_deg": 277.3101,
+      "velocity_cm_s": {
+        "x": -20.35321,
+        "y": 0,
+        "z": 2.610959
+      },
+      "distance_cm": 31.342756625189946,
+      "desired_yaw_deg": -31.08655838709543,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 10,
+      "nearest_index": 10,
+      "lookahead_index": 19
+    },
+    {
+      "time": 1787172617.0650322,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 296.1152,
+        "z": 46.80624
+      },
+      "yaw_deg": 278.9095,
+      "velocity_cm_s": {
+        "x": -20.27241,
+        "y": 0,
+        "z": 3.178019
+      },
+      "distance_cm": 33.243365963589945,
+      "desired_yaw_deg": -25.472086183487416,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 11,
+      "nearest_index": 11,
+      "lookahead_index": 20
+    },
+    {
+      "time": 1787172617.2260425,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 292.8807,
+        "z": 47.36829
+      },
+      "yaw_deg": 280.7337,
+      "velocity_cm_s": {
+        "x": -20.16097,
+        "y": 0,
+        "z": 3.821739
+      },
+      "distance_cm": 35.081917422143555,
+      "desired_yaw_deg": -21.54061412590374,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 12,
+      "nearest_index": 12,
+      "lookahead_index": 21
+    },
+    {
+      "time": 1787172617.3857257,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 289.6662,
+        "z": 48.03576
+      },
+      "yaw_deg": 282.6098,
+      "velocity_cm_s": {
+        "x": -20.02505,
+        "y": 0,
+        "z": 4.479712
+      },
+      "distance_cm": 36.688404704075054,
+      "desired_yaw_deg": -18.990670072302134,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 13,
+      "nearest_index": 13,
+      "lookahead_index": 22
+    },
+    {
+      "time": 1787172617.5419595,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 286.4753,
+        "z": 48.80811
+      },
+      "yaw_deg": 284.4858,
+      "velocity_cm_s": {
+        "x": -19.86765,
+        "y": 0,
+        "z": 5.132892
+      },
+      "distance_cm": 35.02909620991652,
+      "desired_yaw_deg": -14.461892104417744,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 13,
+      "nearest_index": 13,
+      "lookahead_index": 22
+    },
+    {
+      "time": 1787172617.6969802,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 283.5096,
+        "z": 49.63143
+      },
+      "yaw_deg": 286.4558,
+      "velocity_cm_s": {
+        "x": -19.67947,
+        "y": 0,
+        "z": 5.812825
+      },
+      "distance_cm": 36.37786464328135,
+      "desired_yaw_deg": -13.52811466799412,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 14,
+      "nearest_index": 14,
+      "lookahead_index": 23
+    },
+    {
+      "time": 1787172617.8434145,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 280.5747,
+        "z": 50.55873
+      },
+      "yaw_deg": 288.4786,
+      "velocity_cm_s": {
+        "x": -19.46203,
+        "y": 0,
+        "z": 6.503826
+      },
+      "distance_cm": 34.88951646702631,
+      "desired_yaw_deg": -9.194215137716247,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 14,
+      "nearest_index": 14,
+      "lookahead_index": 23
+    },
+    {
+      "time": 1787172618.0028584,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 277.6745,
+        "z": 51.58904
+      },
+      "yaw_deg": 290.5014,
+      "velocity_cm_s": {
+        "x": -19.22034,
+        "y": 0,
+        "z": 7.186726
+      },
+      "distance_cm": 35.71258735925278,
+      "desired_yaw_deg": -9.438259133004072,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 15,
+      "nearest_index": 15,
+      "lookahead_index": 24
+    },
+    {
+      "time": 1787172618.15098,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 274.4338,
+        "z": 52.87963
+      },
+      "yaw_deg": 292.7939,
+      "velocity_cm_s": {
+        "x": -18.91748,
+        "y": 0,
+        "z": 7.949795
+      },
+      "distance_cm": 34.03919443800734,
+      "desired_yaw_deg": -4.407030169064076,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 15,
+      "nearest_index": 15,
+      "lookahead_index": 24
+    },
+    {
+      "time": 1787172618.2937965,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 271.8056,
+        "z": 54.03912
+      },
+      "yaw_deg": 294.6818,
+      "velocity_cm_s": {
+        "x": -18.64531,
+        "y": 0,
+        "z": 8.568709
+      },
+      "distance_cm": 34.74209732244874,
+      "desired_yaw_deg": -5.233899758570776,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 16,
+      "nearest_index": 16,
+      "lookahead_index": 25
+    },
+    {
+      "time": 1787172618.4517198,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 269.0336,
+        "z": 55.37679
+      },
+      "yaw_deg": 296.7046,
+      "velocity_cm_s": {
+        "x": -18.33124,
+        "y": 0,
+        "z": 9.221489
+      },
+      "distance_cm": 33.26194575188425,
+      "desired_yaw_deg": -0.6842807195389424,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 16,
+      "nearest_index": 16,
+      "lookahead_index": 25
+    },
+    {
+      "time": 1787172618.5943468,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 266.3106,
+        "z": 56.81147
+      },
+      "yaw_deg": 298.7274,
+      "velocity_cm_s": {
+        "x": -17.99434,
+        "y": 0,
+        "z": 9.862772
+      },
+      "distance_cm": 33.21439741920513,
+      "desired_yaw_deg": -2.261409341122995,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 17,
+      "nearest_index": 17,
+      "lookahead_index": 26
+    },
+    {
+      "time": 1787172618.7568161,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 263.6371,
+        "z": 58.33641
+      },
+      "yaw_deg": 300.5214,
+      "velocity_cm_s": {
+        "x": -17.67674,
+        "y": 0,
+        "z": 10.42128
+      },
+      "distance_cm": 31.692908167255652,
+      "desired_yaw_deg": 2.464668293960836,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 17,
+      "nearest_index": 17,
+      "lookahead_index": 26
+    },
+    {
+      "time": 1787172618.9029608,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 261.0142,
+        "z": 59.94691
+      },
+      "yaw_deg": 302.4914,
+      "velocity_cm_s": {
+        "x": -17.30806,
+        "y": 0,
+        "z": 11.02278
+      },
+      "distance_cm": 30.316246802467152,
+      "desired_yaw_deg": 7.55478081072462,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 17,
+      "nearest_index": 17,
+      "lookahead_index": 26
+    },
+    {
+      "time": 1787172619.06519,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 258.281,
+        "z": 61.76549
+      },
+      "yaw_deg": 304.649,
+      "velocity_cm_s": {
+        "x": -16.88079,
+        "y": 0,
+        "z": 11.66659
+      },
+      "distance_cm": 29.26185803695334,
+      "desired_yaw_deg": 5.152840667224457,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 18,
+      "nearest_index": 18,
+      "lookahead_index": 27
+    },
+    {
+      "time": 1787172619.2261817,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 255.6181,
+        "z": 63.68569
+      },
+      "yaw_deg": 306.8066,
+      "velocity_cm_s": {
+        "x": -16.42959,
+        "y": 0,
+        "z": 12.29386
+      },
+      "distance_cm": 48.61233648351105,
+      "desired_yaw_deg": -31.802146168644242,
+      "steering": 3,
+      "speed": 4,
+      "route_index": 27,
+      "nearest_index": 27,
+      "lookahead_index": 36
+    },
+    {
+      "time": 1787172619.3742676,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 253.1743,
+        "z": 65.55693
+      },
+      "yaw_deg": 307.8043,
+      "velocity_cm_s": {
+        "x": -16.21303,
+        "y": 0,
+        "z": 12.57807
+      },
+      "distance_cm": 45.747174246229676,
+      "desired_yaw_deg": -30.4358516458348,
+      "steering": 3,
+      "speed": 4,
+      "route_index": 27,
+      "nearest_index": 27,
+      "lookahead_index": 36
+    },
+    {
+      "time": 1787172619.533811,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 250.5951,
+        "z": 67.58838
+      },
+      "yaw_deg": 308.5952,
+      "velocity_cm_s": {
+        "x": -16.03788,
+        "y": 0,
+        "z": 12.80065
+      },
+      "distance_cm": 42.70582460314284,
+      "desired_yaw_deg": -28.832787389452957,
+      "steering": 3,
+      "speed": 4,
+      "route_index": 27,
+      "nearest_index": 27,
+      "lookahead_index": 36
+    },
+    {
+      "time": 1787172619.6842573,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 248.0441,
+        "z": 69.65525
+      },
+      "yaw_deg": 309.386,
+      "velocity_cm_s": {
+        "x": -15.85967,
+        "y": 0,
+        "z": 13.0208
+      },
+      "distance_cm": 46.8170697204258,
+      "desired_yaw_deg": -28.216063707176016,
+      "steering": 3,
+      "speed": 4,
+      "route_index": 29,
+      "nearest_index": 29,
+      "lookahead_index": 38
+    },
+    {
+      "time": 1787172619.8338993,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 245.8356,
+        "z": 71.49248
+      },
+      "yaw_deg": 310.078,
+      "velocity_cm_s": {
+        "x": -15.70125,
+        "y": 0,
+        "z": 13.2114
+      },
+      "distance_cm": 47.827374418267105,
+      "desired_yaw_deg": -27.0423834248364,
+      "steering": 3,
+      "speed": 4,
+      "route_index": 30,
+      "nearest_index": 30,
+      "lookahead_index": 39
+    },
+    {
+      "time": 1787172619.9825878,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 243.339,
+        "z": 73.62465
+      },
+      "yaw_deg": 310.8689,
+      "velocity_cm_s": {
+        "x": -15.51741,
+        "y": 0,
+        "z": 13.42686
+      },
+      "distance_cm": 44.81079254439951,
+      "desired_yaw_deg": -25.438460245524656,
+      "steering": 3,
+      "speed": 4,
+      "route_index": 30,
+      "nearest_index": 30,
+      "lookahead_index": 39
+    },
+    {
+      "time": 1787172620.1339712,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 241.1788,
+        "z": 75.5184
+      },
+      "yaw_deg": 311.5609,
+      "velocity_cm_s": {
+        "x": -15.35411,
+        "y": 0,
+        "z": 13.61329
+      },
+      "distance_cm": 42.188084494194044,
+      "desired_yaw_deg": -23.893677093193777,
+      "steering": 3,
+      "speed": 4,
+      "route_index": 30,
+      "nearest_index": 30,
+      "lookahead_index": 39
+    },
+    {
+      "time": 1787172620.2873826,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 238.7382,
+        "z": 77.71447
+      },
+      "yaw_deg": 312.3517,
+      "velocity_cm_s": {
+        "x": -15.16475,
+        "y": 0,
+        "z": 13.82392
+      },
+      "distance_cm": 43.09726411530326,
+      "desired_yaw_deg": -21.80857643956054,
+      "steering": 3,
+      "speed": 4,
+      "route_index": 31,
+      "nearest_index": 31,
+      "lookahead_index": 40
+    },
+    {
+      "time": 1787172620.442496,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 236.4779,
+        "z": 79.8037
+      },
+      "yaw_deg": 313.0932,
+      "velocity_cm_s": {
+        "x": -14.9846,
+        "y": 0,
+        "z": 14.01899
+      },
+      "distance_cm": 44.49858446760594,
+      "desired_yaw_deg": -19.23493183326893,
+      "steering": 3,
+      "speed": 4,
+      "route_index": 32,
+      "nearest_index": 32,
+      "lookahead_index": 41
+    },
+    {
+      "time": 1787172620.595356,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 234.2447,
+        "z": 81.922
+      },
+      "yaw_deg": 313.8346,
+      "velocity_cm_s": {
+        "x": -14.80194,
+        "y": 0,
+        "z": 14.21172
+      },
+      "distance_cm": 41.786644730014864,
+      "desired_yaw_deg": -17.300315899288712,
+      "steering": 4,
+      "speed": 4,
+      "route_index": 32,
+      "nearest_index": 32,
+      "lookahead_index": 41
+    },
+    {
+      "time": 1787172620.7609968,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 231.897,
+        "z": 84.21705
+      },
+      "yaw_deg": 314.8421,
+      "velocity_cm_s": {
+        "x": -14.54976,
+        "y": 0,
+        "z": 14.46979
+      },
+      "distance_cm": 43.11566329485599,
+      "desired_yaw_deg": -14.764535380784451,
+      "steering": 4,
+      "speed": 4,
+      "route_index": 33,
+      "nearest_index": 33,
+      "lookahead_index": 42
+    },
+    {
+      "time": 1787172620.9088004,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 229.5919,
+        "z": 86.55491
+      },
+      "yaw_deg": 315.8996,
+      "velocity_cm_s": {
+        "x": -14.28023,
+        "y": 0,
+        "z": 14.73586
+      },
+      "distance_cm": 44.84048662906463,
+      "desired_yaw_deg": -11.757777728028397,
+      "steering": 4,
+      "speed": 4,
+      "route_index": 34,
+      "nearest_index": 34,
+      "lookahead_index": 43
+    },
+    {
+      "time": 1787172621.072426,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 227.4704,
+        "z": 88.78493
+      },
+      "yaw_deg": 316.8911,
+      "velocity_cm_s": {
+        "x": -14.02312,
+        "y": 0,
+        "z": 14.98073
+      },
+      "distance_cm": 42.256112778303084,
+      "desired_yaw_deg": -9.557173675087448,
+      "steering": 4,
+      "speed": 4,
+      "route_index": 34,
+      "nearest_index": 34,
+      "lookahead_index": 43
+    },
+    {
+      "time": 1787172621.2175066,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 225.2504,
+        "z": 91.20369
+      },
+      "yaw_deg": 317.9485,
+      "velocity_cm_s": {
+        "x": -13.74425,
+        "y": 0,
+        "z": 15.23699
+      },
+      "distance_cm": 44.109902173730795,
+      "desired_yaw_deg": -6.836122275646521,
+      "steering": 4,
+      "speed": 4,
+      "route_index": 35,
+      "nearest_index": 35,
+      "lookahead_index": 44
+    },
+    {
+      "time": 1787172621.3781397,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 223.0753,
+        "z": 93.66302
+      },
+      "yaw_deg": 319.006,
+      "velocity_cm_s": {
+        "x": -13.46069,
+        "y": 0,
+        "z": 15.48806
+      },
+      "distance_cm": 41.45121693762922,
+      "desired_yaw_deg": -4.25473048432275,
+      "steering": 5,
+      "speed": 4,
+      "route_index": 35,
+      "nearest_index": 35,
+      "lookahead_index": 44
+    },
+    {
+      "time": 1787172621.5451944,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 221.082,
+        "z": 96.00829
+      },
+      "yaw_deg": 320.2162,
+      "velocity_cm_s": {
+        "x": -13.13058,
+        "y": 0,
+        "z": 15.7689
+      },
+      "distance_cm": 39.00671958424727,
+      "desired_yaw_deg": -1.5895206512982158,
+      "steering": 5,
+      "speed": 4,
+      "route_index": 36,
+      "nearest_index": 36,
+      "lookahead_index": 44
+    },
+    {
+      "time": 1787172621.6912217,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 218.8849,
+        "z": 98.71778
+      },
+      "yaw_deg": 321.6259,
+      "velocity_cm_s": {
+        "x": -12.73867,
+        "y": 0,
+        "z": 16.08716
+      },
+      "distance_cm": 41.29727758749237,
+      "desired_yaw_deg": 1.547276085454607,
+      "steering": 5,
+      "speed": 4,
+      "route_index": 37,
+      "nearest_index": 37,
+      "lookahead_index": 45
+    },
+    {
+      "time": 1787172621.8471231,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 217.0022,
+        "z": 101.1528
+      },
+      "yaw_deg": 322.8698,
+      "velocity_cm_s": {
+        "x": -12.38645,
+        "y": 0,
+        "z": 16.35989
+      },
+      "distance_cm": 38.96269693796876,
+      "desired_yaw_deg": 4.412713181736728,
+      "steering": 5,
+      "speed": 4,
+      "route_index": 37,
+      "nearest_index": 37,
+      "lookahead_index": 45
+    },
+    {
+      "time": 1787172621.9950771,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 215.2931,
+        "z": 103.4618
+      },
+      "yaw_deg": 324.0307,
+      "velocity_cm_s": {
+        "x": -12.05245,
+        "y": 0,
+        "z": 16.60749
+      },
+      "distance_cm": 41.804030509629094,
+      "desired_yaw_deg": 6.464893452189147,
+      "steering": 5,
+      "speed": 4,
+      "route_index": 38,
+      "nearest_index": 38,
+      "lookahead_index": 46
+    },
+    {
+      "time": 1787172622.1430972,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 213.5142,
+        "z": 105.9737
+      },
+      "yaw_deg": 325.2746,
+      "velocity_cm_s": {
+        "x": -11.6891,
+        "y": 0,
+        "z": 16.86521
+      },
+      "distance_cm": 44.50146844015376,
+      "desired_yaw_deg": 8.380336294990352,
+      "steering": 5,
+      "speed": 4,
+      "route_index": 39,
+      "nearest_index": 39,
+      "lookahead_index": 47
+    },
+    {
+      "time": 1787172622.2810369,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 211.7903,
+        "z": 108.5235
+      },
+      "yaw_deg": 326.5184,
+      "velocity_cm_s": {
+        "x": -11.32024,
+        "y": 0,
+        "z": 17.11498
+      },
+      "distance_cm": 42.2811923476621,
+      "desired_yaw_deg": 11.196187350513666,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 39,
+      "nearest_index": 39,
+      "lookahead_index": 47
+    },
+    {
+      "time": 1787172622.4351003,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 210.2356,
+        "z": 110.9392
+      },
+      "yaw_deg": 327.8838,
+      "velocity_cm_s": {
+        "x": -10.90921,
+        "y": 0,
+        "z": 17.37986
+      },
+      "distance_cm": 40.262757034261824,
+      "desired_yaw_deg": 14.035139021537155,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 39,
+      "nearest_index": 39,
+      "lookahead_index": 47
+    },
+    {
+      "time": 1787172622.5942504,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 208.5316,
+        "z": 113.7455
+      },
+      "yaw_deg": 329.4832,
+      "velocity_cm_s": {
+        "x": -10.41987,
+        "y": 0,
+        "z": 17.67758
+      },
+      "distance_cm": 38.02516231142215,
+      "desired_yaw_deg": 17.55374566040193,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 40,
+      "nearest_index": 40,
+      "lookahead_index": 47
+    },
+    {
+      "time": 1787172622.7332246,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 207.0058,
+        "z": 116.4186
+      },
+      "yaw_deg": 330.9826,
+      "velocity_cm_s": {
+        "x": -9.953731,
+        "y": 0,
+        "z": 17.94418
+      },
+      "distance_cm": 40.429268999468746,
+      "desired_yaw_deg": 19.429622402079293,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 41,
+      "nearest_index": 41,
+      "lookahead_index": 48
+    },
+    {
+      "time": 1787172622.8736,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 205.6453,
+        "z": 118.9487
+      },
+      "yaw_deg": 332.3821,
+      "velocity_cm_s": {
+        "x": -9.512513,
+        "y": 0,
+        "z": 18.18193
+      },
+      "distance_cm": 38.55441200566173,
+      "desired_yaw_deg": 22.58867655496147,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 41,
+      "nearest_index": 41,
+      "lookahead_index": 48
+    },
+    {
+      "time": 1787172623.0331063,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 204.2567,
+        "z": 121.6956
+      },
+      "yaw_deg": 333.8815,
+      "velocity_cm_s": {
+        "x": -9.03349,
+        "y": 0,
+        "z": 18.42461
+      },
+      "distance_cm": 40.70954789465476,
+      "desired_yaw_deg": 24.848431484072723,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 42,
+      "nearest_index": 42,
+      "lookahead_index": 49
+    },
+    {
+      "time": 1787172623.1801367,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 202.9404,
+        "z": 124.4778
+      },
+      "yaw_deg": 335.381,
+      "velocity_cm_s": {
+        "x": -8.548279,
+        "y": 0,
+        "z": 18.65469
+      },
+      "distance_cm": 38.81009028345485,
+      "desired_yaw_deg": 28.33996395792351,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 42,
+      "nearest_index": 42,
+      "lookahead_index": 49
+    },
+    {
+      "time": 1787172623.3349109,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 201.7026,
+        "z": 127.2958
+      },
+      "yaw_deg": 337.1052,
+      "velocity_cm_s": {
+        "x": -7.983104,
+        "y": 0,
+        "z": 18.90345
+      },
+      "distance_cm": 40.80958594167036,
+      "desired_yaw_deg": 31.010126448750057,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 43,
+      "nearest_index": 43,
+      "lookahead_index": 50
+    },
+    {
+      "time": 1787172623.5029612,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 200.4781,
+        "z": 130.342
+      },
+      "yaw_deg": 338.9813,
+      "velocity_cm_s": {
+        "x": -7.359968,
+        "y": 0,
+        "z": 19.15467
+      },
+      "distance_cm": 38.917824081175254,
+      "desired_yaw_deg": 34.86859288843622,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 43,
+      "nearest_index": 43,
+      "lookahead_index": 50
+    },
+    {
+      "time": 1787172623.645752,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 199.3541,
+        "z": 133.4266
+      },
+      "yaw_deg": 340.8574,
+      "velocity_cm_s": {
+        "x": -6.728938,
+        "y": 0,
+        "z": 19.38535
+      },
+      "distance_cm": 44.296737814218,
+      "desired_yaw_deg": 38.31630653836914,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 44,
+      "nearest_index": 44,
+      "lookahead_index": 52
+    },
+    {
+      "time": 1787172623.7941632,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 198.4538,
+        "z": 136.1546
+      },
+      "yaw_deg": 342.4989,
+      "velocity_cm_s": {
+        "x": -6.170847,
+        "y": 0,
+        "z": 19.57015
+      },
+      "distance_cm": 42.78178187492182,
+      "desired_yaw_deg": 41.529181293554146,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 44,
+      "nearest_index": 44,
+      "lookahead_index": 52
+    },
+    {
+      "time": 1787172623.9363766,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 197.5764,
+        "z": 139.1047
+      },
+      "yaw_deg": 344.2578,
+      "velocity_cm_s": {
+        "x": -5.567285,
+        "y": 0,
+        "z": 19.75033
+      },
+      "distance_cm": 44.7753644156486,
+      "desired_yaw_deg": 45.56028984476552,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 45,
+      "nearest_index": 45,
+      "lookahead_index": 53
+    },
+    {
+      "time": 1787172624.0952566,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 196.7955,
+        "z": 142.0819
+      },
+      "yaw_deg": 346.2453,
+      "velocity_cm_s": {
+        "x": -4.878936,
+        "y": 0,
+        "z": 19.93154
+      },
+      "distance_cm": 43.330895822942296,
+      "desired_yaw_deg": 49.0962571304372,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 45,
+      "nearest_index": 45,
+      "lookahead_index": 53
+    },
+    {
+      "time": 1787172624.2379234,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 196.1201,
+        "z": 145.0847
+      },
+      "yaw_deg": 348.2681,
+      "velocity_cm_s": {
+        "x": -4.172378,
+        "y": 0,
+        "z": 20.09133
+      },
+      "distance_cm": 45.59905615324666,
+      "desired_yaw_deg": 53.398848496407325,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 46,
+      "nearest_index": 46,
+      "lookahead_index": 54
+    },
+    {
+      "time": 1787172624.3820477,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 195.5512,
+        "z": 148.1095
+      },
+      "yaw_deg": 350.2909,
+      "velocity_cm_s": {
+        "x": -3.460618,
+        "y": 0,
+        "z": 20.22608
+      },
+      "distance_cm": 51.800057373726965,
+      "desired_yaw_deg": 58.13659097303362,
+      "steering": 8,
+      "speed": 4,
+      "route_index": 47,
+      "nearest_index": 47,
+      "lookahead_index": 56
+    },
+    {
+      "time": 1787172624.5343866,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 195.1167,
+        "z": 150.9491
+      },
+      "yaw_deg": 352.1788,
+      "velocity_cm_s": {
+        "x": -2.792401,
+        "y": 0,
+        "z": 20.32911
+      },
+      "distance_cm": 50.738851853249,
+      "desired_yaw_deg": 61.1203105017044,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 47,
+      "nearest_index": 47,
+      "lookahead_index": 56
+    },
+    {
+      "time": 1787172624.68487,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 194.741,
+        "z": 154.2105
+      },
+      "yaw_deg": 354.5698,
+      "velocity_cm_s": {
+        "x": -1.941861,
+        "y": 0,
+        "z": 20.42791
+      },
+      "distance_cm": 49.58577028130645,
+      "desired_yaw_deg": 64.63201704132139,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 47,
+      "nearest_index": 47,
+      "lookahead_index": 56
+    },
+    {
+      "time": 1787172624.8234313,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 194.5264,
+        "z": 157.0751
+      },
+      "yaw_deg": 356.7091,
+      "velocity_cm_s": {
+        "x": -1.177964,
+        "y": 0,
+        "z": 20.48616
+      },
+      "distance_cm": 52.76207125782953,
+      "desired_yaw_deg": 68.55697734337006,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 48,
+      "nearest_index": 48,
+      "lookahead_index": 57
+    },
+    {
+      "time": 1787172624.975027,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 194.4189,
+        "z": 159.9457
+      },
+      "yaw_deg": 358.8484,
+      "velocity_cm_s": {
+        "x": -0.4124258,
+        "y": 0,
+        "z": 20.51585
+      },
+      "distance_cm": 51.88359433614048,
+      "desired_yaw_deg": 71.55235880819876,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 48,
+      "nearest_index": 48,
+      "lookahead_index": 57
+    },
+    {
+      "time": 1787172625.1226392,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 194.4273,
+        "z": 163.2287
+      },
+      "yaw_deg": 1.293222,
+      "velocity_cm_s": {
+        "x": 0.4631171,
+        "y": 0,
+        "z": 20.51477
+      },
+      "distance_cm": 55.119159960626426,
+      "desired_yaw_deg": 75.23862523763634,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 49,
+      "nearest_index": 49,
+      "lookahead_index": 58
+    },
+    {
+      "time": 1787172625.2743902,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 194.5624,
+        "z": 166.3035
+      },
+      "yaw_deg": 3.585288,
+      "velocity_cm_s": {
+        "x": 1.283203,
+        "y": 0,
+        "z": 20.47984
+      },
+      "distance_cm": 54.2846906509363,
+      "desired_yaw_deg": 78.34205323253472,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 49,
+      "nearest_index": 49,
+      "lookahead_index": 58
+    },
+    {
+      "time": 1787172625.4326522,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 194.8203,
+        "z": 169.3705
+      },
+      "yaw_deg": 5.877355,
+      "velocity_cm_s": {
+        "x": 2.101236,
+        "y": 0,
+        "z": 20.41213
+      },
+      "distance_cm": 53.49385907778774,
+      "desired_yaw_deg": 81.50505584034742,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 49,
+      "nearest_index": 49,
+      "lookahead_index": 58
+    },
+    {
+      "time": 1787172625.574421,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 195.2007,
+        "z": 172.4247
+      },
+      "yaw_deg": 8.169422,
+      "velocity_cm_s": {
+        "x": 2.915906,
+        "y": 0,
+        "z": 20.31177
+      },
+      "distance_cm": 56.90943381541911,
+      "desired_yaw_deg": 84.19386588847678,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 50,
+      "nearest_index": 50,
+      "lookahead_index": 59
+    },
+    {
+      "time": 1787172625.7320697,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 195.7089,
+        "z": 175.4602
+      },
+      "yaw_deg": 10.70023,
+      "velocity_cm_s": {
+        "x": 3.80996,
+        "y": 0,
+        "z": 20.1632
+      },
+      "distance_cm": 56.17524999214291,
+      "desired_yaw_deg": 87.22300649369687,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 50,
+      "nearest_index": 50,
+      "lookahead_index": 59
+    },
+    {
+      "time": 1787172625.8792841,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 196.3524,
+        "z": 178.4699
+      },
+      "yaw_deg": 13.26777,
+      "velocity_cm_s": {
+        "x": 4.709387,
+        "y": 0,
+        "z": 19.97228
+      },
+      "distance_cm": 55.46652994226443,
+      "desired_yaw_deg": 90.297583904445,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 50,
+      "nearest_index": 50,
+      "lookahead_index": 59
+    },
+    {
+      "time": 1787172626.032734,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 197.1301,
+        "z": 181.4478
+      },
+      "yaw_deg": 15.83531,
+      "velocity_cm_s": {
+        "x": 5.599358,
+        "y": 0,
+        "z": 19.74126
+      },
+      "distance_cm": 58.82622465404649,
+      "desired_yaw_deg": 92.29618774805122,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 51,
+      "nearest_index": 51,
+      "lookahead_index": 60
+    },
+    {
+      "time": 1787172626.187421,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 198.0405,
+        "z": 184.3878
+      },
+      "yaw_deg": 18.40285,
+      "velocity_cm_s": {
+        "x": 6.478086,
+        "y": 0,
+        "z": 19.47061
+      },
+      "distance_cm": 58.110505651788365,
+      "desired_yaw_deg": 95.22988633901932,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 51,
+      "nearest_index": 51,
+      "lookahead_index": 60
+    },
+    {
+      "time": 1787172626.3367398,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 199.1556,
+        "z": 187.4755
+      },
+      "yaw_deg": 21.14156,
+      "velocity_cm_s": {
+        "x": 7.401018,
+        "y": 0,
+        "z": 19.13884
+      },
+      "distance_cm": 57.36950492274685,
+      "desired_yaw_deg": 98.40391693596857,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 51,
+      "nearest_index": 51,
+      "lookahead_index": 60
+    },
+    {
+      "time": 1787172626.5013306,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 200.334,
+        "z": 190.3187
+      },
+      "yaw_deg": 23.7091,
+      "velocity_cm_s": {
+        "x": 8.25095,
+        "y": 0,
+        "z": 18.78809
+      },
+      "distance_cm": 60.55168970136176,
+      "desired_yaw_deg": 99.81174129022568,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 52,
+      "nearest_index": 52,
+      "lookahead_index": 61
+    },
+    {
+      "time": 1787172626.6556306,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 201.8218,
+        "z": 193.4735
+      },
+      "yaw_deg": 26.61897,
+      "velocity_cm_s": {
+        "x": 9.194091,
+        "y": 0,
+        "z": 18.345
+      },
+      "distance_cm": 59.717988558641196,
+      "desired_yaw_deg": 103.03926758362428,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 52,
+      "nearest_index": 52,
+      "lookahead_index": 61
+    },
+    {
+      "time": 1787172626.8112924,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 203.2662,
+        "z": 196.1913
+      },
+      "yaw_deg": 29.18651,
+      "velocity_cm_s": {
+        "x": 10.00666,
+        "y": 0,
+        "z": 17.91472
+      },
+      "distance_cm": 58.99900217910469,
+      "desired_yaw_deg": 105.92825462424007,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 52,
+      "nearest_index": 52,
+      "lookahead_index": 61
+    },
+    {
+      "time": 1787172626.9731584,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 204.8309,
+        "z": 198.8416
+      },
+      "yaw_deg": 31.75405,
+      "velocity_cm_s": {
+        "x": 10.79914,
+        "y": 0,
+        "z": 17.44847
+      },
+      "distance_cm": 58.297817157849046,
+      "desired_yaw_deg": 108.8562938272244,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 53,
+      "nearest_index": 53,
+      "lookahead_index": 61
+    },
+    {
+      "time": 1787172627.1445577,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 206.6289,
+        "z": 201.5884
+      },
+      "yaw_deg": 34.49276,
+      "velocity_cm_s": {
+        "x": 11.62052,
+        "y": 0,
+        "z": 16.91254
+      },
+      "distance_cm": 57.571983896423106,
+      "desired_yaw_deg": 112.02313842584982,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 53,
+      "nearest_index": 53,
+      "lookahead_index": 61
+    },
+    {
+      "time": 1787172627.296647,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 208.8058,
+        "z": 204.5717
+      },
+      "yaw_deg": 37.5738,
+      "velocity_cm_s": {
+        "x": 12.51274,
+        "y": 0,
+        "z": 16.26351
+      },
+      "distance_cm": 56.78568969846187,
+      "desired_yaw_deg": 115.63962683858942,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 53,
+      "nearest_index": 53,
+      "lookahead_index": 61
+    },
+    {
+      "time": 1787172627.4443555,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 210.6081,
+        "z": 206.8087
+      },
+      "yaw_deg": 39.97017,
+      "velocity_cm_s": {
+        "x": 13.18182,
+        "y": 0,
+        "z": 15.7261
+      },
+      "distance_cm": 56.1984535490079,
+      "desired_yaw_deg": 118.49201360222982,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 53,
+      "nearest_index": 53,
+      "lookahead_index": 61
+    },
+    {
+      "time": 1787172627.5857823,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 212.641,
+        "z": 209.1194
+      },
+      "yaw_deg": 42.53772,
+      "velocity_cm_s": {
+        "x": 13.87307,
+        "y": 0,
+        "z": 15.1198
+      },
+      "distance_cm": 58.676355412273494,
+      "desired_yaw_deg": 118.73623598414424,
+      "steering": 10,
+      "speed": 4,
+      "route_index": 54,
+      "nearest_index": 54,
+      "lookahead_index": 62
+    },
+    {
+      "time": 1787172627.733519,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 214.63,
+        "z": 211.192
+      },
+      "yaw_deg": 44.93408,
+      "velocity_cm_s": {
+        "x": 14.49313,
+        "y": 0,
+        "z": 14.52651
+      },
+      "distance_cm": 60.461927740924395,
+      "desired_yaw_deg": 118.57479007521123,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 55,
+      "nearest_index": 55,
+      "lookahead_index": 63
+    },
+    {
+      "time": 1787172627.8736346,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 216.8517,
+        "z": 213.322
+      },
+      "yaw_deg": 47.28125,
+      "velocity_cm_s": {
+        "x": 15.07589,
+        "y": 0,
+        "z": 13.92077
+      },
+      "distance_cm": 59.60185598805276,
+      "desired_yaw_deg": 121.39564342118065,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 55,
+      "nearest_index": 55,
+      "lookahead_index": 63
+    },
+    {
+      "time": 1787172628.0222664,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 219.157,
+        "z": 215.3612
+      },
+      "yaw_deg": 49.57332,
+      "velocity_cm_s": {
+        "x": 15.62057,
+        "y": 0,
+        "z": 13.30669
+      },
+      "distance_cm": 58.77004696463262,
+      "desired_yaw_deg": 124.26462717127171,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 55,
+      "nearest_index": 55,
+      "lookahead_index": 63
+    },
+    {
+      "time": 1787172628.1665866,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 221.3805,
+        "z": 217.1799
+      },
+      "yaw_deg": 51.71258,
+      "velocity_cm_s": {
+        "x": 16.1064,
+        "y": 0,
+        "z": 12.71433
+      },
+      "distance_cm": 58.021841146633086,
+      "desired_yaw_deg": 126.98609973973655,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 55,
+      "nearest_index": 55,
+      "lookahead_index": 63
+    },
+    {
+      "time": 1787172628.3364818,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 224.0028,
+        "z": 219.1552
+      },
+      "yaw_deg": 54.15745,
+      "velocity_cm_s": {
+        "x": 16.63411,
+        "y": 0,
+        "z": 12.01569
+      },
+      "distance_cm": 58.56368007396412,
+      "desired_yaw_deg": 126.77955498568241,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 56,
+      "nearest_index": 56,
+      "lookahead_index": 64
+    },
+    {
+      "time": 1787172628.4874396,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 226.707,
+        "z": 221.0167
+      },
+      "yaw_deg": 56.60233,
+      "velocity_cm_s": {
+        "x": 17.13154,
+        "y": 0,
+        "z": 11.29517
+      },
+      "distance_cm": 57.59634428501031,
+      "desired_yaw_deg": 129.87489674741175,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 56,
+      "nearest_index": 56,
+      "lookahead_index": 64
+    },
+    {
+      "time": 1787172628.6592991,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 229.3121,
+        "z": 222.6556
+      },
+      "yaw_deg": 58.89439,
+      "velocity_cm_s": {
+        "x": 17.56956,
+        "y": 0,
+        "z": 10.60098
+      },
+      "distance_cm": 56.723408198068576,
+      "desired_yaw_deg": 132.83368821796378,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 56,
+      "nearest_index": 56,
+      "lookahead_index": 64
+    },
+    {
+      "time": 1787172628.8076205,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 232.341,
+        "z": 224.3854
+      },
+      "yaw_deg": 61.49207,
+      "velocity_cm_s": {
+        "x": 18.03197,
+        "y": 0,
+        "z": 9.793793
+      },
+      "distance_cm": 56.1334264754879,
+      "desired_yaw_deg": 132.63661291974861,
+      "steering": 9,
+      "speed": 4,
+      "route_index": 57,
+      "nearest_index": 57,
+      "lookahead_index": 65
+    },
+    {
+      "time": 1787172628.9670672,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 235.0764,
+        "z": 225.7963
+      },
+      "yaw_deg": 63.78413,
+      "velocity_cm_s": {
+        "x": 18.40923,
+        "y": 0,
+        "z": 9.064797
+      },
+      "distance_cm": 57.99097383517955,
+      "desired_yaw_deg": 56.05078094605527,
+      "steering": -1,
+      "speed": 4,
+      "route_index": 75,
+      "nearest_index": 75,
+      "lookahead_index": 82
+    },
+    {
+      "time": 1787172629.1292918,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 238.0303,
+        "z": 227.2294
+      },
+      "yaw_deg": 64.02905,
+      "velocity_cm_s": {
+        "x": 18.44781,
+        "y": 0,
+        "z": 8.986019
+      },
+      "distance_cm": 54.7422303658264,
+      "desired_yaw_deg": 55.5684539398021,
+      "steering": -1,
+      "speed": 4,
+      "route_index": 75,
+      "nearest_index": 75,
+      "lookahead_index": 82
+    },
+    {
+      "time": 1787172629.2773938,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 240.7944,
+        "z": 228.5836
+      },
+      "yaw_deg": 63.78272,
+      "velocity_cm_s": {
+        "x": 18.40901,
+        "y": 0,
+        "z": 9.065252
+      },
+      "distance_cm": 52.79666753967722,
+      "desired_yaw_deg": 50.98804241410018,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 76,
+      "nearest_index": 76,
+      "lookahead_index": 83
+    },
+    {
+      "time": 1787172629.426878,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 243.7339,
+        "z": 230.046
+      },
+      "yaw_deg": 63.30594,
+      "velocity_cm_s": {
+        "x": 18.33294,
+        "y": 0,
+        "z": 9.218123
+      },
+      "distance_cm": 49.59721825963929,
+      "desired_yaw_deg": 50.163118842349206,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 76,
+      "nearest_index": 76,
+      "lookahead_index": 83
+    },
+    {
+      "time": 1787172629.586119,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 246.4775,
+        "z": 231.4414
+      },
+      "yaw_deg": 62.81265,
+      "velocity_cm_s": {
+        "x": 18.2529,
+        "y": 0,
+        "z": 9.375617
+      },
+      "distance_cm": 46.60163800772875,
+      "desired_yaw_deg": 49.31957440847632,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 76,
+      "nearest_index": 76,
+      "lookahead_index": 83
+    },
+    {
+      "time": 1787172629.7369072,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 249.3906,
+        "z": 232.9557
+      },
+      "yaw_deg": 62.28649,
+      "velocity_cm_s": {
+        "x": 18.16603,
+        "y": 0,
+        "z": 9.542843
+      },
+      "distance_cm": 45.49520465447407,
+      "desired_yaw_deg": 39.26001824193401,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 77,
+      "nearest_index": 77,
+      "lookahead_index": 85
+    },
+    {
+      "time": 1787172629.8856833,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 252.1063,
+        "z": 234.4043
+      },
+      "yaw_deg": 61.57814,
+      "velocity_cm_s": {
+        "x": 18.04667,
+        "y": 0,
+        "z": 9.76669
+      },
+      "distance_cm": 42.6714586459543,
+      "desired_yaw_deg": 37.66736910777075,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 77,
+      "nearest_index": 77,
+      "lookahead_index": 85
+    },
+    {
+      "time": 1787172630.0255163,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 254.624,
+        "z": 235.788
+      },
+      "yaw_deg": 60.88614,
+      "velocity_cm_s": {
+        "x": 17.92739,
+        "y": 0,
+        "z": 9.983939
+      },
+      "distance_cm": 40.054091599789125,
+      "desired_yaw_deg": 36.02584364666679,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 77,
+      "nearest_index": 77,
+      "lookahead_index": 85
+    },
+    {
+      "time": 1787172630.1895778,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 257.3027,
+        "z": 237.3041
+      },
+      "yaw_deg": 60.14471,
+      "velocity_cm_s": {
+        "x": 17.79669,
+        "y": 0,
+        "z": 10.21509
+      },
+      "distance_cm": 37.27426801650323,
+      "desired_yaw_deg": 34.06605488668838,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 77,
+      "nearest_index": 77,
+      "lookahead_index": 85
+    },
+    {
+      "time": 1787172630.3387585,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 260.1381,
+        "z": 238.9593
+      },
+      "yaw_deg": 59.35384,
+      "velocity_cm_s": {
+        "x": 17.65401,
+        "y": 0,
+        "z": 10.45975
+      },
+      "distance_cm": 36.23960603339076,
+      "desired_yaw_deg": 26.598096431906548,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 78,
+      "nearest_index": 78,
+      "lookahead_index": 86
+    },
+    {
+      "time": 1787172630.4963007,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 262.7725,
+        "z": 240.5512
+      },
+      "yaw_deg": 58.39576,
+      "velocity_cm_s": {
+        "x": 17.47664,
+        "y": 0,
+        "z": 10.75348
+      },
+      "distance_cm": 33.67677571143207,
+      "desired_yaw_deg": 23.80191885956533,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 78,
+      "nearest_index": 78,
+      "lookahead_index": 86
+    },
+    {
+      "time": 1787172630.6434398,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 265.5517,
+        "z": 242.299
+      },
+      "yaw_deg": 57.33825,
+      "velocity_cm_s": {
+        "x": 17.2752,
+        "y": 0,
+        "z": 11.0742
+      },
+      "distance_cm": 31.010499107265854,
+      "desired_yaw_deg": 20.405013389139242,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 78,
+      "nearest_index": 78,
+      "lookahead_index": 86
+    },
+    {
+      "time": 1787172630.7941713,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 267.9541,
+        "z": 243.8742
+      },
+      "yaw_deg": 56.21098,
+      "velocity_cm_s": {
+        "x": 17.05399,
+        "y": 0,
+        "z": 11.41192
+      },
+      "distance_cm": 34.18791761664343,
+      "desired_yaw_deg": 8.025613612100685,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 79,
+      "nearest_index": 79,
+      "lookahead_index": 88
+    },
+    {
+      "time": 1787172630.9462628,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 270.6569,
+        "z": 245.7381
+      },
+      "yaw_deg": 54.6627,
+      "velocity_cm_s": {
+        "x": 16.73942,
+        "y": 0,
+        "z": 11.86854
+      },
+      "distance_cm": 32.05610105744498,
+      "desired_yaw_deg": 3.703078056622625,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 79,
+      "nearest_index": 79,
+      "lookahead_index": 88
+    },
+    {
+      "time": 1787172631.10615,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 273.1426,
+        "z": 247.5532
+      },
+      "yaw_deg": 53.16327,
+      "velocity_cm_s": {
+        "x": 16.42312,
+        "y": 0,
+        "z": 12.30249
+      },
+      "distance_cm": 33.43058511600341,
+      "desired_yaw_deg": -3.8308045707230787,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 80,
+      "nearest_index": 80,
+      "lookahead_index": 89
+    },
+    {
+      "time": 1787172631.255767,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 275.5771,
+        "z": 249.4365
+      },
+      "yaw_deg": 51.45633,
+      "velocity_cm_s": {
+        "x": 16.04938,
+        "y": 0,
+        "z": 12.78624
+      },
+      "distance_cm": 31.81688682765495,
+      "desired_yaw_deg": -8.43659373878531,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 80,
+      "nearest_index": 80,
+      "lookahead_index": 89
+    },
+    {
+      "time": 1787172631.409753,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 278.1089,
+        "z": 251.5265
+      },
+      "yaw_deg": 49.58025,
+      "velocity_cm_s": {
+        "x": 15.62218,
+        "y": 0,
+        "z": 13.30481
+      },
+      "distance_cm": 33.79001183007381,
+      "desired_yaw_deg": -15.478890714569513,
+      "steering": -8,
+      "speed": 4,
+      "route_index": 81,
+      "nearest_index": 81,
+      "lookahead_index": 90
+    },
+    {
+      "time": 1787172631.564274,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 280.4153,
+        "z": 253.5645
+      },
+      "yaw_deg": 47.59267,
+      "velocity_cm_s": {
+        "x": 15.15133,
+        "y": 0,
+        "z": 13.83862
+      },
+      "distance_cm": 32.559230357111275,
+      "desired_yaw_deg": -20.35335760590421,
+      "steering": -8,
+      "speed": 4,
+      "route_index": 81,
+      "nearest_index": 81,
+      "lookahead_index": 90
+    },
+    {
+      "time": 1787172631.7247336,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 282.7947,
+        "z": 255.8266
+      },
+      "yaw_deg": 45.43505,
+      "velocity_cm_s": {
+        "x": 14.61959,
+        "y": 0,
+        "z": 14.39924
+      },
+      "distance_cm": 31.411224962846113,
+      "desired_yaw_deg": -25.86616553402945,
+      "steering": -9,
+      "speed": 4,
+      "route_index": 81,
+      "nearest_index": 81,
+      "lookahead_index": 90
+    },
+    {
+      "time": 1787172631.873201,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 284.9428,
+        "z": 258.0308
+      },
+      "yaw_deg": 43.19684,
+      "velocity_cm_s": {
+        "x": 14.04608,
+        "y": 0,
+        "z": 14.95921
+      },
+      "distance_cm": 34.325717351858344,
+      "desired_yaw_deg": -30.10156560240076,
+      "steering": -9,
+      "speed": 4,
+      "route_index": 82,
+      "nearest_index": 82,
+      "lookahead_index": 91
+    },
+    {
+      "time": 1787172632.027187,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 287.1352,
+        "z": 260.4745
+      },
+      "yaw_deg": 40.75197,
+      "velocity_cm_s": {
+        "x": 13.39516,
+        "y": 0,
+        "z": 15.54477
+      },
+      "distance_cm": 33.45715562249506,
+      "desired_yaw_deg": -35.45638077088256,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 82,
+      "nearest_index": 82,
+      "lookahead_index": 91
+    },
+    {
+      "time": 1787172632.177311,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 289.0895,
+        "z": 262.8521
+      },
+      "yaw_deg": 38.22116,
+      "velocity_cm_s": {
+        "x": 12.69569,
+        "y": 0,
+        "z": 16.12109
+      },
+      "distance_cm": 36.46056203397793,
+      "desired_yaw_deg": -38.5575110644668,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 83,
+      "nearest_index": 83,
+      "lookahead_index": 92
+    },
+    {
+      "time": 1787172632.335957,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 290.9354,
+        "z": 265.3148
+      },
+      "yaw_deg": 35.65361,
+      "velocity_cm_s": {
+        "x": 11.96077,
+        "y": 0,
+        "z": 16.67364
+      },
+      "distance_cm": 35.80940440863025,
+      "desired_yaw_deg": -43.32862457760825,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 83,
+      "nearest_index": 83,
+      "lookahead_index": 92
+    },
+    {
+      "time": 1787172632.485256,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 292.7806,
+        "z": 268.0301
+      },
+      "yaw_deg": 32.91491,
+      "velocity_cm_s": {
+        "x": 11.15042,
+        "y": 0,
+        "z": 17.2261
+      },
+      "distance_cm": 35.246416654719646,
+      "desired_yaw_deg": -48.54653081422834,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 83,
+      "nearest_index": 83,
+      "lookahead_index": 92
+    },
+    {
+      "time": 1787172632.633049,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 294.2872,
+        "z": 270.476
+      },
+      "yaw_deg": 30.51853,
+      "velocity_cm_s": {
+        "x": 10.4204,
+        "y": 0,
+        "z": 17.67726
+      },
+      "distance_cm": 34.87146052309184,
+      "desired_yaw_deg": -53.202444656924975,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 83,
+      "nearest_index": 83,
+      "lookahead_index": 92
+    },
+    {
+      "time": 1787172632.7869174,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 295.882,
+        "z": 273.3455
+      },
+      "yaw_deg": 27.77982,
+      "velocity_cm_s": {
+        "x": 9.56386,
+        "y": 0,
+        "z": 18.15497
+      },
+      "distance_cm": 37.71757275130519,
+      "desired_yaw_deg": -54.961809818071664,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 84,
+      "nearest_index": 84,
+      "lookahead_index": 93
+    },
+    {
+      "time": 1787172632.9395041,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 297.251,
+        "z": 276.102
+      },
+      "yaw_deg": 25.21229,
+      "velocity_cm_s": {
+        "x": 8.740972,
+        "y": 0,
+        "z": 18.56518
+      },
+      "distance_cm": 37.379959938448295,
+      "desired_yaw_deg": -59.63113350997995,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 84,
+      "nearest_index": 84,
+      "lookahead_index": 93
+    },
+    {
+      "time": 1787172633.0930047,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 298.4951,
+        "z": 278.9171
+      },
+      "yaw_deg": 22.64475,
+      "velocity_cm_s": {
+        "x": 7.900533,
+        "y": 0,
+        "z": 18.93811
+      },
+      "distance_cm": 40.049729827177565,
+      "desired_yaw_deg": -60.50356171171463,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 85,
+      "nearest_index": 85,
+      "lookahead_index": 94
+    },
+    {
+      "time": 1787172633.2508063,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 299.6817,
+        "z": 281.9779
+      },
+      "yaw_deg": 19.90604,
+      "velocity_cm_s": {
+        "x": 6.986621,
+        "y": 0,
+        "z": 19.29397
+      },
+      "distance_cm": 39.708571924607604,
+      "desired_yaw_deg": -65.19583473726209,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 85,
+      "nearest_index": 85,
+      "lookahead_index": 94
+    },
+    {
+      "time": 1787172633.4054585,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 300.6602,
+        "z": 284.896
+      },
+      "yaw_deg": 17.3385,
+      "velocity_cm_s": {
+        "x": 6.115295,
+        "y": 0,
+        "z": 19.58759
+      },
+      "distance_cm": 42.13726038908853,
+      "desired_yaw_deg": -65.64532484822027,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 86,
+      "nearest_index": 86,
+      "lookahead_index": 95
+    },
+    {
+      "time": 1787172633.5470114,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 301.507,
+        "z": 287.8549
+      },
+      "yaw_deg": 14.77096,
+      "velocity_cm_s": {
+        "x": 5.23169,
+        "y": 0,
+        "z": 19.84187
+      },
+      "distance_cm": 44.665999869389644,
+      "desired_yaw_deg": -66.79464606739516,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 87,
+      "nearest_index": 87,
+      "lookahead_index": 96
+    },
+    {
+      "time": 1787172633.7020564,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 302.177,
+        "z": 290.6483
+      },
+      "yaw_deg": 12.37459,
+      "velocity_cm_s": {
+        "x": 4.39748,
+        "y": 0,
+        "z": 20.04327
+      },
+      "distance_cm": 44.27175304590695,
+      "desired_yaw_deg": -70.46151125787406,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 87,
+      "nearest_index": 87,
+      "lookahead_index": 96
+    },
+    {
+      "time": 1787172633.8439631,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 302.7989,
+        "z": 293.8718
+      },
+      "yaw_deg": 9.63588,
+      "velocity_cm_s": {
+        "x": 3.434765,
+        "y": 0,
+        "z": 20.23049
+      },
+      "distance_cm": 46.85574255450763,
+      "desired_yaw_deg": -72.21741714155272,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 88,
+      "nearest_index": 88,
+      "lookahead_index": 97
+    },
+    {
+      "time": 1787172633.9942245,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 303.2161,
+        "z": 296.7139
+      },
+      "yaw_deg": 7.23951,
+      "velocity_cm_s": {
+        "x": 2.585876,
+        "y": 0,
+        "z": 20.35641
+      },
+      "distance_cm": 46.4714932652728,
+      "desired_yaw_deg": -75.71335258623463,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 88,
+      "nearest_index": 88,
+      "lookahead_index": 97
+    },
+    {
+      "time": 1787172634.1552866,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 303.5471,
+        "z": 299.9801
+      },
+      "yaw_deg": 4.500802,
+      "velocity_cm_s": {
+        "x": 1.610267,
+        "y": 0,
+        "z": 20.45672
+      },
+      "distance_cm": 49.21999400942433,
+      "desired_yaw_deg": -77.71299677952109,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 89,
+      "nearest_index": 89,
+      "lookahead_index": 98
+    },
+    {
+      "time": 1787172634.3090572,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 303.7216,
+        "z": 303.2584
+      },
+      "yaw_deg": 1.762094,
+      "velocity_cm_s": {
+        "x": 0.6309795,
+        "y": 0,
+        "z": 20.51029
+      },
+      "distance_cm": 56.0543075461233,
+      "desired_yaw_deg": -79.3306332785617,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 91,
+      "nearest_index": 91,
+      "lookahead_index": 100
+    },
+    {
+      "time": 1787172634.4626744,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 303.7427,
+        "z": 306.336
+      },
+      "yaw_deg": 359.1945,
+      "velocity_cm_s": {
+        "x": -0.2884539,
+        "y": 0,
+        "z": 20.51797
+      },
+      "distance_cm": 59.76377676602768,
+      "desired_yaw_deg": -82.10459805319638,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 92,
+      "nearest_index": 92,
+      "lookahead_index": 101
+    },
+    {
+      "time": 1787172634.6089408,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 303.6259,
+        "z": 309.4116
+      },
+      "yaw_deg": 356.627,
+      "velocity_cm_s": {
+        "x": -1.207308,
+        "y": 0,
+        "z": 20.48445
+      },
+      "distance_cm": 63.87084910481463,
+      "desired_yaw_deg": -84.98046938811855,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 93,
+      "nearest_index": 93,
+      "lookahead_index": 102
+    },
+    {
+      "time": 1787172634.773819,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 303.3714,
+        "z": 312.4789
+      },
+      "yaw_deg": 354.0595,
+      "velocity_cm_s": {
+        "x": -2.123739,
+        "y": 0,
+        "z": 20.4098
+      },
+      "distance_cm": 68.41786523394309,
+      "desired_yaw_deg": -87.88825479579315,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 94,
+      "nearest_index": 94,
+      "lookahead_index": 103
+    },
+    {
+      "time": 1787172634.9199061,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 302.9488,
+        "z": 315.7344
+      },
+      "yaw_deg": 351.3208,
+      "velocity_cm_s": {
+        "x": -3.09652,
+        "y": 0,
+        "z": 20.28502
+      },
+      "distance_cm": 67.95276863233757,
+      "desired_yaw_deg": -90.61923657414704,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 95,
+      "nearest_index": 95,
+      "lookahead_index": 103
+    },
+    {
+      "time": 1787172635.073354,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 302.4117,
+        "z": 318.765
+      },
+      "yaw_deg": 348.7532,
+      "velocity_cm_s": {
+        "x": -4.002119,
+        "y": 0,
+        "z": 20.12594
+      },
+      "distance_cm": 67.51675734134452,
+      "desired_yaw_deg": -93.1966962788692,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 95,
+      "nearest_index": 95,
+      "lookahead_index": 103
+    },
+    {
+      "time": 1787172635.2207127,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 301.7395,
+        "z": 321.7684
+      },
+      "yaw_deg": 346.1857,
+      "velocity_cm_s": {
+        "x": -4.899683,
+        "y": 0,
+        "z": 19.92645
+      },
+      "distance_cm": 67.08183136147971,
+      "desired_yaw_deg": -95.79086422362526,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 95,
+      "nearest_index": 95,
+      "lookahead_index": 103
+    },
+    {
+      "time": 1787172635.3676717,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 300.9334,
+        "z": 324.7388
+      },
+      "yaw_deg": 343.6181,
+      "velocity_cm_s": {
+        "x": -5.787412,
+        "y": 0,
+        "z": 19.68695
+      },
+      "distance_cm": 66.64876188647469,
+      "desired_yaw_deg": -98.40221333525082,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 95,
+      "nearest_index": 95,
+      "lookahead_index": 103
+    },
+    {
+      "time": 1787172635.5272563,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 299.9951,
+        "z": 327.67
+      },
+      "yaw_deg": 341.0506,
+      "velocity_cm_s": {
+        "x": -6.663518,
+        "y": 0,
+        "z": 19.40793
+      },
+      "distance_cm": 71.1325728763553,
+      "desired_yaw_deg": -100.26016464262776,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 96,
+      "nearest_index": 96,
+      "lookahead_index": 104
+    },
+    {
+      "time": 1787172635.6774673,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 298.8506,
+        "z": 330.7469
+      },
+      "yaw_deg": 338.3119,
+      "velocity_cm_s": {
+        "x": -7.583242,
+        "y": 0,
+        "z": 19.06738
+      },
+      "distance_cm": 70.62839358197238,
+      "desired_yaw_deg": -102.8826093749564,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 96,
+      "nearest_index": 96,
+      "lookahead_index": 104
+    },
+    {
+      "time": 1787172635.8339508,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 297.6452,
+        "z": 333.5788
+      },
+      "yaw_deg": 335.7444,
+      "velocity_cm_s": {
+        "x": -8.42979,
+        "y": 0,
+        "z": 18.70853
+      },
+      "distance_cm": 70.15015960409498,
+      "desired_yaw_deg": -105.35764206806789,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 96,
+      "nearest_index": 96,
+      "lookahead_index": 104
+    },
+    {
+      "time": 1787172635.9961925,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 296.221,
+        "z": 336.5367
+      },
+      "yaw_deg": 333.0056,
+      "velocity_cm_s": {
+        "x": -9.314082,
+        "y": 0,
+        "z": 18.28437
+      },
+      "distance_cm": 69.63512251651461,
+      "desired_yaw_deg": -108.01580145475928,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 96,
+      "nearest_index": 96,
+      "lookahead_index": 104
+    },
+    {
+      "time": 1787172636.1430805,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 294.7589,
+        "z": 339.2449
+      },
+      "yaw_deg": 330.4381,
+      "velocity_cm_s": {
+        "x": -10.12382,
+        "y": 0,
+        "z": 17.84877
+      },
+      "distance_cm": 73.85200948667541,
+      "desired_yaw_deg": -109.16503782750507,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 97,
+      "nearest_index": 97,
+      "lookahead_index": 105
+    },
+    {
+      "time": 1787172636.284846,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 293.1769,
+        "z": 341.885
+      },
+      "yaw_deg": 327.8706,
+      "velocity_cm_s": {
+        "x": -10.91322,
+        "y": 0,
+        "z": 17.37734
+      },
+      "distance_cm": 73.28637607775403,
+      "desired_yaw_deg": -111.52138931770686,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 97,
+      "nearest_index": 97,
+      "lookahead_index": 105
+    },
+    {
+      "time": 1787172636.4253998,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 291.595,
+        "z": 344.2828
+      },
+      "yaw_deg": 325.4742,
+      "velocity_cm_s": {
+        "x": -11.63027,
+        "y": 0,
+        "z": 16.90583
+      },
+      "distance_cm": 72.74872095672889,
+      "desired_yaw_deg": -113.73579761856082,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 97,
+      "nearest_index": 97,
+      "lookahead_index": 105
+    },
+    {
+      "time": 1787172636.574261,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 289.7905,
+        "z": 346.776
+      },
+      "yaw_deg": 322.9067,
+      "velocity_cm_s": {
+        "x": -12.37592,
+        "y": 0,
+        "z": 16.36786
+      },
+      "distance_cm": 72.16316973532969,
+      "desired_yaw_deg": -116.1252845139996,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 97,
+      "nearest_index": 97,
+      "lookahead_index": 105
+    },
+    {
+      "time": 1787172636.7269685,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 287.8762,
+        "z": 349.1859
+      },
+      "yaw_deg": 320.3391,
+      "velocity_cm_s": {
+        "x": -13.09673,
+        "y": 0,
+        "z": 15.79703
+      },
+      "distance_cm": 75.99904134428274,
+      "desired_yaw_deg": -116.7321453978862,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 98,
+      "nearest_index": 98,
+      "lookahead_index": 106
+    },
+    {
+      "time": 1787172636.8771439,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 285.8558,
+        "z": 351.5077
+      },
+      "yaw_deg": 317.7716,
+      "velocity_cm_s": {
+        "x": -13.79124,
+        "y": 0,
+        "z": 15.19447
+      },
+      "distance_cm": 75.29806473562252,
+      "desired_yaw_deg": -119.00215225623516,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 98,
+      "nearest_index": 98,
+      "lookahead_index": 106
+    },
+    {
+      "time": 1787172637.026492,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 283.7334,
+        "z": 353.7366
+      },
+      "yaw_deg": 315.2041,
+      "velocity_cm_s": {
+        "x": -14.45806,
+        "y": 0,
+        "z": 14.56142
+      },
+      "distance_cm": 74.58197138129296,
+      "desired_yaw_deg": -121.29086622340677,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 98,
+      "nearest_index": 98,
+      "lookahead_index": 106
+    },
+    {
+      "time": 1787172637.1701722,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 281.6643,
+        "z": 355.7292
+      },
+      "yaw_deg": 312.8077,
+      "velocity_cm_s": {
+        "x": -15.05426,
+        "y": 0,
+        "z": 13.94416
+      },
+      "distance_cm": 73.90097176039029,
+      "desired_yaw_deg": -123.44471655628494,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 98,
+      "nearest_index": 98,
+      "lookahead_index": 106
+    },
+    {
+      "time": 1787172637.3259635,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 279.357,
+        "z": 357.7661
+      },
+      "yaw_deg": 310.2401,
+      "velocity_cm_s": {
+        "x": -15.66381,
+        "y": 0,
+        "z": 13.25577
+      },
+      "distance_cm": 73.15868204259836,
+      "desired_yaw_deg": -125.77235693053525,
+      "steering": -10,
+      "speed": 4,
+      "route_index": 99,
+      "nearest_index": 99,
+      "lookahead_index": 106
+    },
+    {
+      "time": 1787172637.4901068,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 276.798,
+        "z": 359.8224
+      },
+      "yaw_deg": 307.5014,
+      "velocity_cm_s": {
+        "x": -16.2793,
+        "y": 0,
+        "z": 12.49219
+      },
+      "distance_cm": 72.35371687591454,
+      "desired_yaw_deg": -128.27889702681782,
+      "steering": -9,
+      "speed": 4,
+      "route_index": 99,
+      "nearest_index": 99,
+      "lookahead_index": 106
+    },
+    {
+      "time": 1787172637.6426318,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 273.9787,
+        "z": 361.8763
+      },
+      "yaw_deg": 304.8487,
+      "velocity_cm_s": {
+        "x": -16.84003,
+        "y": 0,
+        "z": 11.72535
+      },
+      "distance_cm": 71.49187055449033,
+      "desired_yaw_deg": -130.9717729583951,
+      "steering": -9,
+      "speed": 4,
+      "route_index": 99,
+      "nearest_index": 99,
+      "lookahead_index": 106
+    },
+    {
+      "time": 1787172637.785177,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 271.5888,
+        "z": 363.4703
+      },
+      "yaw_deg": 302.7094,
+      "velocity_cm_s": {
+        "x": -17.26599,
+        "y": 0,
+        "z": 11.08856
+      },
+      "distance_cm": 70.78682269695399,
+      "desired_yaw_deg": -133.2148643235342,
+      "steering": -9,
+      "speed": 4,
+      "route_index": 99,
+      "nearest_index": 99,
+      "lookahead_index": 106
+    },
+    {
+      "time": 1787172637.92735,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 269.1412,
+        "z": 364.974
+      },
+      "yaw_deg": 300.5701,
+      "velocity_cm_s": {
+        "x": -17.66787,
+        "y": 0,
+        "z": 10.43631
+      },
+      "distance_cm": 73.67951013300782,
+      "desired_yaw_deg": -132.70796583028326,
+      "steering": -9,
+      "speed": 4,
+      "route_index": 100,
+      "nearest_index": 100,
+      "lookahead_index": 107
+    },
+    {
+      "time": 1787172638.0770319,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 266.4583,
+        "z": 366.4824
+      },
+      "yaw_deg": 298.2781,
+      "velocity_cm_s": {
+        "x": -18.07112,
+        "y": 0,
+        "z": 9.72137
+      },
+      "distance_cm": 72.79006902490201,
+      "desired_yaw_deg": -135.0134138223369,
+      "steering": -9,
+      "speed": 4,
+      "route_index": 100,
+      "nearest_index": 100,
+      "lookahead_index": 107
+    },
+    {
+      "time": 1787172638.236636,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 263.7175,
+        "z": 367.8822
+      },
+      "yaw_deg": 295.986,
+      "velocity_cm_s": {
+        "x": -18.44545,
+        "y": 0,
+        "z": 8.990867
+      },
+      "distance_cm": 71.90216883439608,
+      "desired_yaw_deg": -137.3473122254136,
+      "steering": -9,
+      "speed": 4,
+      "route_index": 100,
+      "nearest_index": 100,
+      "lookahead_index": 107
+    },
+    {
+      "time": 1787172638.395453,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 260.7346,
+        "z": 369.2534
+      },
+      "yaw_deg": 293.5411,
+      "velocity_cm_s": {
+        "x": -18.81219,
+        "y": 0,
+        "z": 8.195844
+      },
+      "distance_cm": 70.95833318730084,
+      "desired_yaw_deg": -139.86973864814567,
+      "steering": -9,
+      "speed": 4,
+      "route_index": 100,
+      "nearest_index": 100,
+      "lookahead_index": 107
+    },
+    {
+      "time": 1787172638.5504935,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 257.6958,
+        "z": 370.4961
+      },
+      "yaw_deg": 291.0963,
+      "velocity_cm_s": {
+        "x": -19.14469,
+        "y": 0,
+        "z": 7.385889
+      },
+      "distance_cm": 73.17585976843732,
+      "desired_yaw_deg": -139.32278067299083,
+      "steering": -9,
+      "speed": 4,
+      "route_index": 101,
+      "nearest_index": 101,
+      "lookahead_index": 108
+    },
+    {
+      "time": 1787172638.6900375,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 254.8014,
+        "z": 371.5423
+      },
+      "yaw_deg": 288.8042,
+      "velocity_cm_s": {
+        "x": -19.42476,
+        "y": 0,
+        "z": 6.614317
+      },
+      "distance_cm": 72.14012150842277,
+      "desired_yaw_deg": -141.60838712048644,
+      "steering": -9,
+      "speed": 4,
+      "route_index": 101,
+      "nearest_index": 101,
+      "lookahead_index": 108
+    },
+    {
+      "time": 1787172638.8431835,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 252.0641,
+        "z": 372.4136
+      },
+      "yaw_deg": 286.6649,
+      "velocity_cm_s": {
+        "x": -19.65812,
+        "y": 0,
+        "z": 5.884612
+      },
+      "distance_cm": 71.17380117550275,
+      "desired_yaw_deg": -143.77161389342268,
+      "steering": -9,
+      "speed": 4,
+      "route_index": 101,
+      "nearest_index": 101,
+      "lookahead_index": 108
+    },
+    {
+      "time": 1787172638.992101,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 248.8985,
+        "z": 373.2835
+      },
+      "yaw_deg": 284.2201,
+      "velocity_cm_s": {
+        "x": -19.89125,
+        "y": 0,
+        "z": 5.04068
+      },
+      "distance_cm": 70.07181797627346,
+      "desired_yaw_deg": -146.28079105353288,
+      "steering": -9,
+      "speed": 4,
+      "route_index": 101,
+      "nearest_index": 101,
+      "lookahead_index": 108
+    },
+    {
+      "time": 1787172639.13691,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 246.1003,
+        "z": 373.9333
+      },
+      "yaw_deg": 282.0808,
+      "velocity_cm_s": {
+        "x": -20.06555,
+        "y": 0,
+        "z": 4.294658
+      },
+      "distance_cm": 71.84962427862791,
+      "desired_yaw_deg": -145.10793952173879,
+      "steering": -8,
+      "speed": 4,
+      "route_index": 102,
+      "nearest_index": 102,
+      "lookahead_index": 109
+    },
+    {
+      "time": 1787172639.2852936,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 243.0787,
+        "z": 374.5189
+      },
+      "yaw_deg": 280.0222,
+      "velocity_cm_s": {
+        "x": -20.20687,
+        "y": 0,
+        "z": 3.571076
+      },
+      "distance_cm": 70.65753215970678,
+      "desired_yaw_deg": -147.3899063024295,
+      "steering": -8,
+      "speed": 4,
+      "route_index": 102,
+      "nearest_index": 102,
+      "lookahead_index": 109
+    },
+    {
+      "time": 1787172639.4251645,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 240.2415,
+        "z": 374.9688
+      },
+      "yaw_deg": 278.1342,
+      "velocity_cm_s": {
+        "x": -20.31355,
+        "y": 0,
+        "z": 2.903438
+      },
+      "distance_cm": 69.55731662226482,
+      "desired_yaw_deg": -149.55878277512954,
+      "steering": -8,
+      "speed": 4,
+      "route_index": 102,
+      "nearest_index": 102,
+      "lookahead_index": 109
+    },
+    {
+      "time": 1787172639.5873988,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 237.187,
+        "z": 375.3469
+      },
+      "yaw_deg": 276.1115,
+      "velocity_cm_s": {
+        "x": -20.40338,
+        "y": 0,
+        "z": 2.184627
+      },
+      "distance_cm": 70.88456326034606,
+      "desired_yaw_deg": -148.3577709795727,
+      "steering": -8,
+      "speed": 4,
+      "route_index": 103,
+      "nearest_index": 103,
+      "lookahead_index": 110
+    },
+    {
+      "time": 1787172639.732732,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 234.121,
+        "z": 375.6169
+      },
+      "yaw_deg": 274.0887,
+      "velocity_cm_s": {
+        "x": -20.46777,
+        "y": 0,
+        "z": 1.46309
+      },
+      "distance_cm": 69.5604140773328,
+      "desired_yaw_deg": -150.62502128224043,
+      "steering": -8,
+      "speed": 4,
+      "route_index": 103,
+      "nearest_index": 103,
+      "lookahead_index": 110
+    },
+    {
+      "time": 1787172639.8785517,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 231.0475,
+        "z": 375.7785
+      },
+      "yaw_deg": 272.0659,
+      "velocity_cm_s": {
+        "x": -20.50666,
+        "y": 0,
+        "z": 0.7397354
+      },
+      "distance_cm": 70.66433554842217,
+      "desired_yaw_deg": -149.32797962284616,
+      "steering": -8,
+      "speed": 4,
+      "route_index": 104,
+      "nearest_index": 104,
+      "lookahead_index": 111
+    },
+    {
+      "time": 1787172640.0353858,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 227.9701,
+        "z": 375.8315
+      },
+      "yaw_deg": 270.0432,
+      "velocity_cm_s": {
+        "x": -20.51999,
+        "y": 0,
+        "z": 0.01545493
+      },
+      "distance_cm": 69.19175446727739,
+      "desired_yaw_deg": -151.54272442937457,
+      "steering": -8,
+      "speed": 4,
+      "route_index": 104,
+      "nearest_index": 104,
+      "lookahead_index": 111
+    },
+    {
+      "time": 1787172640.1821315,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 224.6877,
+        "z": 375.7683
+      },
+      "yaw_deg": 267.8855,
+      "velocity_cm_s": {
+        "x": -20.50603,
+        "y": 0,
+        "z": -0.7571105
+      },
+      "distance_cm": 69.97158577722819,
+      "desired_yaw_deg": -150.28145451847416,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 105,
+      "nearest_index": 105,
+      "lookahead_index": 112
+    },
+    {
+      "time": 1787172640.3316982,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 221.819,
+        "z": 375.6166
+      },
+      "yaw_deg": 266.2088,
+      "velocity_cm_s": {
+        "x": -20.47509,
+        "y": 0,
+        "z": -1.35681
+      },
+      "distance_cm": 70.92257014914223,
+      "desired_yaw_deg": -148.72517508220648,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 106,
+      "nearest_index": 106,
+      "lookahead_index": 113
+    },
+    {
+      "time": 1787172640.480001,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 218.7516,
+        "z": 375.3628
+      },
+      "yaw_deg": 264.45,
+      "velocity_cm_s": {
+        "x": -20.4238,
+        "y": 0,
+        "z": -1.984596
+      },
+      "distance_cm": 69.1580662424854,
+      "desired_yaw_deg": -150.7884495979624,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 106,
+      "nearest_index": 106,
+      "lookahead_index": 113
+    },
+    {
+      "time": 1787172640.6268656,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 215.6934,
+        "z": 375.015
+      },
+      "yaw_deg": 262.6911,
+      "velocity_cm_s": {
+        "x": -20.35327,
+        "y": 0,
+        "z": -2.610513
+      },
+      "distance_cm": 69.8270651578598,
+      "desired_yaw_deg": -149.258302003306,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 107,
+      "nearest_index": 107,
+      "lookahead_index": 114
+    },
+    {
+      "time": 1787172640.7758794,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 212.6465,
+        "z": 374.5791
+      },
+      "yaw_deg": 261.1571,
+      "velocity_cm_s": {
+        "x": -20.27609,
+        "y": 0,
+        "z": -3.154442
+      },
+      "distance_cm": 67.93719981762568,
+      "desired_yaw_deg": -151.27936418713946,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 107,
+      "nearest_index": 107,
+      "lookahead_index": 114
+    },
+    {
+      "time": 1787172640.9327524,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 209.6131,
+        "z": 374.058
+      },
+      "yaw_deg": 259.4329,
+      "velocity_cm_s": {
+        "x": -20.172,
+        "y": 0,
+        "z": -3.763102
+      },
+      "distance_cm": 68.45373660809175,
+      "desired_yaw_deg": -149.62600572389172,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 108,
+      "nearest_index": 108,
+      "lookahead_index": 115
+    },
+    {
+      "time": 1787172641.0885458,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 206.596,
+        "z": 373.4488
+      },
+      "yaw_deg": 257.8816,
+      "velocity_cm_s": {
+        "x": -20.06273,
+        "y": 0,
+        "z": -4.307821
+      },
+      "distance_cm": 68.96034684831567,
+      "desired_yaw_deg": -147.94846808614625,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 109,
+      "nearest_index": 109,
+      "lookahead_index": 116
+    },
+    {
+      "time": 1787172641.2344658,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 203.3967,
+        "z": 372.7121
+      },
+      "yaw_deg": 256.2822,
+      "velocity_cm_s": {
+        "x": -19.93468,
+        "y": 0,
+        "z": -4.866109
+      },
+      "distance_cm": 66.6785277079511,
+      "desired_yaw_deg": -149.94299458468495,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 109,
+      "nearest_index": 109,
+      "lookahead_index": 116
+    },
+    {
+      "time": 1787172641.3960342,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 200.615,
+        "z": 371.9944
+      },
+      "yaw_deg": 254.8828,
+      "velocity_cm_s": {
+        "x": -19.80989,
+        "y": 0,
+        "z": -5.351518
+      },
+      "distance_cm": 67.20706701203378,
+      "desired_yaw_deg": -147.9993159064508,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 110,
+      "nearest_index": 110,
+      "lookahead_index": 117
+    },
+    {
+      "time": 1787172641.5354993,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 197.4573,
+        "z": 371.0958
+      },
+      "yaw_deg": 253.4878,
+      "velocity_cm_s": {
+        "x": -19.67374,
+        "y": 0,
+        "z": -5.832177
+      },
+      "distance_cm": 67.45211709746404,
+      "desired_yaw_deg": -146.26745573799982,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 111,
+      "nearest_index": 111,
+      "lookahead_index": 118
+    },
+    {
+      "time": 1787172641.6970525,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 194.5166,
+        "z": 370.1869
+      },
+      "yaw_deg": 252.244,
+      "velocity_cm_s": {
+        "x": -19.5425,
+        "y": 0,
+        "z": -6.25787
+      },
+      "distance_cm": 65.09216240969414,
+      "desired_yaw_deg": -147.97611466518,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 111,
+      "nearest_index": 111,
+      "lookahead_index": 118
+    },
+    {
+      "time": 1787172641.8500695,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 191.4025,
+        "z": 369.1473
+      },
+      "yaw_deg": 250.9172,
+      "velocity_cm_s": {
+        "x": -19.39237,
+        "y": 0,
+        "z": -6.70869
+      },
+      "distance_cm": 65.24624206450513,
+      "desired_yaw_deg": -146.08759137382665,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 112,
+      "nearest_index": 112,
+      "lookahead_index": 119
+    },
+    {
+      "time": 1787172641.9909856,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 188.5055,
+        "z": 368.1074
+      },
+      "yaw_deg": 249.6734,
+      "velocity_cm_s": {
+        "x": -19.24217,
+        "y": 0,
+        "z": -7.128067
+      },
+      "distance_cm": 62.79342692519655,
+      "desired_yaw_deg": -147.7521406159495,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 112,
+      "nearest_index": 112,
+      "lookahead_index": 119
+    },
+    {
+      "time": 1787172642.1444154,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 185.8226,
+        "z": 367.0803
+      },
+      "yaw_deg": 248.5125,
+      "velocity_cm_s": {
+        "x": -19.0938,
+        "y": 0,
+        "z": -7.516456
+      },
+      "distance_cm": 63.330950326544304,
+      "desired_yaw_deg": -146.0503618851748,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 113,
+      "nearest_index": 113,
+      "lookahead_index": 120
+    },
+    {
+      "time": 1787172642.292773,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 182.7806,
+        "z": 365.8453
+      },
+      "yaw_deg": 247.4044,
+      "velocity_cm_s": {
+        "x": -18.94489,
+        "y": 0,
+        "z": -7.88427
+      },
+      "distance_cm": 60.63536877216092,
+      "desired_yaw_deg": -147.78335438447672,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 113,
+      "nearest_index": 113,
+      "lookahead_index": 120
+    },
+    {
+      "time": 1787172642.4480474,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 179.9499,
+        "z": 364.6365
+      },
+      "yaw_deg": 246.413,
+      "velocity_cm_s": {
+        "x": -18.80563,
+        "y": 0,
+        "z": -8.210885
+      },
+      "distance_cm": 61.06595626174071,
+      "desired_yaw_deg": -146.63300085765744,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 114,
+      "nearest_index": 114,
+      "lookahead_index": 121
+    },
+    {
+      "time": 1787172642.6050024,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 177.1406,
+        "z": 363.3788
+      },
+      "yaw_deg": 245.4216,
+      "velocity_cm_s": {
+        "x": -18.66075,
+        "y": 0,
+        "z": -8.53504
+      },
+      "distance_cm": 61.61256173529168,
+      "desired_yaw_deg": -146.04483400604477,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 115,
+      "nearest_index": 115,
+      "lookahead_index": 122
+    },
+    {
+      "time": 1787172642.7564168,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 174.1685,
+        "z": 361.9841
+      },
+      "yaw_deg": 244.3641,
+      "velocity_cm_s": {
+        "x": -18.50004,
+        "y": 0,
+        "z": -8.878001
+      },
+      "distance_cm": 58.819821071175724,
+      "desired_yaw_deg": -147.6876479633543,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 115,
+      "nearest_index": 115,
+      "lookahead_index": 122
+    },
+    {
+      "time": 1787172642.906462,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 171.5893,
+        "z": 360.7188
+      },
+      "yaw_deg": 243.4388,
+      "velocity_cm_s": {
+        "x": -18.35426,
+        "y": 0,
+        "z": -9.1756
+      },
+      "distance_cm": 63.00131044810047,
+      "desired_yaw_deg": -146.50178331030594,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 116,
+      "nearest_index": 116,
+      "lookahead_index": 124
+    },
+    {
+      "time": 1787172643.0462086,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 168.849,
+        "z": 359.3171
+      },
+      "yaw_deg": 242.4474,
+      "velocity_cm_s": {
+        "x": -18.19275,
+        "y": 0,
+        "z": -9.4918
+      },
+      "distance_cm": 60.33896220537413,
+      "desired_yaw_deg": -147.93723044137707,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 116,
+      "nearest_index": 116,
+      "lookahead_index": 124
+    },
+    {
+      "time": 1787172643.1956832,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 166.3137,
+        "z": 357.9663
+      },
+      "yaw_deg": 241.522,
+      "velocity_cm_s": {
+        "x": -18.03709,
+        "y": 0,
+        "z": -9.784355
+      },
+      "distance_cm": 61.37349415425454,
+      "desired_yaw_deg": -148.8271529334252,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 117,
+      "nearest_index": 117,
+      "lookahead_index": 125
+    },
+    {
+      "time": 1787172643.3483129,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 163.4433,
+        "z": 356.3726
+      },
+      "yaw_deg": 240.4645,
+      "velocity_cm_s": {
+        "x": -17.85344,
+        "y": 0,
+        "z": -10.11558
+      },
+      "distance_cm": 58.54685090257782,
+      "desired_yaw_deg": -150.42351534439103,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 117,
+      "nearest_index": 117,
+      "lookahead_index": 125
+    },
+    {
+      "time": 1787172643.4910498,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 160.7794,
+        "z": 354.8306
+      },
+      "yaw_deg": 239.4731,
+      "velocity_cm_s": {
+        "x": -17.67574,
+        "y": 0,
+        "z": -10.42299
+      },
+      "distance_cm": 59.575597606247236,
+      "desired_yaw_deg": -151.90947055351882,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 118,
+      "nearest_index": 118,
+      "lookahead_index": 126
+    },
+    {
+      "time": 1787172643.6449044,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 158.3176,
+        "z": 353.3501
+      },
+      "yaw_deg": 238.5478,
+      "velocity_cm_s": {
+        "x": -17.50511,
+        "y": 0,
+        "z": -10.70707
+      },
+      "distance_cm": 57.1293519536677,
+      "desired_yaw_deg": -153.38862522807386,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 118,
+      "nearest_index": 118,
+      "lookahead_index": 126
+    },
+    {
+      "time": 1787172643.7933607,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 155.5337,
+        "z": 351.6096
+      },
+      "yaw_deg": 237.4903,
+      "velocity_cm_s": {
+        "x": -17.30452,
+        "y": 0,
+        "z": -11.02832
+      },
+      "distance_cm": 62.33201977452931,
+      "desired_yaw_deg": -156.2749633935381,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 119,
+      "nearest_index": 119,
+      "lookahead_index": 128
+    },
+    {
+      "time": 1787172643.949119,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 152.9535,
+        "z": 349.9315
+      },
+      "yaw_deg": 236.4989,
+      "velocity_cm_s": {
+        "x": -17.11112,
+        "y": 0,
+        "z": -11.32608
+      },
+      "distance_cm": 59.7814100430176,
+      "desired_yaw_deg": -157.89199582871913,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 119,
+      "nearest_index": 119,
+      "lookahead_index": 128
+    },
+    {
+      "time": 1787172644.1036432,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 150.4026,
+        "z": 348.209
+      },
+      "yaw_deg": 235.5075,
+      "velocity_cm_s": {
+        "x": -16.91259,
+        "y": 0,
+        "z": -11.62045
+      },
+      "distance_cm": 57.25120951473859,
+      "desired_yaw_deg": -159.60866639634577,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 119,
+      "nearest_index": 119,
+      "lookahead_index": 128
+    },
+    {
+      "time": 1787172644.250571,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 147.882,
+        "z": 346.4427
+      },
+      "yaw_deg": 234.5161,
+      "velocity_cm_s": {
+        "x": -16.70899,
+        "y": 0,
+        "z": -11.91135
+      },
+      "distance_cm": 59.207637237859785,
+      "desired_yaw_deg": -162.4209194664721,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 120,
+      "nearest_index": 120,
+      "lookahead_index": 129
+    },
+    {
+      "time": 1787172644.3924534,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 145.3955,
+        "z": 344.6285
+      },
+      "yaw_deg": 233.3059,
+      "velocity_cm_s": {
+        "x": -16.45369,
+        "y": 0,
+        "z": -12.26159
+      },
+      "distance_cm": 56.75644837813583,
+      "desired_yaw_deg": -164.26100864825077,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 120,
+      "nearest_index": 120,
+      "lookahead_index": 129
+    },
+    {
+      "time": 1787172644.550409,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 142.949,
+        "z": 342.7609
+      },
+      "yaw_deg": 232.062,
+      "velocity_cm_s": {
+        "x": -16.18365,
+        "y": 0,
+        "z": -12.61587
+      },
+      "distance_cm": 54.326689295501886,
+      "desired_yaw_deg": -166.2105698450648,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 120,
+      "nearest_index": 120,
+      "lookahead_index": 129
+    },
+    {
+      "time": 1787172644.7137213,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 140.3847,
+        "z": 340.7107
+      },
+      "yaw_deg": 230.7352,
+      "velocity_cm_s": {
+        "x": -15.88719,
+        "y": 0,
+        "z": -12.98722
+      },
+      "distance_cm": 56.670310468357215,
+      "desired_yaw_deg": -169.4410175596844,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 121,
+      "nearest_index": 121,
+      "lookahead_index": 130
+    },
+    {
+      "time": 1787172644.864199,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 138.0243,
+        "z": 338.7352
+      },
+      "yaw_deg": 229.4914,
+      "velocity_cm_s": {
+        "x": -15.60153,
+        "y": 0,
+        "z": -13.32903
+      },
+      "distance_cm": 54.33103265657669,
+      "desired_yaw_deg": -171.5067579647129,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 121,
+      "nearest_index": 121,
+      "lookahead_index": 130
+    },
+    {
+      "time": 1787172645.0093386,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 135.7075,
+        "z": 336.7089
+      },
+      "yaw_deg": 228.2475,
+      "velocity_cm_s": {
+        "x": -15.30851,
+        "y": 0,
+        "z": -13.66455
+      },
+      "distance_cm": 52.0229362441222,
+      "desired_yaw_deg": -173.70133084076258,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 121,
+      "nearest_index": 121,
+      "lookahead_index": 130
+    },
+    {
+      "time": 1787172645.1563506,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 133.4351,
+        "z": 334.6328
+      },
+      "yaw_deg": 227.0037,
+      "velocity_cm_s": {
+        "x": -15.00828,
+        "y": 0,
+        "z": -13.99364
+      },
+      "distance_cm": 49.75153010561582,
+      "desired_yaw_deg": -176.04085650084932,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 122,
+      "nearest_index": 122,
+      "lookahead_index": 130
+    },
+    {
+      "time": 1787172645.3133717,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 131.2083,
+        "z": 332.5079
+      },
+      "yaw_deg": 225.7598,
+      "velocity_cm_s": {
+        "x": -14.70098,
+        "y": 0,
+        "z": -14.31614
+      },
+      "distance_cm": 47.52326326442662,
+      "desired_yaw_deg": -178.54307244821072,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 122,
+      "nearest_index": 122,
+      "lookahead_index": 130
+    },
+    {
+      "time": 1787172645.457112,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 129.0316,
+        "z": 330.3318
+      },
+      "yaw_deg": 224.3115,
+      "velocity_cm_s": {
+        "x": -14.33444,
+        "y": 0,
+        "z": -14.68313
+      },
+      "distance_cm": 50.34111530151074,
+      "desired_yaw_deg": 178.89774679807303,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 123,
+      "nearest_index": 123,
+      "lookahead_index": 131
+    },
+    {
+      "time": 1787172645.611587,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 126.9125,
+        "z": 328.0995
+      },
+      "yaw_deg": 222.8121,
+      "velocity_cm_s": {
+        "x": -13.94532,
+        "y": 0,
+        "z": -15.05319
+      },
+      "distance_cm": 48.19849122638589,
+      "desired_yaw_deg": 176.3272309572062,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 123,
+      "nearest_index": 123,
+      "lookahead_index": 131
+    },
+    {
+      "time": 1787172645.7632356,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 124.8524,
+        "z": 325.8126
+      },
+      "yaw_deg": 221.3127,
+      "velocity_cm_s": {
+        "x": -13.54665,
+        "y": 0,
+        "z": -15.41295
+      },
+      "distance_cm": 46.10089049595461,
+      "desired_yaw_deg": 173.58901565781392,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 123,
+      "nearest_index": 123,
+      "lookahead_index": 131
+    },
+    {
+      "time": 1787172645.9137437,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 122.853,
+        "z": 323.4726
+      },
+      "yaw_deg": 219.8133,
+      "velocity_cm_s": {
+        "x": -13.1387,
+        "y": 0,
+        "z": -15.76214
+      },
+      "distance_cm": 48.996658659137154,
+      "desired_yaw_deg": 171.61250635440877,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 124,
+      "nearest_index": 124,
+      "lookahead_index": 132
+    },
+    {
+      "time": 1787172646.067127,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 120.7885,
+        "z": 320.9199
+      },
+      "yaw_deg": 218.2139,
+      "velocity_cm_s": {
+        "x": -12.69365,
+        "y": 0,
+        "z": -16.12271
+      },
+      "distance_cm": 46.834698122866115,
+      "desired_yaw_deg": 168.65705439681685,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 124,
+      "nearest_index": 124,
+      "lookahead_index": 132
+    },
+    {
+      "time": 1787172646.214589,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 118.9184,
+        "z": 318.4752
+      },
+      "yaw_deg": 216.7144,
+      "velocity_cm_s": {
+        "x": -12.26742,
+        "y": 0,
+        "z": -16.44934
+      },
+      "distance_cm": 49.72571642118389,
+      "desired_yaw_deg": 167.12325256185625,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 125,
+      "nearest_index": 125,
+      "lookahead_index": 133
+    },
+    {
+      "time": 1787172646.3565288,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 117.2313,
+        "z": 316.1501
+      },
+      "yaw_deg": 215.315,
+      "velocity_cm_s": {
+        "x": -11.86202,
+        "y": 0,
+        "z": -16.74405
+      },
+      "distance_cm": 47.88393707392909,
+      "desired_yaw_deg": 164.53442443423998,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 125,
+      "nearest_index": 125,
+      "lookahead_index": 133
+    },
+    {
+      "time": 1787172646.5112345,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 115.4873,
+        "z": 313.614
+      },
+      "yaw_deg": 213.8156,
+      "velocity_cm_s": {
+        "x": -11.41982,
+        "y": 0,
+        "z": -17.0487
+      },
+      "distance_cm": 45.96519832753904,
+      "desired_yaw_deg": 161.59496936527415,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 126,
+      "nearest_index": 126,
+      "lookahead_index": 133
+    },
+    {
+      "time": 1787172646.6633413,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 113.815,
+        "z": 311.03
+      },
+      "yaw_deg": 212.0913,
+      "velocity_cm_s": {
+        "x": -10.90167,
+        "y": 0,
+        "z": -17.3846
+      },
+      "distance_cm": 44.106860294063075,
+      "desired_yaw_deg": 158.47237888840843,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 126,
+      "nearest_index": 126,
+      "lookahead_index": 133
+    },
+    {
+      "time": 1787172646.8146403,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 112.2227,
+        "z": 308.396
+      },
+      "yaw_deg": 210.3325,
+      "velocity_cm_s": {
+        "x": -10.36296,
+        "y": 0,
+        "z": -17.711
+      },
+      "distance_cm": 42.311762091527235,
+      "desired_yaw_deg": 155.1559223891122,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 126,
+      "nearest_index": 126,
+      "lookahead_index": 133
+    },
+    {
+      "time": 1787172646.9657142,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 110.6142,
+        "z": 305.5339
+      },
+      "yaw_deg": 208.4564,
+      "velocity_cm_s": {
+        "x": -9.777575,
+        "y": 0,
+        "z": -18.04077
+      },
+      "distance_cm": 44.931128305997404,
+      "desired_yaw_deg": 154.4400098196192,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 127,
+      "nearest_index": 127,
+      "lookahead_index": 134
+    },
+    {
+      "time": 1787172647.125825,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 109.1921,
+        "z": 302.8043
+      },
+      "yaw_deg": 206.6976,
+      "velocity_cm_s": {
+        "x": -9.219255,
+        "y": 0,
+        "z": -18.33237
+      },
+      "distance_cm": 43.152448376656466,
+      "desired_yaw_deg": 151.17113286830298,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 127,
+      "nearest_index": 127,
+      "lookahead_index": 134
+    },
+    {
+      "time": 1787172647.2888622,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 107.7684,
+        "z": 299.846
+      },
+      "yaw_deg": 204.8215,
+      "velocity_cm_s": {
+        "x": -8.614151,
+        "y": 0,
+        "z": -18.62436
+      },
+      "distance_cm": 45.62836567925702,
+      "desired_yaw_deg": 150.84118905156015,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 128,
+      "nearest_index": 128,
+      "lookahead_index": 135
+    },
+    {
+      "time": 1787172647.4378076,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 106.4422,
+        "z": 296.8427
+      },
+      "yaw_deg": 202.9454,
+      "velocity_cm_s": {
+        "x": -7.999809,
+        "y": 0,
+        "z": -18.89639
+      },
+      "distance_cm": 43.730475461970435,
+      "desired_yaw_deg": 147.40451407033007,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 128,
+      "nearest_index": 128,
+      "lookahead_index": 135
+    },
+    {
+      "time": 1787172647.6045177,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 105.2888,
+        "z": 293.9891
+      },
+      "yaw_deg": 201.1866,
+      "velocity_cm_s": {
+        "x": -7.416065,
+        "y": 0,
+        "z": -19.13302
+      },
+      "distance_cm": 46.16051694088792,
+      "desired_yaw_deg": 147.63357309018747,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 129,
+      "nearest_index": 129,
+      "lookahead_index": 136
+    },
+    {
+      "time": 1787172647.7627668,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 104.0883,
+        "z": 290.714
+      },
+      "yaw_deg": 199.1933,
+      "velocity_cm_s": {
+        "x": -6.746068,
+        "y": 0,
+        "z": -19.37939
+      },
+      "distance_cm": 44.12375769231355,
+      "desired_yaw_deg": 144.03786088264062,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 129,
+      "nearest_index": 129,
+      "lookahead_index": 136
+    },
+    {
+      "time": 1787172647.9104152,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 103.1241,
+        "z": 287.791
+      },
+      "yaw_deg": 197.4344,
+      "velocity_cm_s": {
+        "x": -6.14809,
+        "y": 0,
+        "z": -19.57732
+      },
+      "distance_cm": 42.39768486379887,
+      "desired_yaw_deg": 140.66153959388853,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 129,
+      "nearest_index": 129,
+      "lookahead_index": 136
+    },
+    {
+      "time": 1787172648.0758061,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 102.2502,
+        "z": 284.8399
+      },
+      "yaw_deg": 195.6756,
+      "velocity_cm_s": {
+        "x": -5.544319,
+        "y": 0,
+        "z": -19.7568
+      },
+      "distance_cm": 44.540655945439326,
+      "desired_yaw_deg": 141.46285972973055,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 130,
+      "nearest_index": 130,
+      "lookahead_index": 137
+    },
+    {
+      "time": 1787172648.2261567,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 101.3697,
+        "z": 281.4646
+      },
+      "yaw_deg": 193.6823,
+      "velocity_cm_s": {
+        "x": -4.85376,
+        "y": 0,
+        "z": -19.93769
+      },
+      "distance_cm": 46.361202866729,
+      "desired_yaw_deg": 141.86265318138157,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 131,
+      "nearest_index": 131,
+      "lookahead_index": 138
+    },
+    {
+      "time": 1787172648.3776634,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 100.6852,
+        "z": 278.4638
+      },
+      "yaw_deg": 192.1483,
+      "velocity_cm_s": {
+        "x": -4.318279,
+        "y": 0,
+        "z": -20.06048
+      },
+      "distance_cm": 44.48801422270947,
+      "desired_yaw_deg": 138.78114497567555,
+      "steering": -7,
+      "speed": 4,
+      "route_index": 131,
+      "nearest_index": 131,
+      "lookahead_index": 138
+    },
+    {
+      "time": 1787172648.525887,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 100.0851,
+        "z": 275.445
+      },
+      "yaw_deg": 190.4241,
+      "velocity_cm_s": {
+        "x": -3.712723,
+        "y": 0,
+        "z": -20.18133
+      },
+      "distance_cm": 46.381561713788805,
+      "desired_yaw_deg": 139.83627613168494,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 132,
+      "nearest_index": 132,
+      "lookahead_index": 139
+    },
+    {
+      "time": 1787172648.677192,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 99.57224,
+        "z": 272.4101
+      },
+      "yaw_deg": 188.89,
+      "velocity_cm_s": {
+        "x": -3.17113,
+        "y": 0,
+        "z": -20.27349
+      },
+      "distance_cm": 48.2220298269121,
+      "desired_yaw_deg": 140.87658267256694,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 133,
+      "nearest_index": 133,
+      "lookahead_index": 140
+    },
+    {
+      "time": 1787172648.8356006,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 99.13907,
+        "z": 269.3628
+      },
+      "yaw_deg": 187.3906,
+      "velocity_cm_s": {
+        "x": -2.639549,
+        "y": 0,
+        "z": -20.34953
+      },
+      "distance_cm": 46.18656757440305,
+      "desired_yaw_deg": 138.07326661095277,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 133,
+      "nearest_index": 133,
+      "lookahead_index": 140
+    },
+    {
+      "time": 1787172648.9889889,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 98.78579,
+        "z": 266.3052
+      },
+      "yaw_deg": 185.8912,
+      "velocity_cm_s": {
+        "x": -2.106159,
+        "y": 0,
+        "z": -20.41163
+      },
+      "distance_cm": 47.87895626435586,
+      "desired_yaw_deg": 139.31196511364985,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 134,
+      "nearest_index": 134,
+      "lookahead_index": 141
+    },
+    {
+      "time": 1787172649.1391094,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 98.49728,
+        "z": 263.0349
+      },
+      "yaw_deg": 184.2918,
+      "velocity_cm_s": {
+        "x": -1.535629,
+        "y": 0,
+        "z": -20.46246
+      },
+      "distance_cm": 45.64784754408908,
+      "desired_yaw_deg": 136.35999684885283,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 134,
+      "nearest_index": 134,
+      "lookahead_index": 141
+    },
+    {
+      "time": 1787172649.2856958,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 98.3098,
+        "z": 259.9627
+      },
+      "yaw_deg": 182.7924,
+      "velocity_cm_s": {
+        "x": -0.999663,
+        "y": 0,
+        "z": -20.49564
+      },
+      "distance_cm": 47.187489521376314,
+      "desired_yaw_deg": 137.81083035405624,
+      "steering": -6,
+      "speed": 4,
+      "route_index": 135,
+      "nearest_index": 135,
+      "lookahead_index": 142
+    },
+    {
+      "time": 1787172649.435723,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 98.20277,
+        "z": 256.8866
+      },
+      "yaw_deg": 181.2929,
+      "velocity_cm_s": {
+        "x": -0.4630118,
+        "y": 0,
+        "z": -20.51478
+      },
+      "distance_cm": 48.69994964302221,
+      "desired_yaw_deg": 139.23778767633817,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 136,
+      "nearest_index": 136,
+      "lookahead_index": 143
+    },
+    {
+      "time": 1787172649.5871568,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 98.17072,
+        "z": 253.8088
+      },
+      "yaw_deg": 180.015,
+      "velocity_cm_s": {
+        "x": -0.005370557,
+        "y": 0,
+        "z": -20.52
+      },
+      "distance_cm": 46.43423330645612,
+      "desired_yaw_deg": 136.72740846762244,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 136,
+      "nearest_index": 136,
+      "lookahead_index": 143
+    },
+    {
+      "time": 1787172649.7374794,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 98.20555,
+        "z": 250.7311
+      },
+      "yaw_deg": 178.7711,
+      "velocity_cm_s": {
+        "x": 0.4400721,
+        "y": 0,
+        "z": -20.51528
+      },
+      "distance_cm": 47.828846505142685,
+      "desired_yaw_deg": 138.33649141860255,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 137,
+      "nearest_index": 137,
+      "lookahead_index": 144
+    },
+    {
+      "time": 1787172649.912773,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 98.31633,
+        "z": 247.4498
+      },
+      "yaw_deg": 177.4444,
+      "velocity_cm_s": {
+        "x": 0.9149771,
+        "y": 0,
+        "z": -20.4996
+      },
+      "distance_cm": 49.054484654401385,
+      "desired_yaw_deg": 139.76776311306094,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 138,
+      "nearest_index": 138,
+      "lookahead_index": 145
+    },
+    {
+      "time": 1787172650.0560997,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 98.50306,
+        "z": 244.172
+      },
+      "yaw_deg": 176.1176,
+      "velocity_cm_s": {
+        "x": 1.389391,
+        "y": 0,
+        "z": -20.47291
+      },
+      "distance_cm": 46.47346353956846,
+      "desired_yaw_deg": 137.33268504851296,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 138,
+      "nearest_index": 138,
+      "lookahead_index": 145
+    },
+    {
+      "time": 1787172650.2036972,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 98.747,
+        "z": 241.1037
+      },
+      "yaw_deg": 174.8737,
+      "velocity_cm_s": {
+        "x": 1.833483,
+        "y": 0,
+        "z": -20.43792
+      },
+      "distance_cm": 47.75172418552026,
+      "desired_yaw_deg": 139.1190508422622,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 139,
+      "nearest_index": 139,
+      "lookahead_index": 146
+    },
+    {
+      "time": 1787172650.3453565,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 99.03004,
+        "z": 238.2449
+      },
+      "yaw_deg": 173.9148,
+      "velocity_cm_s": {
+        "x": 2.175286,
+        "y": 0,
+        "z": -20.40438
+      },
+      "distance_cm": 45.43524841366668,
+      "desired_yaw_deg": 137.0289691683503,
+      "steering": -5,
+      "speed": 4,
+      "route_index": 139,
+      "nearest_index": 139,
+      "lookahead_index": 146
+    },
+    {
+      "time": 1787172650.5044842,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 99.39001,
+        "z": 235.1881
+      },
+      "yaw_deg": 172.7046,
+      "velocity_cm_s": {
+        "x": 2.605748,
+        "y": 0,
+        "z": -20.35389
+      },
+      "distance_cm": 46.63875930393195,
+      "desired_yaw_deg": 138.980120408307,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 140,
+      "nearest_index": 140,
+      "lookahead_index": 147
+    },
+    {
+      "time": 1787172650.6545193,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 99.81154,
+        "z": 232.1391
+      },
+      "yaw_deg": 171.6627,
+      "velocity_cm_s": {
+        "x": 2.975423,
+        "y": 0,
+        "z": -20.30313
+      },
+      "distance_cm": 47.221416924895664,
+      "desired_yaw_deg": 140.97421233902264,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 141,
+      "nearest_index": 141,
+      "lookahead_index": 148
+    },
+    {
+      "time": 1787172650.7936532,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 100.2859,
+        "z": 229.098
+      },
+      "yaw_deg": 170.6712,
+      "velocity_cm_s": {
+        "x": 3.326273,
+        "y": 0,
+        "z": -20.24862
+      },
+      "distance_cm": 44.58703360788308,
+      "desired_yaw_deg": 138.98666906485442,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 141,
+      "nearest_index": 141,
+      "lookahead_index": 148
+    },
+    {
+      "time": 1787172650.9479527,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 100.8129,
+        "z": 226.0654
+      },
+      "yaw_deg": 169.6798,
+      "velocity_cm_s": {
+        "x": 3.676127,
+        "y": 0,
+        "z": -20.18803
+      },
+      "distance_cm": 44.47873118916612,
+      "desired_yaw_deg": 141.27777382792706,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 142,
+      "nearest_index": 142,
+      "lookahead_index": 149
+    },
+    {
+      "time": 1787172651.1126301,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 101.3922,
+        "z": 223.0425
+      },
+      "yaw_deg": 168.6884,
+      "velocity_cm_s": {
+        "x": 4.024881,
+        "y": 0,
+        "z": -20.1214
+      },
+      "distance_cm": 41.78270998315307,
+      "desired_yaw_deg": 139.30411452280688,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 142,
+      "nearest_index": 142,
+      "lookahead_index": 149
+    },
+    {
+      "time": 1787172651.2553318,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 102.0677,
+        "z": 219.8296
+      },
+      "yaw_deg": 167.6309,
+      "velocity_cm_s": {
+        "x": 4.395554,
+        "y": 0,
+        "z": -20.04369
+      },
+      "distance_cm": 40.814860236735036,
+      "desired_yaw_deg": 141.86289611515267,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 143,
+      "nearest_index": 143,
+      "lookahead_index": 150
+    },
+    {
+      "time": 1787172651.4084847,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 102.7495,
+        "z": 216.828
+      },
+      "yaw_deg": 166.8562,
+      "velocity_cm_s": {
+        "x": 4.666178,
+        "y": 0,
+        "z": -19.98242
+      },
+      "distance_cm": 48.95300127928829,
+      "desired_yaw_deg": 138.79117314944804,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 144,
+      "nearest_index": 144,
+      "lookahead_index": 151
+    },
+    {
+      "time": 1787172651.5666606,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 103.4753,
+        "z": 213.8369
+      },
+      "yaw_deg": 165.8981,
+      "velocity_cm_s": {
+        "x": 4.999649,
+        "y": 0,
+        "z": -19.90161
+      },
+      "distance_cm": 46.24654053764455,
+      "desired_yaw_deg": 137.0260226208096,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 144,
+      "nearest_index": 144,
+      "lookahead_index": 151
+    },
+    {
+      "time": 1787172651.712924,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 104.2528,
+        "z": 210.8587
+      },
+      "yaw_deg": 164.9067,
+      "velocity_cm_s": {
+        "x": 5.343249,
+        "y": 0,
+        "z": -19.81212
+      },
+      "distance_cm": 43.56202099914558,
+      "desired_yaw_deg": 135.103699035971,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 145,
+      "nearest_index": 145,
+      "lookahead_index": 151
+    },
+    {
+      "time": 1787172651.8645294,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 105.1387,
+        "z": 207.6974
+      },
+      "yaw_deg": 163.8492,
+      "velocity_cm_s": {
+        "x": 5.707988,
+        "y": 0,
+        "z": -19.71013
+      },
+      "distance_cm": 40.728898885803424,
+      "desired_yaw_deg": 132.84699834667657,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 145,
+      "nearest_index": 145,
+      "lookahead_index": 151
+    },
+    {
+      "time": 1787172652.0158875,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 106.0222,
+        "z": 204.7489
+      },
+      "yaw_deg": 162.8577,
+      "velocity_cm_s": {
+        "x": 6.048168,
+        "y": 0,
+        "z": -19.60841
+      },
+      "distance_cm": 41.5296273044919,
+      "desired_yaw_deg": 135.75226833531488,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 146,
+      "nearest_index": 146,
+      "lookahead_index": 152
+    },
+    {
+      "time": 1787172652.1561625,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 106.8882,
+        "z": 202.0098
+      },
+      "yaw_deg": 162.1324,
+      "velocity_cm_s": {
+        "x": 6.295909,
+        "y": 0,
+        "z": -19.53028
+      },
+      "distance_cm": 42.6016501473828,
+      "desired_yaw_deg": 138.70959508823591,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 147,
+      "nearest_index": 147,
+      "lookahead_index": 153
+    },
+    {
+      "time": 1787172652.313731,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 107.8528,
+        "z": 199.0868
+      },
+      "yaw_deg": 161.391,
+      "velocity_cm_s": {
+        "x": 6.548105,
+        "y": 0,
+        "z": -19.44718
+      },
+      "distance_cm": 43.57614487400188,
+      "desired_yaw_deg": 141.46569806448935,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 148,
+      "nearest_index": 148,
+      "lookahead_index": 154
+    },
+    {
+      "time": 1787172652.4745457,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 108.9182,
+        "z": 195.9813
+      },
+      "yaw_deg": 160.8152,
+      "velocity_cm_s": {
+        "x": 6.743205,
+        "y": 0,
+        "z": -19.38039
+      },
+      "distance_cm": 48.57702379654398,
+      "desired_yaw_deg": 147.52603051882207,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 150,
+      "nearest_index": 150,
+      "lookahead_index": 156
+    },
+    {
+      "time": 1787172652.6351442,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 110.0122,
+        "z": 192.8857
+      },
+      "yaw_deg": 160.289,
+      "velocity_cm_s": {
+        "x": 6.920896,
+        "y": 0,
+        "z": -19.31766
+      },
+      "distance_cm": 45.38409868367996,
+      "desired_yaw_deg": 146.59285033570572,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 150,
+      "nearest_index": 150,
+      "lookahead_index": 156
+    },
+    {
+      "time": 1787172652.7901678,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 111.0636,
+        "z": 189.9929
+      },
+      "yaw_deg": 159.7957,
+      "velocity_cm_s": {
+        "x": 7.086949,
+        "y": 0,
+        "z": -19.25735
+      },
+      "distance_cm": 42.396394839302076,
+      "desired_yaw_deg": 145.62647062343206,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 150,
+      "nearest_index": 150,
+      "lookahead_index": 156
+    },
+    {
+      "time": 1787172652.93832,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 112.2125,
+        "z": 186.9173
+      },
+      "yaw_deg": 159.2696,
+      "velocity_cm_s": {
+        "x": 7.263497,
+        "y": 0,
+        "z": -19.19146
+      },
+      "distance_cm": 39.217141603385635,
+      "desired_yaw_deg": 144.4748901034816,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 150,
+      "nearest_index": 150,
+      "lookahead_index": 156
+    },
+    {
+      "time": 1787172653.1026647,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 113.3153,
+        "z": 184.0436
+      },
+      "yaw_deg": 158.7763,
+      "velocity_cm_s": {
+        "x": 7.428452,
+        "y": 0,
+        "z": -19.12822
+      },
+      "distance_cm": 36.24578479009663,
+      "desired_yaw_deg": 143.25403380280744,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 150,
+      "nearest_index": 150,
+      "lookahead_index": 156
+    },
+    {
+      "time": 1787172653.2540221,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 114.5187,
+        "z": 180.989
+      },
+      "yaw_deg": 158.2501,
+      "velocity_cm_s": {
+        "x": 7.603798,
+        "y": 0,
+        "z": -19.05919
+      },
+      "distance_cm": 33.089451048483724,
+      "desired_yaw_deg": 141.75921352230264,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 150,
+      "nearest_index": 150,
+      "lookahead_index": 156
+    },
+    {
+      "time": 1787172653.4043257,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 116.0597,
+        "z": 178.3546
+      },
+      "yaw_deg": 160.3951,
+      "velocity_cm_s": {
+        "x": 6.885132,
+        "y": 0,
+        "z": -19.33043
+      },
+      "distance_cm": 30.069458013905074,
+      "desired_yaw_deg": 140.9583628221349,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 150,
+      "nearest_index": 150,
+      "lookahead_index": 156
+    },
+    {
+      "time": 1787172653.5464082,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 118.004,
+        "z": 176.5754
+      },
+      "yaw_deg": 166.2639,
+      "velocity_cm_s": {
+        "x": 4.872493,
+        "y": 0,
+        "z": -19.93312
+      },
+      "distance_cm": 27.465649476391413,
+      "desired_yaw_deg": 141.7707629172819,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 150,
+      "nearest_index": 150,
+      "lookahead_index": 156
+    },
+    {
+      "time": 1787172653.702337,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 119.656,
+        "z": 174.9982
+      },
+      "yaw_deg": 171.6553,
+      "velocity_cm_s": {
+        "x": 2.978041,
+        "y": 0,
+        "z": -20.30275
+      },
+      "distance_cm": 25.206474153280535,
+      "desired_yaw_deg": 142.50208929535904,
+      "steering": -4,
+      "speed": 4,
+      "route_index": 150,
+      "nearest_index": 150,
+      "lookahead_index": 156
+    },
+    {
+      "time": 1787172653.8535469,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 121.3764,
+        "z": 172.433
+      },
+      "yaw_deg": 172.6002,
+      "velocity_cm_s": {
+        "x": 2.642812,
+        "y": 0,
+        "z": -20.34911
+      },
+      "distance_cm": 26.245799015461493,
+      "desired_yaw_deg": 148.72961720505032,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 153,
+      "nearest_index": 153,
+      "lookahead_index": 157
+    },
+    {
+      "time": 1787172654.0049284,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 122.8513,
+        "z": 168.8124
+      },
+      "yaw_deg": 174.8766,
+      "velocity_cm_s": {
+        "x": 1.832443,
+        "y": 0,
+        "z": -20.43802
+      },
+      "distance_cm": 22.394135514683303,
+      "desired_yaw_deg": 147.14637357333376,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 153,
+      "nearest_index": 153,
+      "lookahead_index": 157
+    },
+    {
+      "time": 1787172654.1560717,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 123.8771,
+        "z": 165.2519
+      },
+      "yaw_deg": 177.8733,
+      "velocity_cm_s": {
+        "x": 0.7615008,
+        "y": 0,
+        "z": -20.50587
+      },
+      "distance_cm": 23.105375089359626,
+      "desired_yaw_deg": 151.22319979256127,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 154,
+      "nearest_index": 154,
+      "lookahead_index": 158
+    },
+    {
+      "time": 1787172654.3049207,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 124.0148,
+        "z": 162.3692
+      },
+      "yaw_deg": 177.2914,
+      "velocity_cm_s": {
+        "x": 0.9697018,
+        "y": 0,
+        "z": -20.49708
+      },
+      "distance_cm": 24.920989701053216,
+      "desired_yaw_deg": 153.84499352158718,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 155,
+      "nearest_index": 155,
+      "lookahead_index": 159
+    },
+    {
+      "time": 1787172654.4546869,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 124.1804,
+        "z": 159.2957
+      },
+      "yaw_deg": 176.5954,
+      "velocity_cm_s": {
+        "x": 1.218627,
+        "y": 0,
+        "z": -20.48378
+      },
+      "distance_cm": 22.122110718690482,
+      "desired_yaw_deg": 150.71951878457557,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 155,
+      "nearest_index": 155,
+      "lookahead_index": 159
+    },
+    {
+      "time": 1787172654.6041021,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 124.3981,
+        "z": 156.0197
+      },
+      "yaw_deg": 175.8525,
+      "velocity_cm_s": {
+        "x": 1.484081,
+        "y": 0,
+        "z": -20.46627
+      },
+      "distance_cm": 23.542049012352344,
+      "desired_yaw_deg": 153.23457174248125,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 156,
+      "nearest_index": 156,
+      "lookahead_index": 160
+    },
+    {
+      "time": 1787172654.7516036,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 124.6234,
+        "z": 153.1558
+      },
+      "yaw_deg": 175.2023,
+      "velocity_cm_s": {
+        "x": 1.716262,
+        "y": 0,
+        "z": -20.4481
+      },
+      "distance_cm": 20.911884209702382,
+      "desired_yaw_deg": 150.25070080041306,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 156,
+      "nearest_index": 156,
+      "lookahead_index": 160
+    },
+    {
+      "time": 1787172654.8935034,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 124.9009,
+        "z": 150.0904
+      },
+      "yaw_deg": 174.5052,
+      "velocity_cm_s": {
+        "x": 1.964896,
+        "y": 0,
+        "z": -20.42571
+      },
+      "distance_cm": 22.48590654098695,
+      "desired_yaw_deg": 153.31210698020422,
+      "steering": -3,
+      "speed": 4,
+      "route_index": 157,
+      "nearest_index": 157,
+      "lookahead_index": 161
+    },
+    {
+      "time": 1787172655.042993,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 125.1935,
+        "z": 147.2325
+      },
+      "yaw_deg": 173.8543,
+      "velocity_cm_s": {
+        "x": 2.1968,
+        "y": 0,
+        "z": -20.40208
+      },
+      "distance_cm": 24.299207775151835,
+      "desired_yaw_deg": 156.19827592648372,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 158,
+      "nearest_index": 158,
+      "lookahead_index": 162
+    },
+    {
+      "time": 1787172655.191857,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 125.5615,
+        "z": 143.97
+      },
+      "yaw_deg": 173.3417,
+      "velocity_cm_s": {
+        "x": 2.37924,
+        "y": 0,
+        "z": -20.3816
+      },
+      "distance_cm": 21.18835015403512,
+      "desired_yaw_deg": 153.5474154618212,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 158,
+      "nearest_index": 158,
+      "lookahead_index": 162
+    },
+    {
+      "time": 1787172655.345409,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 125.906,
+        "z": 141.118
+      },
+      "yaw_deg": 172.9218,
+      "velocity_cm_s": {
+        "x": 2.528538,
+        "y": 0,
+        "z": -20.36362
+      },
+      "distance_cm": 22.992841494691337,
+      "desired_yaw_deg": 156.70194001909087,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 159,
+      "nearest_index": 159,
+      "lookahead_index": 163
+    },
+    {
+      "time": 1787172655.4854004,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 126.2982,
+        "z": 138.0651
+      },
+      "yaw_deg": 172.4717,
+      "velocity_cm_s": {
+        "x": 2.688461,
+        "y": 0,
+        "z": -20.34312
+      },
+      "distance_cm": 20.051662306402434,
+      "desired_yaw_deg": 154.28029161351458,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 159,
+      "nearest_index": 159,
+      "lookahead_index": 163
+    },
+    {
+      "time": 1787172655.634446,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 126.6859,
+        "z": 135.2186
+      },
+      "yaw_deg": 172.0512,
+      "velocity_cm_s": {
+        "x": 2.837676,
+        "y": 0,
+        "z": -20.32285
+      },
+      "distance_cm": 21.861291013341376,
+      "desired_yaw_deg": 157.64702205313876,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 160,
+      "nearest_index": 160,
+      "lookahead_index": 164
+    },
+    {
+      "time": 1787172655.78258,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 127.1546,
+        "z": 131.9689
+      },
+      "yaw_deg": 171.5703,
+      "velocity_cm_s": {
+        "x": 3.008141,
+        "y": 0,
+        "z": -20.29831
+      },
+      "distance_cm": 23.327727458327345,
+      "desired_yaw_deg": 160.34764637098118,
+      "steering": -1,
+      "speed": 4,
+      "route_index": 161,
+      "nearest_index": 161,
+      "lookahead_index": 165
+    },
+    {
+      "time": 1787172655.9274998,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 127.5825,
+        "z": 129.1281
+      },
+      "yaw_deg": 171.3468,
+      "velocity_cm_s": {
+        "x": 3.087301,
+        "y": 0,
+        "z": -20.28643
+      },
+      "distance_cm": 20.515933219329792,
+      "desired_yaw_deg": 158.80468942032397,
+      "steering": -2,
+      "speed": 4,
+      "route_index": 161,
+      "nearest_index": 161,
+      "lookahead_index": 165
+    },
+    {
+      "time": 1787172656.0887775,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 128.0568,
+        "z": 126.0869
+      },
+      "yaw_deg": 170.9283,
+      "velocity_cm_s": {
+        "x": 3.235399,
+        "y": 0,
+        "z": -20.26333
+      },
+      "distance_cm": 22.200571565840367,
+      "desired_yaw_deg": 161.77504147763102,
+      "steering": -1,
+      "speed": 4,
+      "route_index": 162,
+      "nearest_index": 162,
+      "lookahead_index": 166
+    },
+    {
+      "time": 1787172656.244637,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 128.5838,
+        "z": 122.8463
+      },
+      "yaw_deg": 170.6604,
+      "velocity_cm_s": {
+        "x": 3.330098,
+        "y": 0,
+        "z": -20.24799
+      },
+      "distance_cm": 18.964652544404814,
+      "desired_yaw_deg": 160.22519476350365,
+      "steering": -1,
+      "speed": 4,
+      "route_index": 162,
+      "nearest_index": 162,
+      "lookahead_index": 166
+    },
+    {
+      "time": 1787172656.4131095,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 129.1234,
+        "z": 119.6077
+      },
+      "yaw_deg": 170.4416,
+      "velocity_cm_s": {
+        "x": 3.407408,
+        "y": 0,
+        "z": -20.23512
+      },
+      "distance_cm": 20.469399767702026,
+      "desired_yaw_deg": 163.31606453920568,
+      "steering": -1,
+      "speed": 4,
+      "route_index": 163,
+      "nearest_index": 163,
+      "lookahead_index": 167
+    },
+    {
+      "time": 1787172656.5525005,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 129.6753,
+        "z": 116.3712
+      },
+      "yaw_deg": 170.2224,
+      "velocity_cm_s": {
+        "x": 3.484791,
+        "y": 0,
+        "z": -20.22194
+      },
+      "distance_cm": 22.024545841628612,
+      "desired_yaw_deg": 166.00943692407893,
+      "steering": -1,
+      "speed": 4,
+      "route_index": 164,
+      "nearest_index": 164,
+      "lookahead_index": 168
+    },
+    {
+      "time": 1787172656.6929176,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 130.1684,
+        "z": 113.5411
+      },
+      "yaw_deg": 170.0303,
+      "velocity_cm_s": {
+        "x": 3.552561,
+        "y": 0,
+        "z": -20.21014
+      },
+      "distance_cm": 19.160290910369813,
+      "desired_yaw_deg": 165.3941973952859,
+      "steering": -1,
+      "speed": 4,
+      "route_index": 164,
+      "nearest_index": 164,
+      "lookahead_index": 168
+    },
+    {
+      "time": 1787172656.848899,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 130.7072,
+        "z": 110.5106
+      },
+      "yaw_deg": 169.8242,
+      "velocity_cm_s": {
+        "x": 3.62523,
+        "y": 0,
+        "z": -20.19724
+      },
+      "distance_cm": 20.955019546638457,
+      "desired_yaw_deg": 168.1788228495929,
+      "steering": 0,
+      "speed": 4,
+      "route_index": 165,
+      "nearest_index": 165,
+      "lookahead_index": 169
+    },
+    {
+      "time": 1787172656.9895976,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 131.2517,
+        "z": 107.4811
+      },
+      "yaw_deg": 169.8314,
+      "velocity_cm_s": {
+        "x": 3.622722,
+        "y": 0,
+        "z": -20.19769
+      },
+      "distance_cm": 22.791437210057637,
+      "desired_yaw_deg": 170.53408220903597,
+      "steering": 0,
+      "speed": 4,
+      "route_index": 166,
+      "nearest_index": 166,
+      "lookahead_index": 170
+    },
+    {
+      "time": 1787172657.1442184,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 131.758,
+        "z": 104.6533
+      },
+      "yaw_deg": 169.8684,
+      "velocity_cm_s": {
+        "x": 3.60967,
+        "y": 0,
+        "z": -20.20001
+      },
+      "distance_cm": 19.918904711102968,
+      "desired_yaw_deg": 170.63286975680083,
+      "steering": 0,
+      "speed": 4,
+      "route_index": 166,
+      "nearest_index": 166,
+      "lookahead_index": 170
+    },
+    {
+      "time": 1787172657.2852685,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 132.2985,
+        "z": 101.6231
+      },
+      "yaw_deg": 169.9078,
+      "velocity_cm_s": {
+        "x": 3.595784,
+        "y": 0,
+        "z": -20.20249
+      },
+      "distance_cm": 21.791203634953252,
+      "desired_yaw_deg": 172.87860364395902,
+      "steering": 0,
+      "speed": 4,
+      "route_index": 167,
+      "nearest_index": 167,
+      "lookahead_index": 171
+    },
+    {
+      "time": 1787172657.4338574,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 132.8369,
+        "z": 98.59258
+      },
+      "yaw_deg": 169.9469,
+      "velocity_cm_s": {
+        "x": 3.582002,
+        "y": 0,
+        "z": -20.20495
+      },
+      "distance_cm": 18.717986875366694,
+      "desired_yaw_deg": 173.36392161839146,
+      "steering": 0,
+      "speed": 4,
+      "route_index": 167,
+      "nearest_index": 167,
+      "lookahead_index": 171
+    },
+    {
+      "time": 1787172657.584357,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 133.3733,
+        "z": 95.56167
+      },
+      "yaw_deg": 169.9857,
+      "velocity_cm_s": {
+        "x": 3.568321,
+        "y": 0,
+        "z": -20.20737
+      },
+      "distance_cm": 20.62591636943436,
+      "desired_yaw_deg": 175.4765677140882,
+      "steering": 1,
+      "speed": 4,
+      "route_index": 168,
+      "nearest_index": 168,
+      "lookahead_index": 172
+    },
+    {
+      "time": 1787172657.7344623,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 133.8675,
+        "z": 92.7317
+      },
+      "yaw_deg": 170.2187,
+      "velocity_cm_s": {
+        "x": 3.486108,
+        "y": 0,
+        "z": -20.22171
+      },
+      "distance_cm": 17.767828824591938,
+      "desired_yaw_deg": 176.34555875505703,
+      "steering": 1,
+      "speed": 4,
+      "route_index": 168,
+      "nearest_index": 168,
+      "lookahead_index": 172
+    },
+    {
+      "time": 1787172657.874105,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 134.3825,
+        "z": 89.69711
+      },
+      "yaw_deg": 170.5033,
+      "velocity_cm_s": {
+        "x": 3.385629,
+        "y": 0,
+        "z": -20.23878
+      },
+      "distance_cm": 19.706786866511237,
+      "desired_yaw_deg": 178.20437820350267,
+      "steering": 1,
+      "speed": 4,
+      "route_index": 169,
+      "nearest_index": 169,
+      "lookahead_index": 173
+    },
+    {
+      "time": 1787172658.0233617,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 134.8825,
+        "z": 86.65998
+      },
+      "yaw_deg": 170.7875,
+      "velocity_cm_s": {
+        "x": 3.285167,
+        "y": 0,
+        "z": -20.25533
+      },
+      "distance_cm": 21.660298701781567,
+      "desired_yaw_deg": 179.68918770676618,
+      "steering": 1,
+      "speed": 4,
+      "route_index": 170,
+      "nearest_index": 170,
+      "lookahead_index": 174
+    },
+    {
+      "time": 1787172658.169483,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 135.3355,
+        "z": 83.82312
+      },
+      "yaw_deg": 171.0526,
+      "velocity_cm_s": {
+        "x": 3.19142,
+        "y": 0,
+        "z": -20.27031
+      },
+      "distance_cm": 18.82610970924158,
+      "desired_yaw_deg": -178.97887816689482,
+      "steering": 1,
+      "speed": 4,
+      "route_index": 170,
+      "nearest_index": 170,
+      "lookahead_index": 174
+    },
+    {
+      "time": 1787172658.3271248,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 135.8063,
+        "z": 80.78134
+      },
+      "yaw_deg": 171.3364,
+      "velocity_cm_s": {
+        "x": 3.090997,
+        "y": 0,
+        "z": -20.28586
+      },
+      "distance_cm": 20.79697602743245,
+      "desired_yaw_deg": -177.77808234254096,
+      "steering": 1,
+      "speed": 4,
+      "route_index": 171,
+      "nearest_index": 171,
+      "lookahead_index": 175
+    },
+    {
+      "time": 1787172658.4743273,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 136.2919,
+        "z": 77.53425
+      },
+      "yaw_deg": 171.6387,
+      "velocity_cm_s": {
+        "x": 2.983905,
+        "y": 0,
+        "z": -20.3019
+      },
+      "distance_cm": 17.581778313711613,
+      "desired_yaw_deg": -175.78613792513676,
+      "steering": 2,
+      "speed": 4,
+      "route_index": 171,
+      "nearest_index": 171,
+      "lookahead_index": 175
+    },
+    {
+      "time": 1787172658.6264782,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 136.7263,
+        "z": 74.48706
+      },
+      "yaw_deg": 172.1359,
+      "velocity_cm_s": {
+        "x": 2.807625,
+        "y": 0,
+        "z": -20.32702
+      },
+      "distance_cm": 19.563374431155786,
+      "desired_yaw_deg": -174.937554497076,
+      "steering": 2,
+      "speed": 4,
+      "route_index": 172,
+      "nearest_index": 172,
+      "lookahead_index": 176
+    },
+    {
+      "time": 1787172658.773361,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 137.1063,
+        "z": 71.63951
+      },
+      "yaw_deg": 172.6304,
+      "velocity_cm_s": {
+        "x": 2.632079,
+        "y": 0,
+        "z": -20.35049
+      },
+      "distance_cm": 21.74177758901282,
+      "desired_yaw_deg": -174.4405798673286,
+      "steering": 2,
+      "speed": 4,
+      "route_index": 173,
+      "nearest_index": 173,
+      "lookahead_index": 177
+    },
+    {
+      "time": 1787172658.9228482,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 137.5105,
+        "z": 68.38133
+      },
+      "yaw_deg": 173.1953,
+      "velocity_cm_s": {
+        "x": 2.43132,
+        "y": 0,
+        "z": -20.37545
+      },
+      "distance_cm": 18.551978407137614,
+      "desired_yaw_deg": -172.22273139732692,
+      "steering": 2,
+      "speed": 4,
+      "route_index": 173,
+      "nearest_index": 173,
+      "lookahead_index": 177
+    },
+    {
+      "time": 1787172659.0635548,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 137.8378,
+        "z": 65.52725
+      },
+      "yaw_deg": 173.6893,
+      "velocity_cm_s": {
+        "x": 2.255552,
+        "y": 0,
+        "z": -20.39566
+      },
+      "distance_cm": 20.722478167499652,
+      "desired_yaw_deg": -172.1290061231379,
+      "steering": 2,
+      "speed": 4,
+      "route_index": 174,
+      "nearest_index": 174,
+      "lookahead_index": 178
+    },
+    {
+      "time": 1787172659.221358,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 138.1612,
+        "z": 62.4663
+      },
+      "yaw_deg": 174.2184,
+      "velocity_cm_s": {
+        "x": 2.067135,
+        "y": 0,
+        "z": -20.41561
+      },
+      "distance_cm": 22.592773662735603,
+      "desired_yaw_deg": -171.28052587096434,
+      "steering": 2,
+      "speed": 4,
+      "route_index": 175,
+      "nearest_index": 175,
+      "lookahead_index": 179
+    },
+    {
+      "time": 1787172659.3739812,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 138.4563,
+        "z": 59.40249
+      },
+      "yaw_deg": 174.7471,
+      "velocity_cm_s": {
+        "x": 1.878638,
+        "y": 0,
+        "z": -20.43383
+      },
+      "distance_cm": 19.623683824559183,
+      "desired_yaw_deg": -169.07221927839464,
+      "steering": 2,
+      "speed": 4,
+      "route_index": 175,
+      "nearest_index": 175,
+      "lookahead_index": 179
+    },
+    {
+      "time": 1787172659.5234456,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 138.7399,
+        "z": 56.13157
+      },
+      "yaw_deg": 175.3109,
+      "velocity_cm_s": {
+        "x": 1.677502,
+        "y": 0,
+        "z": -20.45132
+      },
+      "distance_cm": 21.349965523733754,
+      "desired_yaw_deg": -167.02952990891805,
+      "steering": 2,
+      "speed": 4,
+      "route_index": 176,
+      "nearest_index": 176,
+      "lookahead_index": 180
+    },
+    {
+      "time": 1787172659.6770327,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 138.9766,
+        "z": 53.06269
+      },
+      "yaw_deg": 175.8391,
+      "velocity_cm_s": {
+        "x": 1.488887,
+        "y": 0,
+        "z": -20.46592
+      },
+      "distance_cm": 18.435455825056106,
+      "desired_yaw_deg": -164.17071994880524,
+      "steering": 2,
+      "speed": 4,
+      "route_index": 176,
+      "nearest_index": 176,
+      "lookahead_index": 180
+    },
+    {
+      "time": 1787172659.8375258,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 139.185,
+        "z": 49.99176
+      },
+      "yaw_deg": 176.3671,
+      "velocity_cm_s": {
+        "x": 1.300238,
+        "y": 0,
+        "z": -20.47876
+      },
+      "distance_cm": 20.43530957014573,
+      "desired_yaw_deg": -161.3332035150125,
+      "steering": 3,
+      "speed": 4,
+      "route_index": 177,
+      "nearest_index": 177,
+      "lookahead_index": 181
+    },
+    {
+      "time": 1787172660.003456,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 139.3706,
+        "z": 46.71384
+      },
+      "yaw_deg": 177.145,
+      "velocity_cm_s": {
+        "x": 1.022074,
+        "y": 0,
+        "z": -20.49453
+      },
+      "distance_cm": 22.304272393705165,
+      "desired_yaw_deg": -157.51604075454475,
+      "steering": 3,
+      "speed": 4,
+      "route_index": 178,
+      "nearest_index": 178,
+      "lookahead_index": 182
+    },
+    {
+      "time": 1787172660.1496174,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 139.5091,
+        "z": 43.43359
+      },
+      "yaw_deg": 177.9723,
+      "velocity_cm_s": {
+        "x": 0.7260626,
+        "y": 0,
+        "z": -20.50715
+      },
+      "distance_cm": 19.375710575705984,
+      "desired_yaw_deg": -153.42461695405623,
+      "steering": 4,
+      "speed": 4,
+      "route_index": 178,
+      "nearest_index": 178,
+      "lookahead_index": 182
+    },
+    {
+      "time": 1787172660.2916505,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 139.5905,
+        "z": 40.3567
+      },
+      "yaw_deg": 178.9642,
+      "velocity_cm_s": {
+        "x": 0.3709324,
+        "y": 0,
+        "z": -20.51665
+      },
+      "distance_cm": 21.5882304360686,
+      "desired_yaw_deg": -149.26848391966817,
+      "steering": 4,
+      "speed": 4,
+      "route_index": 179,
+      "nearest_index": 179,
+      "lookahead_index": 183
+    },
+    {
+      "time": 1787172660.4398139,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 139.6169,
+        "z": 37.48406
+      },
+      "yaw_deg": 179.9209,
+      "velocity_cm_s": {
+        "x": 0.02831576,
+        "y": 0,
+        "z": -20.51998
+      },
+      "distance_cm": 19.190464777032748,
+      "desired_yaw_deg": -144.81343365810153,
+      "steering": 4,
+      "speed": 4,
+      "route_index": 179,
+      "nearest_index": 179,
+      "lookahead_index": 183
+    },
+    {
+      "time": 1787172660.601522,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 139.5919,
+        "z": 34.4062
+      },
+      "yaw_deg": 180.9457,
+      "velocity_cm_s": {
+        "x": -0.3386928,
+        "y": 0,
+        "z": -20.51721
+      },
+      "distance_cm": 21.596470463993228,
+      "desired_yaw_deg": -140.39447803588152,
+      "steering": 5,
+      "speed": 4,
+      "route_index": 180,
+      "nearest_index": 180,
+      "lookahead_index": 184
+    },
+    {
+      "time": 1787172660.745377,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 139.4999,
+        "z": 31.12436
+      },
+      "yaw_deg": 182.2405,
+      "velocity_cm_s": {
+        "x": -0.8022258,
+        "y": 0,
+        "z": -20.50432
+      },
+      "distance_cm": 23.972187887830277,
+      "desired_yaw_deg": -135.40685424483098,
+      "steering": 5,
+      "speed": 4,
+      "route_index": 181,
+      "nearest_index": 181,
+      "lookahead_index": 185
+    },
+    {
+      "time": 1787172660.9031634,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 139.3557,
+        "z": 28.25523
+      },
+      "yaw_deg": 183.4322,
+      "velocity_cm_s": {
+        "x": -1.228466,
+        "y": 0,
+        "z": -20.4832
+      },
+      "distance_cm": 21.911362296596362,
+      "desired_yaw_deg": -130.40177072594747,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 181,
+      "nearest_index": 181,
+      "lookahead_index": 185
+    },
+    {
+      "time": 1787172661.0512462,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 139.1132,
+        "z": 24.98111
+      },
+      "yaw_deg": 184.9982,
+      "velocity_cm_s": {
+        "x": -1.7878,
+        "y": 0,
+        "z": -20.44197
+      },
+      "distance_cm": 24.558213142963297,
+      "desired_yaw_deg": -125.54980952659302,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 182,
+      "nearest_index": 182,
+      "lookahead_index": 186
+    },
+    {
+      "time": 1787172661.192582,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 138.6053,
+        "z": 22.28892
+      },
+      "yaw_deg": 186.3103,
+      "velocity_cm_s": {
+        "x": -2.255398,
+        "y": 0,
+        "z": -20.39568
+      },
+      "distance_cm": 22.659100232262325,
+      "desired_yaw_deg": -120.75226908545052,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 182,
+      "nearest_index": 182,
+      "lookahead_index": 186
+    },
+    {
+      "time": 1787172661.3446388,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 137.635,
+        "z": 20.38612
+      },
+      "yaw_deg": 188.8816,
+      "velocity_cm_s": {
+        "x": -3.168131,
+        "y": 0,
+        "z": -20.27395
+      },
+      "distance_cm": 20.883374247475786,
+      "desired_yaw_deg": -117.62547609230998,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 182,
+      "nearest_index": 182,
+      "lookahead_index": 186
+    },
+    {
+      "time": 1787172661.503126,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 136.3895,
+        "z": 18.31229
+      },
+      "yaw_deg": 192.9315,
+      "velocity_cm_s": {
+        "x": -4.592088,
+        "y": 0,
+        "z": -19.99958
+      },
+      "distance_cm": 23.626501144846056,
+      "desired_yaw_deg": -116.54391143740762,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 183,
+      "nearest_index": 183,
+      "lookahead_index": 187
+    },
+    {
+      "time": 1787172661.6466165,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 135.288,
+        "z": 16.05934
+      },
+      "yaw_deg": 194.0231,
+      "velocity_cm_s": {
+        "x": -4.972267,
+        "y": 0,
+        "z": -19.90847
+      },
+      "distance_cm": 21.68785910268303,
+      "desired_yaw_deg": -112.51647330721191,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 183,
+      "nearest_index": 183,
+      "lookahead_index": 187
+    },
+    {
+      "time": 1787172661.7963467,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 133.8392,
+        "z": 14.21278
+      },
+      "yaw_deg": 198.1787,
+      "velocity_cm_s": {
+        "x": -6.401855,
+        "y": 0,
+        "z": -19.49581
+      },
+      "distance_cm": 24.464884673756067,
+      "desired_yaw_deg": -111.51110528152071,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 184,
+      "nearest_index": 184,
+      "lookahead_index": 188
+    },
+    {
+      "time": 1787172661.9478986,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 132.6128,
+        "z": 12.10997
+      },
+      "yaw_deg": 199.3808,
+      "velocity_cm_s": {
+        "x": -6.809455,
+        "y": 0,
+        "z": -19.35722
+      },
+      "distance_cm": 22.603115732726433,
+      "desired_yaw_deg": -107.68913762485803,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 184,
+      "nearest_index": 184,
+      "lookahead_index": 188
+    },
+    {
+      "time": 1787172662.1164763,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 131.0549,
+        "z": 10.39937
+      },
+      "yaw_deg": 202.8429,
+      "velocity_cm_s": {
+        "x": -7.965976,
+        "y": 0,
+        "z": -18.91067
+      },
+      "distance_cm": 20.63153548772706,
+      "desired_yaw_deg": -104.47615877961566,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 184,
+      "nearest_index": 184,
+      "lookahead_index": 188
+    },
+    {
+      "time": 1787172662.2645466,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 129.2529,
+        "z": 8.15366
+      },
+      "yaw_deg": 206.3931,
+      "velocity_cm_s": {
+        "x": -9.121695,
+        "y": 0,
+        "z": -18.38111
+      },
+      "distance_cm": 23.134130709147634,
+      "desired_yaw_deg": -102.37438241371206,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 185,
+      "nearest_index": 185,
+      "lookahead_index": 189
+    },
+    {
+      "time": 1787172662.4134583,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 127.7643,
+        "z": 6.738335
+      },
+      "yaw_deg": 207.9301,
+      "velocity_cm_s": {
+        "x": -9.611448,
+        "y": 0,
+        "z": -18.12982
+      },
+      "distance_cm": 21.403246676855805,
+      "desired_yaw_deg": -99.52641760957349,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 185,
+      "nearest_index": 185,
+      "lookahead_index": 189
+    },
+    {
+      "time": 1787172662.5755022,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 125.7747,
+        "z": 5.127858
+      },
+      "yaw_deg": 212.3512,
+      "velocity_cm_s": {
+        "x": -10.9804,
+        "y": 0,
+        "z": -17.33497
+      },
+      "distance_cm": 23.990780139869567,
+      "desired_yaw_deg": -98.35886968509422,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 186,
+      "nearest_index": 186,
+      "lookahead_index": 190
+    },
+    {
+      "time": 1787172662.7346814,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 123.9981,
+        "z": 3.243325
+      },
+      "yaw_deg": 213.4355,
+      "velocity_cm_s": {
+        "x": -11.30647,
+        "y": 0,
+        "z": -17.12408
+      },
+      "distance_cm": 22.017760843535193,
+      "desired_yaw_deg": -94.17529997222316,
+      "steering": 7,
+      "speed": 4,
+      "route_index": 186,
+      "nearest_index": 186,
+      "lookahead_index": 190
+    },
+    {
+      "time": 1787172662.8875902,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 121.8426,
+        "z": 1.844574
+      },
+      "yaw_deg": 218.1995,
+      "velocity_cm_s": {
+        "x": -12.6896,
+        "y": 0,
+        "z": -16.1259
+      },
+      "distance_cm": 24.594286217303512,
+      "desired_yaw_deg": -92.91742546332507,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 187,
+      "nearest_index": 187,
+      "lookahead_index": 191
+    },
+    {
+      "time": 1787172663.0351877,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 120.1073,
+        "z": 0.2515959
+      },
+      "yaw_deg": 219.1382,
+      "velocity_cm_s": {
+        "x": -12.95208,
+        "y": 0,
+        "z": -15.91584
+      },
+      "distance_cm": 22.829660152923527,
+      "desired_yaw_deg": -89.14362919680464,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 187,
+      "nearest_index": 187,
+      "lookahead_index": 191
+    },
+    {
+      "time": 1787172663.183595,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 117.898,
+        "z": -0.9607718
+      },
+      "yaw_deg": 222.7634,
+      "velocity_cm_s": {
+        "x": -13.93252,
+        "y": 0,
+        "z": -15.06504
+      },
+      "distance_cm": 20.67625935904231,
+      "desired_yaw_deg": -85.69083319253679,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 187,
+      "nearest_index": 187,
+      "lookahead_index": 191
+    },
+    {
+      "time": 1787172663.3372366,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 115.86,
+        "z": -2.250008
+      },
+      "yaw_deg": 225.7326,
+      "velocity_cm_s": {
+        "x": -14.69417,
+        "y": 0,
+        "z": -14.32312
+      },
+      "distance_cm": 23.537967176721114,
+      "desired_yaw_deg": -84.35327908348387,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 188,
+      "nearest_index": 188,
+      "lookahead_index": 192
+    },
+    {
+      "time": 1787172663.49734,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 113.7194,
+        "z": -3.308012
+      },
+      "yaw_deg": 227.2864,
+      "velocity_cm_s": {
+        "x": -15.07715,
+        "y": 0,
+        "z": -13.91942
+      },
+      "distance_cm": 21.548929642099683,
+      "desired_yaw_deg": -80.99188861838519,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 188,
+      "nearest_index": 188,
+      "lookahead_index": 192
+    },
+    {
+      "time": 1787172663.6542587,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 111.3261,
+        "z": -4.188542
+      },
+      "yaw_deg": 231.4914,
+      "velocity_cm_s": {
+        "x": -16.0572,
+        "y": 0,
+        "z": -12.77642
+      },
+      "distance_cm": 24.140224034679765,
+      "desired_yaw_deg": -79.84901604727094,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 189,
+      "nearest_index": 189,
+      "lookahead_index": 193
+    },
+    {
+      "time": 1787172663.8223386,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 109.1903,
+        "z": -5.345772
+      },
+      "yaw_deg": 232.2272,
+      "velocity_cm_s": {
+        "x": -16.21995,
+        "y": 0,
+        "z": -12.56916
+      },
+      "distance_cm": 22.29338332785448,
+      "desired_yaw_deg": -75.95096404446276,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 189,
+      "nearest_index": 189,
+      "lookahead_index": 193
+    },
+    {
+      "time": 1787172663.984687,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 106.5956,
+        "z": -5.972372
+      },
+      "yaw_deg": 236.7444,
+      "velocity_cm_s": {
+        "x": -17.15949,
+        "y": 0,
+        "z": -11.25266
+      },
+      "distance_cm": 24.76196497180312,
+      "desired_yaw_deg": -74.6252295399248,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 190,
+      "nearest_index": 190,
+      "lookahead_index": 194
+    },
+    {
+      "time": 1787172664.1363766,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 104.1364,
+        "z": -7.055182
+      },
+      "yaw_deg": 237.7968,
+      "velocity_cm_s": {
+        "x": -17.36328,
+        "y": 0,
+        "z": -10.93559
+      },
+      "distance_cm": 22.741197164176008,
+      "desired_yaw_deg": -70.34805891395963,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 190,
+      "nearest_index": 190,
+      "lookahead_index": 194
+    },
+    {
+      "time": 1787172664.2942157,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 101.6455,
+        "z": -7.394319
+      },
+      "yaw_deg": 241.9758,
+      "velocity_cm_s": {
+        "x": -18.11402,
+        "y": 0,
+        "z": -9.6412
+      },
+      "distance_cm": 20.54205222531585,
+      "desired_yaw_deg": -67.11901048576163,
+      "steering": 6,
+      "speed": 4,
+      "route_index": 190,
+      "nearest_index": 190,
+      "lookahead_index": 194
+    }
+  ],
+  "handshake": true,
+  "initial_run_state": "Ready",
+  "start_response": {
+    "type": "response",
+    "id": 3,
+    "ok": true
+  },
+  "released": true,
+  "official_structure_route_override": [
+    [
+      135.0,
+      180.0
+    ],
+    [
+      135.0,
+      175.0
+    ],
+    [
+      135.0,
+      170.0
+    ],
+    [
+      135.0,
+      165.0
+    ],
+    [
+      135.0,
+      160.0
+    ],
+    [
+      135.0,
+      155.0
+    ],
+    [
+      135.0,
+      150.0
+    ],
+    [
+      135.0,
+      145.0
+    ],
+    [
+      135.0,
+      140.0
+    ],
+    [
+      135.0,
+      135.0
+    ],
+    [
+      135.0,
+      130.0
+    ],
+    [
+      135.0,
+      125.0
+    ],
+    [
+      135.0,
+      120.0
+    ],
+    [
+      135.0,
+      115.0
+    ],
+    [
+      135.0,
+      110.0
+    ],
+    [
+      135.0,
+      105.0
+    ],
+    [
+      135.0,
+      100.0
+    ],
+    [
+      135.0,
+      95.0
+    ],
+    [
+      135.0,
+      90.0
+    ],
+    [
+      135.0,
+      85.0
+    ],
+    [
+      135.0,
+      80.0
+    ],
+    [
+      135.0,
+      75.0
+    ],
+    [
+      135.0,
+      70.0
+    ],
+    [
+      135.0,
+      65.0
+    ],
+    [
+      135.0,
+      60.0
+    ],
+    [
+      135.0,
+      55.0
+    ],
+    [
+      135.0,
+      50.0
+    ],
+    [
+      135.0,
+      45.0
+    ],
+    [
+      134.73620807194618,
+      40.13464417092262
+    ],
+    [
+      133.9479250069539,
+      35.32633019050392
+    ],
+    [
+      132.64439270322612,
+      30.6314311438809
+    ],
+    [
+      130.84089388519305,
+      26.104990429788092
+    ],
+    [
+      128.55857292754152,
+      21.80007642703402
+    ],
+    [
+      125.82418795675397,
+      17.76716031628057
+    ],
+    [
+      122.6697971365409,
+      14.053524351595957
+    ],
+    [
+      119.13238281518224,
+      10.702707519256357
+    ],
+    [
+      115.2534179413072,
+      7.753995082939923
+    ],
+    [
+      111.07837983149057,
+      5.241957999928971
+    ],
+    [
+      106.65621699029616,
+      3.196047608244392
+    ],
+    [
+      102.03877523381493,
+      1.6402503366349634
+    ],
+    [
+      97.28018984487441,
+      0.5928064856313213
+    ],
+    [
+      92.4362508863438,
+      0.06599637669943093
+    ],
+    [
+      87.56374911365623,
+      0.06599637669942382
+    ],
+    [
+      82.71981015512559,
+      0.5928064856313213
+    ],
+    [
+      77.96122476618507,
+      1.6402503366349706
+    ],
+    [
+      73.34378300970386,
+      3.1960476082443847
+    ],
+    [
+      68.92162016850945,
+      5.241957999928971
+    ],
+    [
+      64.7465820586928,
+      7.753995082939923
+    ],
+    [
+      60.86761718481776,
+      10.702707519256357
+    ],
+    [
+      57.33020286345913,
+      14.05352435159594
+    ],
+    [
+      54.17581204324604,
+      17.767160316280552
+    ],
+    [
+      51.44142707245848,
+      21.80007642703403
+    ],
+    [
+      49.15910611480693,
+      26.1049904297881
+    ],
+    [
+      47.35560729677389,
+      30.63143114388091
+    ],
+    [
+      46.0520749930461,
+      35.32633019050391
+    ],
+    [
+      45.26379192805382,
+      40.13464417092261
+    ],
+    [
+      45.0,
+      44.99999999999999
+    ],
+    [
+      45.0,
+      49.99999999999999
+    ],
+    [
+      45.0,
+      54.99999999999999
+    ],
+    [
+      45.0,
+      59.99999999999999
+    ],
+    [
+      45.0,
+      65.0
+    ],
+    [
+      45.0,
+      70.0
+    ],
+    [
+      45.0,
+      75.0
+    ],
+    [
+      45.0,
+      80.0
+    ],
+    [
+      45.0,
+      85.0
+    ],
+    [
+      45.0,
+      90.0
+    ],
+    [
+      45.0,
+      95.0
+    ],
+    [
+      45.0,
+      100.0
+    ],
+    [
+      45.0,
+      105.0
+    ],
+    [
+      45.0,
+      110.0
+    ],
+    [
+      45.0,
+      115.0
+    ],
+    [
+      45.0,
+      120.0
+    ],
+    [
+      45.0,
+      125.0
+    ],
+    [
+      45.0,
+      130.0
+    ],
+    [
+      45.0,
+      135.0
+    ],
+    [
+      45.0,
+      140.0
+    ],
+    [
+      45.0,
+      145.0
+    ],
+    [
+      45.0,
+      150.0
+    ],
+    [
+      45.0,
+      155.0
+    ],
+    [
+      45.0,
+      160.0
+    ],
+    [
+      45.0,
+      165.0
+    ],
+    [
+      45.0,
+      170.0
+    ],
+    [
+      45.0,
+      175.0
+    ],
+    [
+      45.0,
+      180.0
+    ],
+    [
+      45.0,
+      185.0
+    ],
+    [
+      45.0,
+      190.0
+    ],
+    [
+      45.0,
+      195.0
+    ],
+    [
+      45.0,
+      200.0
+    ],
+    [
+      45.0,
+      205.0
+    ],
+    [
+      45.0,
+      210.0
+    ],
+    [
+      45.0,
+      215.0
+    ],
+    [
+      45.0,
+      220.0
+    ],
+    [
+      45.0,
+      225.0
+    ],
+    [
+      45.0,
+      230.0
+    ],
+    [
+      45.0,
+      235.0
+    ],
+    [
+      45.0,
+      240.0
+    ],
+    [
+      45.0,
+      245.0
+    ],
+    [
+      45.0,
+      250.0
+    ],
+    [
+      45.0,
+      255.0
+    ],
+    [
+      45.0,
+      260.0
+    ],
+    [
+      45.0,
+      265.0
+    ],
+    [
+      45.0,
+      270.0
+    ],
+    [
+      45.0,
+      275.0
+    ],
+    [
+      45.0,
+      280.0
+    ],
+    [
+      45.0,
+      285.0
+    ],
+    [
+      45.0,
+      290.0
+    ],
+    [
+      45.0,
+      295.0
+    ],
+    [
+      45.0,
+      300.0
+    ],
+    [
+      45.0,
+      305.0
+    ],
+    [
+      45.0,
+      310.0
+    ],
+    [
+      45.0,
+      315.0
+    ],
+    [
+      45.0,
+      320.0
+    ],
+    [
+      45.0,
+      325.0
+    ],
+    [
+      45.0,
+      330.0
+    ],
+    [
+      45.0,
+      335.0
+    ],
+    [
+      45.0,
+      340.0
+    ],
+    [
+      45.0,
+      345.0
+    ],
+    [
+      45.0,
+      350.0
+    ],
+    [
+      45.0,
+      355.0
+    ],
+    [
+      45.0,
+      360.0
+    ],
+    [
+      45.0,
+      365.0
+    ],
+    [
+      45.0,
+      370.0
+    ],
+    [
+      45.0,
+      375.0
+    ],
+    [
+      45.0,
+      380.0
+    ],
+    [
+      45.0,
+      385.0
+    ],
+    [
+      45.0,
+      390.0
+    ],
+    [
+      45.0,
+      395.0
+    ],
+    [
+      45.0,
+      400.0
+    ],
+    [
+      45.0,
+      405.0
+    ],
+    [
+      45.0,
+      410.0
+    ],
+    [
+      45.0,
+      415.0
+    ],
+    [
+      45.0,
+      420.0
+    ],
+    [
+      45.0,
+      425.0
+    ],
+    [
+      45.0,
+      430.0
+    ],
+    [
+      45.0,
+      435.0
+    ],
+    [
+      45.0,
+      440.0
+    ],
+    [
+      45.0,
+      445.0
+    ],
+    [
+      45.0,
+      450.0
+    ]
+  ],
+  "route_cell_count": 569,
+  "route_preview_cells": [
+    [
+      70,
+      9
+    ],
+    [
+      69,
+      9
+    ],
+    [
+      68,
+      9
+    ],
+    [
+      67,
+      9
+    ],
+    [
+      66,
+      9
+    ],
+    [
+      65,
+      9
+    ],
+    [
+      64,
+      9
+    ],
+    [
+      63,
+      9
+    ],
+    [
+      62,
+      9
+    ],
+    [
+      61,
+      9
+    ],
+    [
+      60,
+      9
+    ],
+    [
+      59,
+      9
+    ],
+    [
+      58,
+      9
+    ],
+    [
+      57,
+      9
+    ],
+    [
+      57,
+      10
+    ],
+    [
+      57,
+      11
+    ],
+    [
+      57,
+      12
+    ],
+    [
+      57,
+      13
+    ],
+    [
+      57,
+      14
+    ],
+    [
+      57,
+      15
+    ],
+    [
+      57,
+      16
+    ],
+    [
+      57,
+      17
+    ],
+    [
+      56,
+      17
+    ],
+    [
+      56,
+      18
+    ],
+    [
+      55,
+      18
+    ],
+    [
+      54,
+      18
+    ],
+    [
+      53,
+      18
+    ],
+    [
+      52,
+      18
+    ],
+    [
+      51,
+      18
+    ],
+    [
+      50,
+      18
+    ]
+  ],
+  "route_distance_cm": 2958.8126125477506,
+  "final_state_before_abort": "Running",
+  "final_pose": [
+    99.15059,
+    -8.087607,
+    244.3282
+  ],
+  "visited_count": 0,
+  "target_count": 9,
+  "abort_reason": "finish_not_reached",
+  "snapshot_count": 329
+}

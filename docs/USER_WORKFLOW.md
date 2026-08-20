@@ -54,13 +54,13 @@ From a build (recommended for normal use):
 or with options:
 
 ```powershell
-.\scripts\run_simulator.ps1 -Course "template_course" -Mode "Drive"
+.\scripts\run_simulator.ps1 -Course "2026_preliminary" -Mode "Drive"
 ```
 
 From the Unity Editor (development only):
 
 1. Open `Assets/JajuchaSim/Scenes/JajuchaSimulator.unity`.
-2. Press Play. The bootstrap loads the template course and enters **Drive**
+2. Press Play. The bootstrap loads the selected 2026 course and enters **Drive**
    mode automatically.
 
 ## Start the user program
@@ -78,10 +78,10 @@ Replace the loop body with your own algorithm (see `python/user/README.md`).
 
 * The main viewport shows the observer camera (chase mode by default; `F3`
   cycles chase / top-down / free).
-* The top status bar shows the application mode, bridge state, and the
-  writable data folder.
-* The runtime UI (status text + Start/Pause/Resume/Step/Stop/Reset buttons,
-  map editor palette, scenario panel, events, scoring) is available.
+* The single dark `SimulatorDashboardUI` shows application mode, bridge state,
+  stage, and run status. Its tabs are `주행 / 코스 편집 / 채점 / 센서 / 디버그`.
+* The dashboard owns the controls; scenario, scoring, and debug components
+  provide state only and do not create additional runtime canvases.
 
 ## Default key bindings
 
@@ -113,20 +113,39 @@ motor watchdog that stops propulsion when the bridge disconnects.
 
 ```text
 Launch simulator
-→ Edit Map (F2)
-→ New Course (or load an existing one)
-→ choose tile size
-→ import drawing or paint roads
-→ place structures (tunnel, ramp)
-→ place objects (obstacle, slow sign, start signal)
-→ place triggers (slow zone, start, finish, speed terminals)
-→ configure objectives/scoring (SCENARIO / SCORING sections)
-→ save
-→ Test Drive
+→ 코스 편집 탭
+→ 공식 원본 확인 (읽기 전용)
+→ 연습용 복사본 만들기
+→ 도구 선택 후 도로/구조물/오브젝트/트리거 편집
+→ 자동 검증
+→ 시험 주행
+→ 연습 코스 저장
 ```
 
 Everything works in the standalone build. Courses are saved under the writable
 data folder (`Courses/`), never into read-only build assets.
+
+### Using the map editor
+
+1. Open **코스 편집**. Official preliminary/final JSON is explicitly marked
+   `공식 원본 · 읽기 전용`.
+2. Press **연습용 복사본 만들기**; only then are tools, undo/redo, and save
+   enabled. Road painting updates the visual and 5 cm judgement layers together.
+3. Place tunnels/ramps by selecting a tool and clicking/dragging on the course;
+   object and trigger tools use the same placement flow. **자동 검증** checks
+   the 41-panel inventory, dimensions, structure rules, start/finish, sensors,
+   and candidate IDs.
+4. **시험 주행** snapshots the unsaved practice document and observer-camera
+   state. Closing the result or pressing **시험 주행 종료** restores both; the
+   test run is not saved.
+5. **연습 코스 저장** writes `Courses/Practice/practice_2026_*.json`; an
+   existing base name is numbered rather than overwritten. **최근 연습 코스
+   불러오기** lists and loads those copies without changing the initial official
+   course preference.
+
+The runtime editor uses separate panels for tools, inspector, layers, actions,
+events, and scenario settings. This keeps the controls readable at common
+window sizes; resizing the simulator is supported.
 
 ## Competition-test workflow (Step 11.36)
 

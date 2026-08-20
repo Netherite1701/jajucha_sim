@@ -10,8 +10,8 @@ checks, not vague advice.
 1. Check the writable log file: open the data folder (shown in the status bar)
    → `Logs/simulator.log`. Read the last lines.
 2. If the bootstrap failed, an on-screen panel shows the failing system, the
-   reason, and the error code. Check that `Courses/template_course.json` exists
-   next to the executable (or in the writable `Courses/` folder).
+   reason, and the error code. Check that `Courses/2026_preliminary.json` and
+   `Courses/2026_final.json` exist next to the executable.
 3. In the Unity Editor: confirm you opened
    `Assets/JajuchaSim/Scenes/JajuchaSimulator.unity` (the authoritative scene),
    not a test scene.

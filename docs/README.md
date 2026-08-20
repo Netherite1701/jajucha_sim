@@ -22,8 +22,11 @@ See [USER_WORKFLOW.md](USER_WORKFLOW.md) for the full normal workflow.
 | Document | Purpose |
 |---|---|
 | [USER_WORKFLOW.md](USER_WORKFLOW.md) | The normal user workflow: setup, drive, map, test, batch. |
+| [VSCODE_WORKFLOW.md](VSCODE_WORKFLOW.md) | VS Code tasks and Python debugging workflow. |
+| [CALIBRATION.md](CALIBRATION.md) | Confirmed vehicle dimensions and provisional camera-array values. |
+| [COMPETITION_2026.md](COMPETITION_2026.md) | 2026 preliminary/final course, mission, signal, and practice defaults. |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | Subsystem map, authority order, scene hierarchy. |
-| [COURSE_FORMAT.md](COURSE_FORMAT.md) | The tile-based course JSON format + template course. |
+| [COURSE_FORMAT.md](COURSE_FORMAT.md) | The 5 cm-mask course JSON format. |
 | [CONFIGURATION.md](CONFIGURATION.md) | Every configurable field and the configuration hierarchy. |
 | [SCORING.md](SCORING.md) | Competition scoring and how it is shared by manual + automated runs. |
 | [TESTING.md](TESTING.md) | Running the automated test suites. |
@@ -48,5 +51,5 @@ See [USER_WORKFLOW.md](USER_WORKFLOW.md) for the full normal workflow.
 > When the simulator behavior and the Jajucha manual disagree, inspect the
 > manual first.
 
-The manual (`자주차 매뉴얼.pdf`) is the primary source of truth. Manual-derived
-behavior is recorded in [MANUAL_COMPATIBILITY.md](MANUAL_COMPATIBILITY.md).
+The four supplied 2026 track/sign PDFs are the primary source for competition
+course behavior. Values absent from them are labelled `비공식 연습값`.

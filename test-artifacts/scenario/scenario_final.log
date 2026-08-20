@@ -1,0 +1,17 @@
+Simulator window handle: 0x19596484
+Capture 01_ready: client=(639,311) 1280x720, window=(631,280)-(1927,1039), foreground=0x19596484
+Click client (590,30) -> screen (1229,341), foreground=0x19596484
+Click client (590,30) -> screen (1229,341), foreground=0x19596484
+Click client (195,64) -> screen (834,375), foreground=0x19596484
+Capture 02_course_official: client=(639,311) 1280x720, window=(631,280)-(1927,1039), foreground=0x19596484
+Click client (125,160) -> screen (764,471), foreground=0x19596484
+Capture 03_course_practice: client=(639,311) 1280x720, window=(631,280)-(1927,1039), foreground=0x19596484
+Click client (75,64) -> screen (714,375), foreground=0x19596484
+Click client (510,158) -> screen (1149,469), foreground=0x19596484
+Click client (510,190) -> screen (1149,501), foreground=0x19596484
+Click client (510,220) -> screen (1149,531), foreground=0x19596484
+Capture 04_drive_configured: client=(639,311) 1280x720, window=(631,280)-(1927,1039), foreground=0x19596484
+Click client (480,64) -> screen (1119,375), foreground=0x19596484
+Capture 08_sensors_dashboard: client=(639,311) 1280x720, window=(631,280)-(1927,1039), foreground=0x19596484
+UI smoke test passed. Trace: C:\Users\user\AppData\LocalLow\DefaultCompany\jajucha-sim\JajuchaSim\Logs\state-trace.jsonl
+Scenario smoke passed. Result: C:\dev\jajucha-sim\test-artifacts\scenario\scenario_smoke_20260820_063518.json

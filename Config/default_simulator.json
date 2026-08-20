@@ -1,5 +1,5 @@
 {
-  "defaultCourse": "template_course",
+  "defaultCourse": "2026_preliminary",
   "bridgePort": 8765,
   "debugUiEnabled": true,
   "observerMode": "chase",

@@ -19,6 +19,7 @@ class SimulatorProtocol:
         """Create a handshake hello message."""
         return {
             "type": "hello",
+            "id": 0,
             "protocol": SimulatorProtocol.PROTOCOL_VERSION,
             "client": SimulatorProtocol.CLIENT_NAME,
         }

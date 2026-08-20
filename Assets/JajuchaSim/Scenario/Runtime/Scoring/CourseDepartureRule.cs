@@ -69,7 +69,7 @@ namespace JajuchaSim.Scenario
             }
         }
 
-        public override void Finalize()
+        public override void FinalizeRule()
         {
             Ctx.Session.CourseDepartureCount = _departureCount;
             Ctx.Score.Result.CourseDepartureCount = _departureCount;

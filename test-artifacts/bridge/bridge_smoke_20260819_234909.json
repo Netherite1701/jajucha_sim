@@ -1,0 +1,297 @@
+﻿{
+    "passed":  true,
+    "timestamp":  "2026-08-19T23:49:20.6358442+09:00",
+    "exe":  "C:\\dev\\jajucha-sim\\dist\\JajuchaSimulator\\JajuchaSimulator.exe",
+    "checks":  {
+                   "handshake":  true,
+                   "initialState":  "Running",
+                   "initialPosition":  {
+                                           "x":  350,
+                                           "y":  3.977083,
+                                           "z":  45
+                                       },
+                   "motorAccepted":  true,
+                   "positionChangedAfterMotor":  true,
+                   "pauseAck":  true,
+                   "pauseFreezesTick":  true,
+                   "pauseFreezesPosition":  true,
+                   "stepAck":  true,
+                   "stepExactlyOneTick":  true,
+                   "resetAck":  true,
+                   "resetTickZero":  true,
+                   "resetSpeedZero":  true,
+                   "resetVelocityZero":  true
+               },
+    "responses":  [
+                      {
+                          "request":  "get_status",
+                          "id":  1,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  1,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Running",
+                                                           "tick":  191,
+                                                           "sim_time":  1.90999995730817,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  350,
+                                                                                               "y":  3.977083,
+                                                                                               "z":  45
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  0,
+                                                                                                "y":  0,
+                                                                                                "z":  0
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  0,
+                                                                                                 "y":  2.182484E-05,
+                                                                                                 "z":  0
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  0,
+                                                                                           "right":  0,
+                                                                                           "speed":  0
+                                                                                       },
+                                                                           "driven_wheel_grounded":  true,
+                                                                           "ground_ray_hit":  "JajuchaVehicle",
+                                                                           "ground_ray_y":  9.977083
+                                                                       }
+                                                       }
+                                       }
+                      },
+                      {
+                          "request":  "set_motor",
+                          "id":  2,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  2,
+                                           "ok":  true
+                                       }
+                      },
+                      {
+                          "request":  "get_status",
+                          "id":  3,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  3,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Running",
+                                                           "tick":  287,
+                                                           "sim_time":  2.8699999358505,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  349.9656,
+                                                                                               "y":  3.977082,
+                                                                                               "z":  45.12266
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  0.09322177,
+                                                                                                "y":  358.9869,
+                                                                                                "z":  359.9767
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  2.847454,
+                                                                                                 "y":  -0.0003454018,
+                                                                                                 "z":  0.7236478
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  8,
+                                                                                           "right":  8,
+                                                                                           "speed":  8
+                                                                                       },
+                                                                           "driven_wheel_grounded":  true,
+                                                                           "ground_ray_hit":  "JajuchaVehicle",
+                                                                           "ground_ray_y":  9.977091
+                                                                       }
+                                                       }
+                                       }
+                      },
+                      {
+                          "request":  "sim_pause",
+                          "id":  4,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  4,
+                                           "ok":  true
+                                       }
+                      },
+                      {
+                          "request":  "get_status",
+                          "id":  5,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  5,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Paused",
+                                                           "tick":  297,
+                                                           "sim_time":  2.96999993361533,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  350.2434,
+                                                                                               "y":  3.977085,
+                                                                                               "z":  45.06693
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  359.9936,
+                                                                                                "y":  359.4058,
+                                                                                                "z":  359.9434
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  1.524932,
+                                                                                                 "y":  0.0002789783,
+                                                                                                 "z":  0.7441964
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  8,
+                                                                                           "right":  8,
+                                                                                           "speed":  8
+                                                                                       },
+                                                                           "driven_wheel_grounded":  true,
+                                                                           "ground_ray_hit":  "JajuchaVehicle",
+                                                                           "ground_ray_y":  9.977091
+                                                                       }
+                                                       }
+                                       }
+                      },
+                      {
+                          "request":  "get_status",
+                          "id":  6,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  6,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Paused",
+                                                           "tick":  297,
+                                                           "sim_time":  2.96999993361533,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  350.2434,
+                                                                                               "y":  3.977085,
+                                                                                               "z":  45.06693
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  359.9936,
+                                                                                                "y":  359.4058,
+                                                                                                "z":  359.9434
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  1.524932,
+                                                                                                 "y":  0.0002789783,
+                                                                                                 "z":  0.7441964
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  8,
+                                                                                           "right":  8,
+                                                                                           "speed":  8
+                                                                                       },
+                                                                           "driven_wheel_grounded":  true,
+                                                                           "ground_ray_hit":  "JajuchaVehicle",
+                                                                           "ground_ray_y":  9.977091
+                                                                       }
+                                                       }
+                                       }
+                      },
+                      {
+                          "request":  "sim_step",
+                          "id":  7,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  7,
+                                           "ok":  true
+                                       }
+                      },
+                      {
+                          "request":  "get_status",
+                          "id":  8,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  8,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Paused",
+                                                           "tick":  298,
+                                                           "sim_time":  2.97999993339181,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  350.2577,
+                                                                                               "y":  3.977087,
+                                                                                               "z":  45.0584
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  359.9857,
+                                                                                                "y":  359.273,
+                                                                                                "z":  359.9579
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  1.374144,
+                                                                                                 "y":  0.0001926279,
+                                                                                                 "z":  -0.8808908
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  8,
+                                                                                           "right":  8,
+                                                                                           "speed":  8
+                                                                                       },
+                                                                           "driven_wheel_grounded":  true,
+                                                                           "ground_ray_hit":  "JajuchaVehicle",
+                                                                           "ground_ray_y":  9.97709
+                                                                       }
+                                                       }
+                                       }
+                      },
+                      {
+                          "request":  "sim_reset",
+                          "id":  9,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  9,
+                                           "ok":  true
+                                       }
+                      },
+                      {
+                          "request":  "get_status",
+                          "id":  10,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  10,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Ready",
+                                                           "tick":  0,
+                                                           "sim_time":  0,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  0,
+                                                                                               "y":  3.099999,
+                                                                                               "z":  0
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  0,
+                                                                                                "y":  0,
+                                                                                                "z":  0
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  0,
+                                                                                                 "y":  0,
+                                                                                                 "z":  0
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  0,
+                                                                                           "right":  0,
+                                                                                           "speed":  0
+                                                                                       },
+                                                                           "driven_wheel_grounded":  true,
+                                                                           "ground_ray_hit":  "JajuchaVehicle",
+                                                                           "ground_ray_y":  9.099999
+                                                                       }
+                                                       }
+                                       }
+                      }
+                  ]
+}

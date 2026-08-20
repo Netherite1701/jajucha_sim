@@ -21,11 +21,13 @@ namespace JajuchaSim.Sensors
         private readonly CameraConfig _leftConfig;
         private readonly CameraConfig _centerConfig;
         private readonly CameraConfig _rightConfig;
+        private readonly LidarConfig _lidarConfig;
 
         // The three camera sensors
         private JajuchaCameraSensor _leftCamera;
         private JajuchaCameraSensor _centerCamera;
         private JajuchaCameraSensor _rightCamera;
+        private LidarSensorSystem _lidar;
 
         // Per-camera scheduling
         private CameraCaptureScheduler _leftScheduler;
@@ -47,17 +49,20 @@ namespace JajuchaSim.Sensors
         public JajuchaCameraSensor LeftCamera => _leftCamera;
         public JajuchaCameraSensor CenterCamera => _centerCamera;
         public JajuchaCameraSensor RightCamera => _rightCamera;
+        public LidarSensorSystem Lidar => _lidar;
 
         public CameraSensorSystem(
             VehicleSystem vehicleSystem,
             CameraConfig leftConfig,
             CameraConfig centerConfig,
-            CameraConfig rightConfig)
+            CameraConfig rightConfig,
+            LidarConfig lidarConfig = null)
         {
             _vehicleSystem = vehicleSystem ?? throw new ArgumentNullException(nameof(vehicleSystem));
             _leftConfig = leftConfig ?? throw new ArgumentNullException(nameof(leftConfig));
             _centerConfig = centerConfig ?? throw new ArgumentNullException(nameof(centerConfig));
             _rightConfig = rightConfig ?? throw new ArgumentNullException(nameof(rightConfig));
+            _lidarConfig = lidarConfig ?? ScriptableObject.CreateInstance<LidarConfig>();
         }
 
         /// <summary>
@@ -104,6 +109,8 @@ namespace JajuchaSim.Sensors
             {
                 _rightCamera.RequestCapture(_context.Clock.Tick, _context.Clock.Time);
             }
+
+            _lidar?.SimulationTick(deltaTime);
         }
 
         public void ResetSimulation()
@@ -113,6 +120,7 @@ namespace JajuchaSim.Sensors
             _leftCamera?.ResetSensor();
             _centerCamera?.ResetSensor();
             _rightCamera?.ResetSensor();
+            _lidar?.ResetSimulation();
 
             _leftScheduler?.Reset();
             _centerScheduler?.Reset();
@@ -123,6 +131,7 @@ namespace JajuchaSim.Sensors
         {
             // Cameras are MonoBehaviour; they are destroyed with their GameObjects.
             _initialized = false;
+            _lidar?.Shutdown();
         }
 
         /// <summary>
@@ -193,9 +202,19 @@ namespace JajuchaSim.Sensors
             sensorsRoot.transform.SetParent(vehicleRoot.transform, false);
 
             // Create mounts with independently editable transforms
-            _leftMount = CreateCameraMount(sensorsRoot, "CameraLeftMount", new Vector3(-10f, 5f, 5f));
-            _rightMount = CreateCameraMount(sensorsRoot, "CameraRightMount", new Vector3(10f, 5f, 5f));
-            _centerMount = CreateCameraMount(sensorsRoot, "CameraCenterMount", new Vector3(0f, 5f, 10f));
+            // The three cameras share one array calibration.  The current
+            // values are provisional measurements from the reference photos:
+            // 10 cm left-to-right spacing, 4 cm height, 12 cm forward offset.
+            float arrayWidth = Mathf.Max(0.1f, _centerConfig.arrayWidthCm);
+            float mountHeight = _centerConfig.mountHeightCm;
+            float forwardOffset = _centerConfig.mountForwardOffsetCm;
+            float halfWidth = arrayWidth * 0.5f;
+            _leftMount = CreateCameraMount(sensorsRoot, "CameraLeftMount",
+                new Vector3(-halfWidth, mountHeight, forwardOffset));
+            _rightMount = CreateCameraMount(sensorsRoot, "CameraRightMount",
+                new Vector3(halfWidth, mountHeight, forwardOffset));
+            _centerMount = CreateCameraMount(sensorsRoot, "CameraCenterMount",
+                new Vector3(0f, mountHeight, forwardOffset));
 
             // Create camera sensors as children of their mounts
             _leftCamera = CreateCameraSensor(_leftMount, "CameraLeft", CameraLocation.Left, _leftConfig);
@@ -212,6 +231,9 @@ namespace JajuchaSim.Sensors
             {
                 _centerCamera.EnableDepthRendering();
             }
+
+            _lidar = new LidarSensorSystem(_vehicleSystem, _lidarConfig);
+            _lidar.Initialize(_context);
 
             SimLog.Info($"[SENSOR] Camera sensors created (left={_leftConfig.width}x{_leftConfig.height}, " +
                         $"center={_centerConfig.width}x{_centerConfig.height}, " +

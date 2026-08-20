@@ -13,7 +13,7 @@
 
 [CmdletBinding()]
 param(
-    [string]$Course = "template_course",
+    [string]$Course = "2026_preliminary",
     [string]$Mode = "Drive",
     [float]$SimulationSpeed = 1.0,
     [switch]$NoDebugUi

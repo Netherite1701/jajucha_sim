@@ -35,6 +35,17 @@ def set_motor(left: int, right: int, speed: int):
     backend.set_motor(left, right, speed)
 
 
+def stop_motor():
+    """Stop propulsion and centre both steering channels.
+
+    This mirrors the physical JCHM convenience API and uses the same backend
+    command path as :func:`set_motor`, keeping simulator state, watchdog, and
+    trace output consistent.
+    """
+    backend = get_backend()
+    backend.set_motor(0, 0, 0)
+
+
 def _clamp(value: int, min_val: int, max_val: int) -> int:
     """Clamp an integer to the given range."""
     if value < min_val:

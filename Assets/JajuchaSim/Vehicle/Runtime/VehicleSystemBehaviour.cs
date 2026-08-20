@@ -13,9 +13,10 @@ namespace JajuchaSim.Vehicle
     /// exposed via the <see cref="VehicleSystem"/> property for downstream code
     /// (bridge, debug HUD, etc.) that needs direct access.
     /// </summary>
-    public sealed class VehicleSystemBehaviour : SimulationSystemBehaviour
+    public sealed class VehicleSystemBehaviour : SimulationSystemBehaviour, IPostPhysicsSimulationSystem
     {
         [SerializeField] private VehicleConfig vehicleConfig;
+        [SerializeField] private GameObject visualPrefab;
 
         /// <summary>The underlying vehicle system instance.</summary>
         public VehicleSystem VehicleSystem { get; private set; }
@@ -40,6 +41,11 @@ namespace JajuchaSim.Vehicle
             VehicleSystem?.Shutdown();
         }
 
+        public void PostPhysicsStep(float deltaTime)
+        {
+            VehicleSystem?.PostPhysicsStep(deltaTime);
+        }
+
         protected override void OnInitialize(SimulationContext context)
         {
             if (vehicleConfig == null)
@@ -52,7 +58,7 @@ namespace JajuchaSim.Vehicle
                 }
             }
 
-            VehicleSystem = new VehicleSystem(vehicleConfig, gameObject);
+            VehicleSystem = new VehicleSystem(vehicleConfig, gameObject, visualPrefab);
             VehicleSystem.Initialize(context);
         }
 

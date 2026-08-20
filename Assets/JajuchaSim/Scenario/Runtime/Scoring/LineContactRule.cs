@@ -66,7 +66,7 @@ namespace JajuchaSim.Scenario
             }
         }
 
-        public override void Finalize()
+        public override void FinalizeRule()
         {
             Ctx.Session.LineContactCount = _violationCount;
             Ctx.Score.Result.LineContactCount = _violationCount;

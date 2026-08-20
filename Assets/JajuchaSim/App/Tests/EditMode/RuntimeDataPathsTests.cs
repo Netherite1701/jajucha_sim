@@ -45,12 +45,12 @@ namespace JajuchaSim.App.Tests
         }
 
         [Test]
-        public void ResolveCoursePath_FindsTemplateCourse()
+        public void ResolveCoursePath_Finds2026PreliminaryCourse()
         {
-            string path = RuntimeDataPaths.ResolveCoursePath("template_course");
-            Assert.IsNotNull(path, "template_course should resolve next to the project root.");
+            string path = RuntimeDataPaths.ResolveCoursePath("2026_preliminary");
+            Assert.IsNotNull(path, "2026 preliminary course should resolve next to the project root.");
             Assert.IsTrue(File.Exists(path));
-            StringAssert.Contains("template_course", path);
+            StringAssert.Contains("2026_preliminary", path);
         }
 
         [Test]

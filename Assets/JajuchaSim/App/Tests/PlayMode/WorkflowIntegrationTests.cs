@@ -1,4 +1,6 @@
 using System.Collections;
+using System.IO;
+using System.Linq;
 using JajuchaSim.App;
 using JajuchaSim.Bridge;
 using JajuchaSim.Core;
@@ -14,7 +16,7 @@ namespace JajuchaSim.App.Tests
 {
     /// <summary>
     /// End-to-end workflow integration tests (Step 11.51): bootstrap success,
-    /// template course loading, vehicle spawn, bridge readiness, first camera
+    /// 2026 course loading, vehicle spawn, bridge readiness, first camera
     /// frame, reset lifecycle, and mode transitions. Builds the authoritative
     /// wiring programmatically so each test is isolated.
     /// </summary>
@@ -143,7 +145,7 @@ namespace JajuchaSim.App.Tests
             Assert.IsNotNull(_bootstrap.Course);
             Assert.IsNotNull(_bootstrap.Course.Document);
             Assert.Greater(_bootstrap.Course.Document.Grid.RoadTileCount, 0,
-                "template course road must be loaded");
+                "2026 course road must be loaded");
         }
 
         [UnityTest]
@@ -202,6 +204,121 @@ namespace JajuchaSim.App.Tests
             Assert.IsNotNull(frame, "Center camera must produce a first frame after ticks.");
             Assert.IsNotNull(_sensors.SensorSystem.CenterCamera,
                 "Center camera sensor must exist.");
+        }
+
+        [UnityTest]
+        public IEnumerator Bootstrap_PlacesVehicleAtOfficialStartCheckpoint()
+        {
+            _bootstrap = CreateBootstrap();
+            var result = _bootstrap.RunBootstrap();
+            yield return null;
+            Assert.IsTrue(result.Success, result.FormatDisplay());
+
+            var doc = _bootstrap.Course.Document;
+            var start = doc.Triggers.FirstOrDefault(t => t.Type == TriggerType.Start);
+            Assert.IsNotNull(start);
+            var checkpoint = doc.Competition2026.checkpoints[0];
+            float ts = doc.Grid.TileSizeCm;
+            var expected = new Vector3(
+                (checkpoint.region.x + checkpoint.region.width * 0.5f) * ts,
+                _vehicle.VehicleRoot.transform.position.y,
+                (checkpoint.region.z + checkpoint.region.height * 0.5f) * ts);
+            Assert.Less(Vector3.Distance(_vehicle.VehicleRoot.transform.position, expected), 5f,
+                "Vehicle must spawn at the official start checkpoint, not a stale trigger rectangle.");
+            Assert.AreEqual(checkpoint.region.x, start.Region.x);
+            Assert.AreEqual(checkpoint.region.z, start.Region.z);
+        }
+
+        [UnityTest]
+        public IEnumerator Bootstrap_StartPosePersistsThroughPhysicsTicks()
+        {
+            _bootstrap = CreateBootstrap();
+            var result = _bootstrap.RunBootstrap();
+            yield return null;
+            Assert.IsTrue(result.Success, result.FormatDisplay());
+
+            var checkpoint = _bootstrap.Course.Document.Competition2026.checkpoints[0];
+            float tileSize = _bootstrap.Course.Document.Grid.TileSizeCm;
+            var expected = new Vector3(
+                (checkpoint.region.x + checkpoint.region.width * 0.5f) * tileSize,
+                _vehicle.VehicleSystem.ChassisRigidbody.position.y,
+                (checkpoint.region.z + checkpoint.region.height * 0.5f) * tileSize);
+
+            // Run the same post-bootstrap scripted physics path as the player.
+            _sim.Advance(5);
+            yield return null;
+            Assert.Less(Vector3.Distance(_vehicle.VehicleSystem.ChassisRigidbody.position, expected), 5f,
+                "Rigidbody must remain at the official start checkpoint after physics ticks.");
+        }
+
+        [UnityTest]
+        public IEnumerator TickCompleted_IsPostPhysicsAndMonotonic()
+        {
+            _bootstrap = CreateBootstrap();
+            var result = _bootstrap.RunBootstrap();
+            yield return null;
+            Assert.IsTrue(result.Success, result.FormatDisplay());
+
+            // Bootstrap enters Drive and the frame scheduler may have already
+            // consumed wall-clock ticks by the time this coroutine resumes.
+            // Reset to a known zero-tick state, then pause before observing the
+            // explicit Advance call so the callback and clock counts are exact.
+            _sim.ResetSimulation();
+            _sim.StartSimulation();
+            _sim.Pause();
+            int callbackCount = 0;
+            long previousTick = -1;
+            double previousTime = -1;
+            _sim.TickCompleted += (tick, time) =>
+            {
+                callbackCount++;
+                Assert.Greater(tick, previousTick);
+                Assert.Greater(time, previousTime);
+                Assert.AreEqual(tick, _sim.Clock.Tick);
+                Assert.AreEqual(time, _sim.Clock.Time, 1e-9);
+                previousTick = tick;
+                previousTime = time;
+            };
+
+            _sim.Advance(3);
+            yield return null;
+            Assert.AreEqual(3, callbackCount);
+            Assert.AreEqual(3, _sim.Clock.Tick);
+        }
+
+        [UnityTest]
+        public IEnumerator StateTrace_CapturesPostPhysicsInternalState()
+        {
+            _bootstrap = CreateBootstrap();
+            var result = _bootstrap.RunBootstrap();
+            yield return null;
+            Assert.IsTrue(result.Success, result.FormatDisplay());
+
+            var trace = RuntimeStateTrace.Attach(_bootstrap);
+            Assert.IsNotNull(trace);
+            Assert.IsFalse(string.IsNullOrEmpty(trace.OutputPath));
+
+            _sim.Advance(2);
+            yield return null;
+
+            Assert.IsTrue(File.Exists(trace.OutputPath));
+            // Open with a compatible share mode: the recorder intentionally
+            // remains active so external tools can tail the JSONL live.
+            string[] lines;
+            using (var stream = new FileStream(trace.OutputPath, FileMode.Open,
+                FileAccess.Read, FileShare.ReadWrite))
+            using (var reader = new StreamReader(stream))
+            {
+                var records = new System.Collections.Generic.List<string>();
+                while (!reader.EndOfStream)
+                    records.Add(reader.ReadLine());
+                lines = records.ToArray();
+            }
+            Assert.GreaterOrEqual(lines.Length, 3, "bind + two post-physics tick records expected");
+            StringAssert.Contains("\"vehicle\"", lines[lines.Length - 1]);
+            StringAssert.Contains("\"positionCm\"", lines[lines.Length - 1]);
+            StringAssert.Contains("\"simulationState\"", lines[lines.Length - 1]);
+            StringAssert.Contains("\"course\"", lines[lines.Length - 1]);
         }
 
         [UnityTest]

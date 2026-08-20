@@ -18,7 +18,7 @@ namespace JajuchaSim.App
     public sealed class ApplicationConfig
     {
         /// <summary>Course name (without extension) or a path to load at startup.</summary>
-        public string defaultCourse = "template_course";
+        public string defaultCourse = "2026_preliminary";
 
         /// <summary>TCP port for the Python bridge.</summary>
         public int bridgePort = 8765;
@@ -106,7 +106,9 @@ namespace JajuchaSim.App
             if (simulationSpeed <= 0f || !float.IsFinite(simulationSpeed))
                 simulationSpeed = 1.0f;
             if (string.IsNullOrWhiteSpace(defaultCourse))
-                defaultCourse = "template_course";
+                defaultCourse = "2026_preliminary";
+            if (string.Equals(defaultCourse, "template_course", StringComparison.OrdinalIgnoreCase))
+                defaultCourse = "2026_preliminary";
             if (string.IsNullOrWhiteSpace(observerMode))
                 observerMode = "chase";
         }

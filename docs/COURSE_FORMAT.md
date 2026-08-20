@@ -222,49 +222,22 @@ by `TriggerDetectionSystem`.
 - Course image import (pixel→grid projection).
 - Full scenario/scoring stack consuming `SpeedMeasuredEvent` (Step 9).
 
-## Template course (Step 11)
+## Shipped 2026 courses
 
-`Courses/template_course.json` is the shipped default course. It is an
-**EXAMPLE / SIMULATOR_ONLY** course — it is NOT a replica of any competition
-layout. Its purpose is to verify that vehicle, cameras, bridge, runtime map,
-structures, triggers, scoring, speed measurement, and testing all work
-together in one short run.
+`Courses/2026_preliminary.json` and `Courses/2026_final.json` are the only
+shipped courses. Both use a 5 cm logical mask and include a `competition2026`
+block with edition, stage, 990×540 cm physical size, the exact 41-panel
+inventory, ordered checkpoints, visual profile, and five mission candidates.
 
-Layout (tile size 20 cm):
+Structures store both a validation region and `pathPoints`. Tunnel entries
+also store the 39 cm opening, 22 cm height, and 26/9.8 cm roof dimensions.
+Hill entries store the 0/10/10/0 cm height profile for slope, 900×900×100 mm
+flat block, and descent.
 
-```text
-START (z=0)
-  │  straight (x=0..3)
-SLOW SIGN (object)
-  │
-SLOW ZONE (trigger region)
-  │
-SPEED TERMINAL A (z=6) / B (z=7)   → pair "speed_zone_01"
-  │
-CURVE (road widens to x=0..5, z=9..12)
-  │
-TUNNEL (region x=0..3, z=10..11)
-  │
-RAMP (region x=2..5, z=14..15)
-  │
-OBSTACLE (x=3, z=16)
-  │
-FINISH (z=16)
-```
+Mission objects are injected at run start. Yellow flag mode creates one pair
+of speed terminals exactly 30 cm apart; dynamic obstacle mode creates the
+configured moving obstacle. Legacy tile-array course files are not loaded.
 
-Contents:
-
-* start trigger (`start_01`) + finish trigger (`finish_01`)
-* straight + curve road tiles and boundary `lines`
-* one tunnel, one ramp, one obstacle, one slow sign, one start signal
-* one slow-zone objective, two speed terminals (pair A→B)
-* a `scenario` documentation block (EXAMPLE) with the intended scoring
-  configuration (base 100; line contact 5; course departure 5; collision 5;
-  objective failure 10; max time 60 s; slow-zone max 20 cm/s)
-
-The runtime scenario is built from the map-editor SCENARIO/SCORING sections
-whose defaults match the documented block; the `scenario` key in the JSON is a
-documentation convenience and is not parsed by the runtime.
-
-Validation: `TemplateCourseTests` loads the file, checks every required feature,
-and asserts `CourseValidator.ValidateDocument` has zero errors.
+`Competition2026CourseTests` and `Competition2026Specification.ValidateDocument`
+verify the official inventory, dimensions, order, structure profiles, and
+candidate geometry.

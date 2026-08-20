@@ -53,7 +53,7 @@ namespace JajuchaSim.App.Tests
             Assert.IsNotNull(bootstrap.Course, "CourseManager must be present.");
             Assert.IsNotNull(bootstrap.Course.Document, "Course must be loaded.");
             Assert.Greater(bootstrap.Course.Document.Grid.RoadTileCount, 0,
-                "Template course road must be loaded.");
+                "2026 course road mask must be loaded.");
 
             var vehicle = Object.FindFirstObjectByType<Vehicle.VehicleSystemBehaviour>();
             Assert.IsNotNull(vehicle, "VehicleSystemBehaviour must exist in the scene.");

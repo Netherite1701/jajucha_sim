@@ -4,7 +4,7 @@
 #   * required folders exist
 #   * manual exists
 #   * template scene exists
-#   * template course exists
+#   * both 2026 competition courses and source references exist
 #   * Python package imports
 #   * required documentation exists
 #   * no obvious generated folders are tracked
@@ -53,14 +53,24 @@ Check "Manual: docs/자주차 매뉴얼.pdf" (Test-Path (Join-Path $Root "docs\�
 Check "Template scene: Assets/JajuchaSim/Scenes/JajuchaSimulator.unity" `
     (Test-Path (Join-Path $Root "Assets\JajuchaSim\Scenes\JajuchaSimulator.unity"))
 
-# Template course exists.
-Check "Template course: Courses/template_course.json" `
-    (Test-Path (Join-Path $Root "Courses\template_course.json"))
+# 2026 courses and extracted artwork exist.
+foreach ($stage in @("preliminary", "final")) {
+    Check "2026 course: $stage" (Test-Path (Join-Path $Root "Courses\2026_$stage.json"))
+}
+foreach ($asset in @("track_surface.png", "starting_light_sign.png", "yellow_flag.png",
+                     "pit_barrier.png", "dynamic_obstacle.png")) {
+    Check "2026 artwork: $asset" `
+        (Test-Path (Join-Path $Root "Assets\JajuchaSim\Resources\Competition2026\$asset"))
+}
+foreach ($pdf in @("2026_signs_A4.pdf", "2026_signs_B4.pdf", "2026_track_build_manual.pdf",
+                   "2026_track_summary.pdf")) {
+    Check "2026 source PDF: $pdf" (Test-Path (Join-Path $Root "docs\reference\2026\$pdf"))
+}
 
 # Required documentation exists.
 foreach ($doc in @("README.md", "docs\README.md", "docs\USER_WORKFLOW.md", "docs\ARCHITECTURE.md",
                    "docs\DESIGN_DECISIONS.md", "docs\MANUAL_COMPATIBILITY.md", "docs\CONFIGURATION.md",
-                   "docs\COURSE_FORMAT.md", "docs\SCORING.md", "docs\TESTING.md",
+                   "docs\COURSE_FORMAT.md", "docs\COMPETITION_2026.md", "docs\SCORING.md", "docs\TESTING.md",
                    "docs\TROUBLESHOOTING.md", "docs\IMPLEMENTATION_STATUS.md",
                    "docs\CHANGELOG.md", "python\user\README.md")) {
     Check "Doc: $doc" (Test-Path (Join-Path $Root $doc))
@@ -81,12 +91,33 @@ try {
     Check "Config parses: Config/default_simulator.json" $false $_
 }
 
-# Course files validate (JSON parse).
-try {
-    $course = Get-Content (Join-Path $Root "Courses\template_course.json") -Raw | ConvertFrom-Json
-    Check "Course parses: Courses/template_course.json" ($null -ne $course)
-} catch {
-    Check "Course parses: Courses/template_course.json" $false $_
+# Course files validate (JSON parse + official invariants).
+$expectedPanels = @{ A=9; B=2; C=1; D=5; F=2; G=1; H=1; I=1; J=5; K=3;
+                     L=1; M=2; N=1; O=1; P=4; Q=2 }
+foreach ($stage in @("preliminary", "final")) {
+    try {
+        $relative = "Courses\2026_$stage.json"
+        $course = Get-Content (Join-Path $Root $relative) -Raw | ConvertFrom-Json
+        $meta = $course.competition2026
+        Check "Course parses: $relative" ($null -ne $course)
+        Check "Course metadata: $stage" `
+            ($course.tileSizeCm -eq 5 -and $meta.edition -eq 2026 -and
+             $meta.stage -eq $stage -and $meta.physicalWidthCm -eq 990 -and
+             $meta.physicalLengthCm -eq 540 -and $meta.panels.Count -eq 41 -and
+             $meta.missionCandidates.Count -eq 5)
+        foreach ($code in $expectedPanels.Keys) {
+            $actual = @($meta.panels | Where-Object { $_.code -eq $code }).Count
+            Check "Panel $code count ($stage)" ($actual -eq $expectedPanels[$code]) "got $actual"
+        }
+        foreach ($candidate in $meta.missionCandidates) {
+            $dx = $candidate.terminalBCellX - $candidate.terminalACellX
+            $dz = $candidate.terminalBCellZ - $candidate.terminalACellZ
+            $distance = [Math]::Sqrt($dx*$dx + $dz*$dz) * $course.tileSizeCm
+            Check "$($candidate.id) sensor distance ($stage)" ([Math]::Abs($distance - 30) -lt 0.001) "got $distance cm"
+        }
+    } catch {
+        Check "Course validates: $stage" $false $_
+    }
 }
 
 # Bridge protocol files present.
@@ -98,7 +129,10 @@ foreach ($f in @("python\jchm\_protocol.py", "python\jchm\_sim_backend.py",
 
 # Python package imports + example compile.
 $VenvPy = Join-Path $Root ".venv\Scripts\python.exe"
-if (-not (Test-Path $VenvPy)) { $VenvPy = "python" }
+if (-not (Test-Path $VenvPy)) {
+    $pythonCommand = Get-Command python -ErrorAction SilentlyContinue
+    $VenvPy = if ($pythonCommand) { $pythonCommand.Source } else { "py" }
+}
 
 $importCheck = & $VenvPy -c "import sys; sys.path.insert(0, 'python'); import jchm, jchm_sim; print('OK')" 2>&1
 Check "Python imports (jchm, jchm_sim)" ($LASTEXITCODE -eq 0) ($importCheck -join " ")

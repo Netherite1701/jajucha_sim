@@ -1,0 +1,103 @@
+=== Jajucha Simulator project validation ===
+[ OK ] Folder: Assets\JajuchaSim
+[ OK ] Folder: python
+[ OK ] Folder: python\jchm
+[ OK ] Folder: python\jchm_sim
+[ OK ] Folder: python\examples
+[ OK ] Folder: python\user
+[ OK ] Folder: python\tests
+[ OK ] Folder: docs
+[ OK ] Folder: Courses
+[ OK ] Folder: Config
+[ OK ] Folder: scripts
+[ OK ] Folder: implementation_plan
+[ OK ] Manual: docs/자주차 매뉴얼.pdf
+[ OK ] Template scene: Assets/JajuchaSim/Scenes/JajuchaSimulator.unity
+[ OK ] 2026 course: preliminary
+[ OK ] 2026 course: final
+[ OK ] 2026 artwork: track_surface.png
+[ OK ] 2026 artwork: starting_light_sign.png
+[ OK ] 2026 artwork: yellow_flag.png
+[ OK ] 2026 artwork: pit_barrier.png
+[ OK ] 2026 artwork: dynamic_obstacle.png
+[ OK ] 2026 source PDF: 2026_signs_A4.pdf
+[ OK ] 2026 source PDF: 2026_signs_B4.pdf
+[ OK ] 2026 source PDF: 2026_track_build_manual.pdf
+[ OK ] 2026 source PDF: 2026_track_summary.pdf
+[ OK ] Doc: README.md
+[ OK ] Doc: docs\README.md
+[ OK ] Doc: docs\USER_WORKFLOW.md
+[ OK ] Doc: docs\ARCHITECTURE.md
+[ OK ] Doc: docs\DESIGN_DECISIONS.md
+[ OK ] Doc: docs\MANUAL_COMPATIBILITY.md
+[ OK ] Doc: docs\CONFIGURATION.md
+[ OK ] Doc: docs\COURSE_FORMAT.md
+[ OK ] Doc: docs\COMPETITION_2026.md
+[ OK ] Doc: docs\SCORING.md
+[ OK ] Doc: docs\TESTING.md
+[ OK ] Doc: docs\TROUBLESHOOTING.md
+[ OK ] Doc: docs\IMPLEMENTATION_STATUS.md
+[ OK ] Doc: docs\CHANGELOG.md
+[ OK ] Doc: python\user\README.md
+[WARN] Generated folder present (not tracked by git): Library
+[WARN] Generated folder present (not tracked by git): Logs
+[WARN] Generated folder present (not tracked by git): .venv
+[ OK ] Config parses: Config/default_simulator.json
+[ OK ] Course parses: Courses\2026_preliminary.json
+[ OK ] Course metadata: preliminary
+[ OK ] Panel O count (preliminary)
+[ OK ] Panel C count (preliminary)
+[ OK ] Panel N count (preliminary)
+[ OK ] Panel I count (preliminary)
+[ OK ] Panel L count (preliminary)
+[ OK ] Panel F count (preliminary)
+[ OK ] Panel K count (preliminary)
+[ OK ] Panel B count (preliminary)
+[ OK ] Panel G count (preliminary)
+[ OK ] Panel Q count (preliminary)
+[ OK ] Panel M count (preliminary)
+[ OK ] Panel J count (preliminary)
+[ OK ] Panel P count (preliminary)
+[ OK ] Panel A count (preliminary)
+[ OK ] Panel H count (preliminary)
+[ OK ] Panel D count (preliminary)
+[ OK ] candidate_1 sensor distance (preliminary)
+[ OK ] candidate_2 sensor distance (preliminary)
+[ OK ] candidate_3 sensor distance (preliminary)
+[ OK ] candidate_4 sensor distance (preliminary)
+[ OK ] candidate_5 sensor distance (preliminary)
+[ OK ] Course parses: Courses\2026_final.json
+[ OK ] Course metadata: final
+[ OK ] Panel O count (final)
+[ OK ] Panel C count (final)
+[ OK ] Panel N count (final)
+[ OK ] Panel I count (final)
+[ OK ] Panel L count (final)
+[ OK ] Panel F count (final)
+[ OK ] Panel K count (final)
+[ OK ] Panel B count (final)
+[ OK ] Panel G count (final)
+[ OK ] Panel Q count (final)
+[ OK ] Panel M count (final)
+[ OK ] Panel J count (final)
+[ OK ] Panel P count (final)
+[ OK ] Panel A count (final)
+[ OK ] Panel H count (final)
+[ OK ] Panel D count (final)
+[ OK ] candidate_1 sensor distance (final)
+[ OK ] candidate_2 sensor distance (final)
+[ OK ] candidate_3 sensor distance (final)
+[ OK ] candidate_4 sensor distance (final)
+[ OK ] candidate_5 sensor distance (final)
+[ OK ] Bridge protocol file: python\jchm\_protocol.py
+[ OK ] Bridge protocol file: python\jchm\_sim_backend.py
+[ OK ] Bridge protocol file: Assets\JajuchaSim\Bridge\Runtime\BridgeProtocol.cs
+[ OK ] Bridge protocol file: Assets\JajuchaSim\Bridge\Runtime\JajuchaBridgeServer.cs
+[ OK ] Python imports (jchm, jchm_sim)
+[ OK ] Python examples compile (compileall)
+=== Running Python tests ===
+.................................                                        [100%]
+33 passed in 4.36s
+[ OK ] Python pytest
+
+=== VALIDATION PASSED ===

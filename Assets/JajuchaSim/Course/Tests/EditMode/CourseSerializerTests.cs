@@ -282,7 +282,7 @@ namespace JajuchaSim.Course.Tests
         }
 
         [Test]
-        public void LegacyFormat_LoadsSuccessfully()
+        public void LegacyTileArrays_AreIgnored()
         {
             // Old format with "tiles" arrays instead of "region"
             var json = @"{
@@ -296,29 +296,8 @@ namespace JajuchaSim.Course.Tests
             var grid = CourseSerializer.FromJson(json);
             Assert.IsNotNull(grid);
             Assert.IsTrue(grid.HasRoad(new GridCoordinate(0, 0)));
-            Assert.AreEqual(StructureType.Tunnel, grid.GetStructure(new GridCoordinate(0, 0)));
-            Assert.AreEqual(ObjectType.Obstacle, grid.GetObject(new GridCoordinate(1, 1)));
-            Assert.AreEqual(TriggerType.SlowZone, grid.GetTrigger(new GridCoordinate(2, 2)));
-        }
-
-        [Test]
-        public void LegacyFormat_LoadsStartFinishTrigger()
-        {
-            var json = @"{
-                ""tileSizeCm"": 20,
-                ""road"": [{""x"":0,""z"":0},{""x"":0,""z"":1}],
-                ""structures"": [],
-                ""objects"": [],
-                ""triggers"": [
-                    {""type"":""start"",""tiles"":[{""x"":0,""z"":0}]},
-                    {""type"":""finish"",""tiles"":[{""x"":0,""z"":1}]}
-                ]
-            }";
-
-            var grid = CourseSerializer.FromJson(json);
-            Assert.IsNotNull(grid);
-            Assert.AreEqual(TriggerType.Start, grid.GetTrigger(new GridCoordinate(0, 0)));
-            Assert.AreEqual(TriggerType.Finish, grid.GetTrigger(new GridCoordinate(0, 1)));
+            Assert.AreEqual(StructureType.None, grid.GetStructure(new GridCoordinate(0, 0)));
+            Assert.AreEqual(TriggerType.None, grid.GetTrigger(new GridCoordinate(2, 2)));
         }
 
         [Test]

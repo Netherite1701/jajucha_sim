@@ -1,0 +1,285 @@
+﻿{
+    "passed":  true,
+    "timestamp":  "2026-08-20T00:51:33.7781201+09:00",
+    "exe":  "C:\\dev\\jajucha-sim\\dist\\JajuchaSimulator\\JajuchaSimulator.exe",
+    "checks":  {
+                   "handshake":  true,
+                   "initialState":  "Running",
+                   "initialPosition":  {
+                                           "x":  350,
+                                           "y":  3.977084,
+                                           "z":  45
+                                       },
+                   "motorAccepted":  true,
+                   "positionChangedAfterMotor":  true,
+                   "pauseAck":  true,
+                   "pauseFreezesTick":  true,
+                   "pauseFreezesPosition":  true,
+                   "stepAck":  true,
+                   "stepExactlyOneTick":  true,
+                   "resetAck":  true,
+                   "resetTickZero":  true,
+                   "resetSpeedZero":  true,
+                   "resetVelocityZero":  true
+               },
+    "responses":  [
+                      {
+                          "request":  "get_status",
+                          "id":  1,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  1,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Running",
+                                                           "tick":  188,
+                                                           "sim_time":  1.87999995797873,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  350,
+                                                                                               "y":  3.977084,
+                                                                                               "z":  45
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  0,
+                                                                                                "y":  0,
+                                                                                                "z":  0
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  0,
+                                                                                                 "y":  1.328468E-05,
+                                                                                                 "z":  0
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  0,
+                                                                                           "right":  0,
+                                                                                           "speed":  0
+                                                                                       },
+                                                                           "driven_wheel_grounded":  true
+                                                                       }
+                                                       }
+                                       }
+                      },
+                      {
+                          "request":  "set_motor",
+                          "id":  2,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  2,
+                                           "ok":  true
+                                       }
+                      },
+                      {
+                          "request":  "get_status",
+                          "id":  3,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  3,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Running",
+                                                           "tick":  314,
+                                                           "sim_time":  3.13999992981553,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  328.6728,
+                                                                                               "y":  -51.47976,
+                                                                                               "z":  43.65804
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  55.26466,
+                                                                                                "y":  166.6047,
+                                                                                                "z":  157.9563
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  -33.33224,
+                                                                                                 "y":  -325.0439,
+                                                                                                 "z":  -6.991292
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  8,
+                                                                                           "right":  8,
+                                                                                           "speed":  8
+                                                                                       },
+                                                                           "driven_wheel_grounded":  false
+                                                                       }
+                                                       }
+                                       }
+                      },
+                      {
+                          "request":  "sim_pause",
+                          "id":  4,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  4,
+                                           "ok":  true
+                                       }
+                      },
+                      {
+                          "request":  "get_status",
+                          "id":  5,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  5,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Paused",
+                                                           "tick":  317,
+                                                           "sim_time":  3.16999992914498,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  327.6828,
+                                                                                               "y":  -61.7176,
+                                                                                               "z":  43.45039
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  38.76376,
+                                                                                                "y":  2.117277,
+                                                                                                "z":  359.7906
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  -32.83475,
+                                                                                                 "y":  -349.3293,
+                                                                                                 "z":  -6.886946
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  8,
+                                                                                           "right":  8,
+                                                                                           "speed":  8
+                                                                                       },
+                                                                           "driven_wheel_grounded":  false
+                                                                       }
+                                                       }
+                                       }
+                      },
+                      {
+                          "request":  "get_status",
+                          "id":  6,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  6,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Paused",
+                                                           "tick":  317,
+                                                           "sim_time":  3.16999992914498,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  327.6828,
+                                                                                               "y":  -61.7176,
+                                                                                               "z":  43.45039
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  38.76376,
+                                                                                                "y":  2.117277,
+                                                                                                "z":  359.7906
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  -32.83475,
+                                                                                                 "y":  -349.3293,
+                                                                                                 "z":  -6.886946
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  8,
+                                                                                           "right":  8,
+                                                                                           "speed":  8
+                                                                                       },
+                                                                           "driven_wheel_grounded":  false
+                                                                       }
+                                                       }
+                                       }
+                      },
+                      {
+                          "request":  "sim_step",
+                          "id":  7,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  7,
+                                           "ok":  true
+                                       }
+                      },
+                      {
+                          "request":  "get_status",
+                          "id":  8,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  8,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Paused",
+                                                           "tick":  318,
+                                                           "sim_time":  3.17999992892146,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  327.3561,
+                                                                                               "y":  -65.29103,
+                                                                                               "z":  43.38186
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  10.73462,
+                                                                                                "y":  357.5913,
+                                                                                                "z":  358.0991
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  -32.67058,
+                                                                                                 "y":  -357.3436,
+                                                                                                 "z":  -6.852511
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  8,
+                                                                                           "right":  8,
+                                                                                           "speed":  8
+                                                                                       },
+                                                                           "driven_wheel_grounded":  false
+                                                                       }
+                                                       }
+                                       }
+                      },
+                      {
+                          "request":  "sim_reset",
+                          "id":  9,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  9,
+                                           "ok":  true
+                                       }
+                      },
+                      {
+                          "request":  "get_status",
+                          "id":  10,
+                          "response":  {
+                                           "type":  "response",
+                                           "id":  10,
+                                           "ok":  true,
+                                           "payload":  {
+                                                           "state":  "Ready",
+                                                           "tick":  0,
+                                                           "sim_time":  0,
+                                                           "vehicle":  {
+                                                                           "position_cm":  {
+                                                                                               "x":  0,
+                                                                                               "y":  3.1,
+                                                                                               "z":  0
+                                                                                           },
+                                                                           "rotation_deg":  {
+                                                                                                "x":  0,
+                                                                                                "y":  0,
+                                                                                                "z":  0
+                                                                                            },
+                                                                           "velocity_cm_s":  {
+                                                                                                 "x":  0,
+                                                                                                 "y":  0,
+                                                                                                 "z":  0
+                                                                                             },
+                                                                           "command":  {
+                                                                                           "left":  0,
+                                                                                           "right":  0,
+                                                                                           "speed":  0
+                                                                                       },
+                                                                           "driven_wheel_grounded":  false
+                                                                       }
+                                                       }
+                                       }
+                      }
+                  ]
+}

@@ -28,6 +28,7 @@ namespace JajuchaSim.Scenario
         private bool _detailsVisible;
         private bool _built;
 
+        public bool BuildStandaloneUi = false;
         public bool IsVisible { get; private set; }
 
         /// <summary>Show the finished-run overlay for the given manager.</summary>
@@ -50,6 +51,11 @@ namespace JajuchaSim.Scenario
         private void EnsureBuilt()
         {
             if (_built) return;
+            if (!BuildStandaloneUi)
+            {
+                _built = true;
+                return;
+            }
 
             var canvasGo = new GameObject("ResultsCanvas");
             canvasGo.transform.SetParent(transform, false);
@@ -149,6 +155,16 @@ namespace JajuchaSim.Scenario
             }
 
             var sb = new System.Text.StringBuilder();
+            if (!string.IsNullOrEmpty(session.CompetitionStage))
+            {
+                sb.AppendLine("비공식 연습값");
+                sb.AppendLine($"2026 Course          {session.CompetitionStage}");
+                sb.AppendLine($"Mission              {session.AdditionalMission}");
+                sb.AppendLine($"Candidate            {session.MissionCandidateId}");
+                sb.AppendLine($"Random Seed          {session.MissionRandomSeed}");
+                sb.AppendLine($"Start Hold           {session.StartReleaseDelaySec:0.000} s");
+                sb.AppendLine();
+            }
             sb.AppendLine($"Status               {status}");
             sb.AppendLine($"Time                 {session.ElapsedSec:0.00} s");
             sb.AppendLine();
@@ -203,9 +219,14 @@ namespace JajuchaSim.Scenario
                 }
             }
 
-            _contentText.text = "RUN COMPLETE\n\n" + sb.ToString();
-
-            _detailsText.text = _detailsVisible ? BuildDetails() : "";
+            // The dashboard owns the only runtime Canvas.  In that mode the
+            // legacy ResultsPanel remains a controller and intentionally has
+            // no text widgets; completion must still be null-safe for tests
+            // and for ScenarioPanel event forwarding.
+            if (_contentText != null)
+                _contentText.text = "RUN COMPLETE\n\n" + sb.ToString();
+            if (_detailsText != null)
+                _detailsText.text = _detailsVisible ? BuildDetails() : "";
         }
 
         private string BuildDetails()

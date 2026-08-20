@@ -123,19 +123,23 @@ namespace JajuchaSim.Sensors
         private void SetupCamera()
         {
             // Create RenderTexture at configured resolution
-            _renderTexture = new RenderTexture(_config.width, _config.height, 24, RenderTextureFormat.Default)
+            _renderTexture = new RenderTexture(_config.width, _config.height, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear)
             {
                 name = $"{gameObject.name}_RT",
                 autoGenerateMips = false,
                 useMipMap = false,
                 antiAliasing = 1,
-                anisoLevel = 0
+                anisoLevel = 0,
+                useDynamicScale = false,
+                dimension = TextureDimension.Tex2D,
+                volumeDepth = 1
             };
             _renderTexture.Create();
 
             // Configure the Unity Camera
             _camera.enabled = false; // We control rendering manually
             _camera.targetTexture = _renderTexture;
+            _camera.rect = new Rect(0f, 0f, 1f, 1f);
             _camera.fieldOfView = _config.verticalFov;
             _camera.nearClipPlane = _config.nearClipCm; // 1 unit = 1 cm
             _camera.farClipPlane = _config.farClipCm;
@@ -229,11 +233,22 @@ namespace JajuchaSim.Sensors
             // Render the camera
             _camera.Render();
 
-            // Initiate GPU readback
-            if (SystemInfo.supportsAsyncGPUReadback)
+            // Editor tests use a synchronous path for deterministic readback;
+            // standalone builds use RGBA32 async readback and normalize the
+            // rows below without stalling the simulation thread.
+            if (Application.isEditor)
+            {
+                CaptureSync();
+            }
+            else if (SystemInfo.supportsAsyncGPUReadback)
             {
                 _awaitingReadback = true;
-                _pendingRequest = AsyncGPUReadback.Request(_renderTexture, 0, OnAsyncReadback);
+                // Read back the native 32-bit render target.  Requesting RGB24
+                // directly is not supported consistently by all Windows
+                // graphics backends and can return a half-height/strided
+                // buffer.  We strip alpha in OnAsyncReadback instead.
+                _pendingRequest = AsyncGPUReadback.Request(
+                    _renderTexture, 0, TextureFormat.RGBA32, OnAsyncReadback);
             }
             else
             {
@@ -271,6 +286,9 @@ namespace JajuchaSim.Sensors
                 _readTexture.Apply();
 
                 byte[] data = _readTexture.GetRawTextureData();
+                // Unity Texture2D data is bottom-left origin while the JCHM
+                // image API (and OpenCV/manual examples) use top-left origin.
+                FlipRows(data, _config.width, _config.height, 3);
                 PublishFrame(data);
             }
             finally
@@ -298,10 +316,46 @@ namespace JajuchaSim.Sensors
                 var data = request.GetData<byte>();
                 if (data.Length > 0)
                 {
-                    byte[] managedData = new byte[data.Length];
-                    data.CopyTo(managedData);
-                    PublishFrame(managedData);
+                    int pixelCount = _config.width * _config.height;
+                    if (data.Length == pixelCount * 4)
+                    {
+                        byte[] rgba = new byte[data.Length];
+                        data.CopyTo(rgba);
+                        byte[] rgb = new byte[pixelCount * 3];
+                        for (int src = 0, dst = 0; src < rgba.Length; src += 4)
+                        {
+                            rgb[dst++] = rgba[src];
+                            rgb[dst++] = rgba[src + 1];
+                            rgb[dst++] = rgba[src + 2];
+                        }
+                        FlipRows(rgb, _config.width, _config.height, 3);
+                        PublishFrame(rgb);
+                    }
+                    else
+                    {
+                        byte[] managedData = new byte[data.Length];
+                        data.CopyTo(managedData);
+                        if (data.Length == _config.width * _config.height * 3)
+                            FlipRows(managedData, _config.width, _config.height, 3);
+                        PublishFrame(managedData);
+                    }
                 }
+            }
+        }
+
+        private static void FlipRows(byte[] data, int width, int height, int bytesPerPixel)
+        {
+            if (data == null || width <= 0 || height <= 1 || bytesPerPixel <= 0) return;
+            int rowBytes = width * bytesPerPixel;
+            if (data.Length < rowBytes * height) return;
+            var scratch = new byte[rowBytes];
+            for (int y = 0; y < height / 2; y++)
+            {
+                int top = y * rowBytes;
+                int bottom = (height - 1 - y) * rowBytes;
+                Buffer.BlockCopy(data, top, scratch, 0, rowBytes);
+                Buffer.BlockCopy(data, bottom, data, top, rowBytes);
+                Buffer.BlockCopy(scratch, 0, data, bottom, rowBytes);
             }
         }
 
@@ -374,6 +428,7 @@ namespace JajuchaSim.Sensors
             // Also capture initial depth frame if depth is enabled
             if (_depthEnabled)
             {
+                RenderDepthTexture();
                 CaptureDepthSync(simulationTick, simulationTime);
             }
         }
@@ -423,19 +478,15 @@ namespace JajuchaSim.Sensors
                 return;
             }
 
-            // Set shader properties
-            _depthMaterial.SetVector("_CameraWorldPos", _camera.transform.position);
-            _depthMaterial.SetFloat("_NearDistance", _config.nearClipCm);
-            _depthMaterial.SetFloat("_FarDistance", _config.farClipCm);
+            RenderDepthTexture();
 
-            // Render with depth shader
-            RenderTexture previousTarget = _camera.targetTexture;
-            _camera.targetTexture = _depthRenderTexture;
-            _camera.RenderWithShader(_depthMaterial.shader, "");
-            _camera.targetTexture = previousTarget;
-
-            // Read back depth data
-            if (SystemInfo.supportsAsyncGPUReadback)
+            // Match the camera path: editor tests use synchronous readback;
+            // standalone builds use RGBA32 async readback.
+            if (Application.isEditor)
+            {
+                CaptureDepthSync(simulationTick, simulationTime);
+            }
+            else if (SystemInfo.supportsAsyncGPUReadback)
             {
                 _awaitingDepthReadback = true;
                 AsyncGPUReadback.Request(_depthRenderTexture, 0, TextureFormat.RGB24, request => OnDepthAsyncReadback(request, simulationTick, simulationTime));
@@ -444,6 +495,32 @@ namespace JajuchaSim.Sensors
             {
                 CaptureDepthSync(simulationTick, simulationTime);
             }
+        }
+
+        /// <summary>
+        /// Render the replacement depth shader into the depth RenderTexture.
+        /// RenderWithShader uses the replacement shader directly, so the
+        /// distance parameters must be global shader properties as well as
+        /// material properties; otherwise the shader sees the zero vector and
+        /// every pixel clamps to black.
+        /// </summary>
+        private void RenderDepthTexture()
+        {
+            if (_camera == null || _depthRenderTexture == null || _depthMaterial == null)
+                return;
+
+            Vector3 cameraPosition = _camera.transform.position;
+            _depthMaterial.SetVector("_CameraWorldPos", cameraPosition);
+            _depthMaterial.SetFloat("_NearDistance", _config.nearClipCm);
+            _depthMaterial.SetFloat("_FarDistance", _config.farClipCm);
+            Shader.SetGlobalVector("_CameraWorldPos", cameraPosition);
+            Shader.SetGlobalFloat("_NearDistance", _config.nearClipCm);
+            Shader.SetGlobalFloat("_FarDistance", _config.farClipCm);
+
+            RenderTexture previousTarget = _camera.targetTexture;
+            _camera.targetTexture = _depthRenderTexture;
+            _camera.RenderWithShader(_depthMaterial.shader, "");
+            _camera.targetTexture = previousTarget;
         }
 
         /// <summary>
@@ -482,6 +559,8 @@ namespace JajuchaSim.Sensors
                     depthData[i] = (byte)(pixels[i].r * 255f);
                 }
 
+                FlipRows(depthData, _config.width, _config.height, 1);
+
                 PublishDepthFrame(depthData, simulationTick, simulationTime);
             }
             finally
@@ -518,6 +597,8 @@ namespace JajuchaSim.Sensors
                             depthData[i] = data[srcIdx]; // R channel (R=G=B)
                         }
                     }
+
+                    FlipRows(depthData, _config.width, _config.height, 1);
 
                     PublishDepthFrame(depthData, simulationTick, simulationTime);
                 }

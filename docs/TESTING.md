@@ -104,11 +104,9 @@ New assembly `JajuchaSim.App` (runtime) + `JajuchaSim.App.EditModeTests` +
 - `ApplicationConfigTests` — defaults, JSON load, normalization, command-line
   overrides (`--course/--mode/--simulation-speed/--no-debug-ui/--batch-config`),
   mode parsing.
-- `RuntimeDataPathsTests` — writable data root, sub-directories, course
-  resolution (finds `Courses/template_course.json` next to the project root).
-- `TemplateCourseTests` — template course loads, has straight+curve road,
-  boundary lines, tunnel/ramp/obstacle/slow sign/start signal, start/finish/
-  slow-zone triggers, two speed terminals, and zero validation errors.
+- `RuntimeDataPathsTests` — writable data root, sub-directories, and 2026 course resolution.
+- `Competition2026CourseTests` — both stages validate 41 panels, dimensions,
+  official checkpoint order, path structures, print objects, and five 30 cm candidates.
 - `SceneHierarchyValidationTests` — loads `JajuchaSimulator.unity` and verifies
   the fixed hierarchy, exactly-one SimulationManager / observer camera / bridge
   / vehicle / sensors / map editor, wired references, and required layers

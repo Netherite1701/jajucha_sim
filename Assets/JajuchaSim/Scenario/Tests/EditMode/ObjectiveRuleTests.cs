@@ -36,9 +36,7 @@ namespace JajuchaSim.Scenario.Tests
             def.name = "Objective Test";
             def.startTriggerId = "start_line";
             def.finishTriggerId = "finish_line";
-            def.startTimingMode = StartTimingMode.SignalGreen;
-            def.redDurationSec = 0.01f;
-            def.yellowDurationSec = 0.01f;
+            def.startTimingMode = StartTimingMode.SignalRelease;
 
             manager.PrepareRun(def, doc);
             return (clock, events, manager, doc, def);

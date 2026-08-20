@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using JajuchaSim.Core;
 using JajuchaSim.Course;
+using JajuchaSim.Vehicle;
 using NUnit.Framework;
 using UnityEngine;
 
@@ -44,9 +45,11 @@ namespace JajuchaSim.Scenario.Tests
                 Definition.startTriggerId = "start_line";
                 Definition.finishTriggerId = "finish_line";
                 Definition.maxRunTimeSec = 180f;
-                Definition.startTimingMode = StartTimingMode.SignalGreen;
-                Definition.redDurationSec = 0.01f;
-                Definition.yellowDurationSec = 0.01f;
+                Definition.startTimingMode = StartTimingMode.SignalRelease;
+                Definition.lampIntervalSec = 0.01f;
+                Definition.releaseDelayMinSec = 0.01f;
+                Definition.releaseDelayMaxSec = 0.01f;
+                Definition.buzzerDurationSec = 0.02f;
 
                 Manager.PrepareRun(Definition, Document);
             }
@@ -76,7 +79,8 @@ namespace JajuchaSim.Scenario.Tests
         {
             var h = new Harness();
             Assert.AreEqual(ScenarioState.Ready, h.Manager.State);
-            Assert.AreEqual(StartSignalState.Red, h.Manager.Signal);
+            Assert.AreEqual(StartSignalState.Waiting, h.Manager.Signal);
+            Assert.AreEqual(0, h.Manager.StartLight.LitLampCount);
             Assert.AreEqual("run_0001", h.Manager.Session.RunId);
             Assert.AreEqual("test_course", h.Manager.Session.CourseId);
             Assert.AreEqual("test_scenario", h.Manager.Session.ScenarioId);
@@ -108,32 +112,60 @@ namespace JajuchaSim.Scenario.Tests
             h.Manager.RequestStart();
 
             Assert.AreEqual(ScenarioState.Countdown, h.Manager.State);
-            Assert.AreEqual(StartSignalState.Red, h.Manager.Signal);
+            Assert.AreEqual(StartSignalState.Lamp1, h.Manager.Signal);
             Assert.IsFalse(h.Manager.Timer.IsRunning);
 
-            h.Tick(2); // red 0.01 + yellow 0.01
+            h.Tick(4); // lamp 2, 3, 4, then release
 
             Assert.AreEqual(ScenarioState.Running, h.Manager.State);
-            Assert.AreEqual(StartSignalState.Green, h.Manager.Signal);
+            Assert.AreEqual(StartSignalState.Released, h.Manager.Signal);
+            Assert.IsTrue(h.Manager.StartLight.Released);
+            Assert.IsTrue(h.Manager.StartLight.BuzzerActive);
             Assert.IsTrue(h.Manager.Timer.IsRunning);
 
             Assert.AreEqual(new[] { ScenarioState.Countdown, ScenarioState.Running }, order.ToArray());
         }
 
         [Test]
-        public void StartSequence_TimerBeginsExactlyAtGreen()
+        public void StartSequence_FourLampsThenRelease_StartsTimerExactlyAtRelease()
         {
             var h = new Harness();
             h.Manager.RequestStart();
 
-            h.Tick(1); // red done, yellow active
-            Assert.AreEqual(StartSignalState.Yellow, h.Manager.Signal);
+            Assert.AreEqual(1, h.Manager.StartLight.LitLampCount);
+            h.Tick(1);
+            Assert.AreEqual(2, h.Manager.StartLight.LitLampCount);
+            h.Tick(1);
+            Assert.AreEqual(3, h.Manager.StartLight.LitLampCount);
+            h.Tick(1);
+            Assert.AreEqual(4, h.Manager.StartLight.LitLampCount);
             Assert.IsFalse(h.Manager.Timer.IsRunning);
 
-            h.Tick(1); // yellow done → GREEN
-            Assert.AreEqual(StartSignalState.Green, h.Manager.Signal);
+            h.Tick(1);
+            Assert.AreEqual(StartSignalState.Released, h.Manager.Signal);
             Assert.IsTrue(h.Manager.Timer.IsRunning);
             Assert.AreEqual(h.Clock.Time, h.Manager.Session.StartTime, 1e-6);
+        }
+
+        [Test]
+        public void StartSequence_ReleaseDelayIsThreeToSixSecondsAndSeedReproducible()
+        {
+            var first = new Harness();
+            var second = new Harness();
+            first.Definition.releaseDelayMinSec = second.Definition.releaseDelayMinSec = 3f;
+            first.Definition.releaseDelayMaxSec = second.Definition.releaseDelayMaxSec = 6f;
+
+            first.Manager.RequestStart();
+            second.Manager.RequestStart();
+            first.Tick(3);
+            second.Tick(3);
+
+            Assert.That(first.Manager.ActualReleaseDelaySec, Is.InRange(3f, 6f));
+            Assert.AreEqual(first.Manager.ActualReleaseDelaySec, second.Manager.ActualReleaseDelaySec, 1e-6f);
+            Assert.AreEqual(first.Manager.ActualReleaseDelaySec, first.Manager.Session.StartReleaseDelaySec, 1e-6f);
+            Assert.AreEqual(second.Manager.ActualReleaseDelaySec, second.Manager.Session.StartReleaseDelaySec, 1e-6f);
+            Assert.AreEqual(StartSignalState.Lamp4, first.Manager.Signal);
+            Assert.IsFalse(first.Manager.StartLight.Released);
         }
 
         [Test]
@@ -142,7 +174,7 @@ namespace JajuchaSim.Scenario.Tests
             var h = new Harness();
             h.Manager.RequestStart(StartMode.Immediate);
             Assert.AreEqual(ScenarioState.Running, h.Manager.State);
-            Assert.AreEqual(StartSignalState.Green, h.Manager.Signal);
+            Assert.AreEqual(StartSignalState.Released, h.Manager.Signal);
             Assert.IsTrue(h.Manager.Timer.IsRunning);
         }
 
@@ -266,11 +298,44 @@ namespace JajuchaSim.Scenario.Tests
         }
 
         [Test]
+        public void InitialStartTriggerOverlap_DoesNotRecordFalseStart()
+        {
+            var h = new Harness();
+            h.Definition.falseStart.enabled = true;
+            // Spawn pose is inside the 2x1 start region (20 cm tiles).
+            h.SetSpeed(0f, new Vector3(10f, 0f, 10f));
+            h.Manager.RequestStart();
+
+            // The first geometric enter is only the initial containment.
+            h.Events.Publish(new TriggerEnteredEvent(default, TriggerType.Start, "start_line"));
+
+            Assert.IsFalse(h.Manager.Session.FalseStart);
+            Assert.AreEqual(ScenarioState.Countdown, h.Manager.State);
+        }
+
+        [Test]
+        public void MotorInputBeforeRelease_RecordsFalseStartWithoutAllowingMovement()
+        {
+            var h = new Harness();
+            h.Definition.falseStart.enabled = true;
+            h.Definition.falseStart.violationMode = ViolationMode.Penalty;
+            h.Definition.falseStart.penalty = 10f;
+            h.Manager.RequestStart();
+
+            h.Manager.NotifyMotorCommandBeforeRelease(new MotorCommand(4, 4, 10));
+
+            Assert.IsTrue(h.Manager.Session.FalseStart);
+            Assert.AreEqual(ScenarioState.Countdown, h.Manager.State);
+            Assert.AreEqual(1, h.Manager.Session.Penalties.Count);
+            Assert.IsFalse(h.Manager.IsMovementReleased);
+        }
+
+        [Test]
         public void StartLineCrossing_AfterGreen_IsNotFalseStart()
         {
             var h = new Harness();
             h.Definition.falseStart.enabled = true;
-            h.Manager.RequestStart(StartMode.Immediate); // GREEN
+            h.Manager.RequestStart(StartMode.Immediate); // released
 
             h.Events.Publish(new TriggerEnteredEvent(default, TriggerType.Start, "start_line"));
 
@@ -310,13 +375,13 @@ namespace JajuchaSim.Scenario.Tests
             Assert.IsTrue(h.Manager.Timer.IsRunning);
         }
 
-        // ---- 8.24 Option A: signal-green timing ------------------------
+        // ---- 8.24 Option A: signal-release timing ----------------------
 
         [Test]
-        public void SignalGreen_TimerStartsAtGreen_EvenWithoutStartCrossing()
+        public void SignalRelease_TimerStartsAtRelease_EvenWithoutStartCrossing()
         {
             var h = new Harness();
-            h.Definition.startTimingMode = StartTimingMode.SignalGreen;
+            h.Definition.startTimingMode = StartTimingMode.SignalRelease;
             h.SetSpeed(0f, new Vector3(500, 0, 500));
 
             h.Manager.RequestStart(StartMode.Immediate);
@@ -427,7 +492,7 @@ namespace JajuchaSim.Scenario.Tests
             h.Manager.RequestStart(StartMode.Immediate);
             h.Tick(25);
 
-            Assert.IsTrue(h.Manager.Session.Events.Count >= 2); // SIGNAL GREEN + RUN START
+            Assert.IsTrue(h.Manager.Session.Events.Count >= 2); // RELEASE + RUN START
             foreach (var ev in h.Manager.Session.Events)
             {
                 Assert.AreEqual(ev.SimulationTime, ev.SimulationTick * Dt, 1e-6);

@@ -3,6 +3,8 @@ using JajuchaSim.Bridge;
 using JajuchaSim.Core;
 using JajuchaSim.MapEditor;
 using JajuchaSim.Sensors;
+using JajuchaSim.Scenario;
+using JajuchaSim.UI;
 using JajuchaSim.Vehicle;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -53,9 +55,11 @@ namespace JajuchaSim.App
         public SimulationManager Simulation => simulationManager;
         public SimulationRunner Runner => simulationRunner;
         public CourseManager Course => courseManager;
+        public VehicleSystemBehaviour Vehicle => vehicleBehaviour;
         public JajuchaBridgeServer BridgeServer => bridgeServer;
         public ObserverCameraController Observer => observerController;
         public int BridgePort => Config != null ? Config.bridgePort : 8765;
+        public RuntimeStateTrace StateTrace => stateTrace;
 
         private bool _debugUiVisible = true;
 
@@ -207,6 +211,12 @@ namespace JajuchaSim.App
             // 11. Enter READY state.
             IsReady = true;
             ApplyModeToScene(Mode);
+            // EnterDrive wires the runtime systems and may initialize/reset
+            // physics objects. Re-apply the official checkpoint after the
+            // complete startup graph is live so the Rigidbody pose, not just
+            // the pre-wiring Transform, is authoritative on the first tick.
+            if (courseManager != null)
+                courseManager.PlaceVehicleAtStart();
 
             LastResult = BootstrapResult.Ok();
             RuntimeFileLogger.Info("Bootstrap",
@@ -222,6 +232,14 @@ namespace JajuchaSim.App
                 if (Config == null)
                     Config = ApplicationConfig.Default();
                 Config.Normalize();
+
+                // The 2026 course selector remembers the last stage separately
+                // from legacy application config. Command-line --course still
+                // wins because overrides are applied immediately afterwards.
+                var competitionPrefs = CompetitionMissionPreferences.Load();
+                Config.defaultCourse = string.Equals(competitionPrefs.lastStage, "final", StringComparison.OrdinalIgnoreCase)
+                    ? "2026_final"
+                    : "2026_preliminary";
 
                 var applied = Config.ApplyCommandLine(Environment.GetCommandLineArgs());
                 if (applied.Length > 0)
@@ -271,6 +289,7 @@ namespace JajuchaSim.App
             {
                 courseManager?.PlaceVehicleAtStart();
                 ApplyModeToScene(Mode);
+                courseManager?.PlaceVehicleAtStart();
             }
             LastResult = result;
             return result;
@@ -302,7 +321,7 @@ namespace JajuchaSim.App
             }
 
             // Auto-wire the scenario (start/finish triggers, slow zone) from
-            // the loaded course so the template works without manual picking.
+            // the loaded 2026 course so it works without manual picking.
             if (mapEditor != null)
                 mapEditor.AutoConfigureScenario();
 
@@ -371,12 +390,24 @@ namespace JajuchaSim.App
 
         private void StepInitUi()
         {
-            // MapEditorHud and SimulationDebugHud build their UI in Start();
-            // the status bar is App-level and already enabled.
+            // The 2026 runtime uses one integrated dashboard Canvas. Legacy
+            // panel components remain available as controller/data facades but
+            // do not create overlapping canvases in the authoritative scene.
             if (statusBar == null)
                 statusBar = GetComponentInChildren<RuntimeStatusBar>();
             if (statusBar != null)
-                statusBar.enabled = true;
+                statusBar.enabled = false;
+            if (dashboard == null)
+                dashboard = FindFirstObjectByType<SimulatorDashboardUI>();
+            if (dashboard == null)
+            {
+                var go = new GameObject("SimulatorDashboardUI");
+                go.transform.SetParent(transform, false);
+                dashboard = go.AddComponent<SimulatorDashboardUI>();
+            }
+            dashboard.Bind(this, mapEditor, sensorBehaviour);
+            if (RuntimeStateTrace.IsRequested())
+                stateTrace = RuntimeStateTrace.Attach(this);
             RuntimeFileLogger.Info("Bootstrap", "Runtime UI initialized (data folder: " +
                 RuntimeDataPaths.WritableDataRoot() + ")");
         }
@@ -397,6 +428,7 @@ namespace JajuchaSim.App
             ApplyModeToScene(mode);
             RuntimeFileLogger.Info("Bootstrap", "Application mode -> " + mode);
             SimLog.Info($"[Bootstrap] mode -> {mode}");
+            stateTrace?.RecordEvent("mode_changed");
         }
 
         private void ApplyModeToScene(ApplicationMode mode)
@@ -439,6 +471,8 @@ namespace JajuchaSim.App
         // ================================================================
 
         private RuntimeStatusBar statusBar;
+        private SimulatorDashboardUI dashboard;
+        private RuntimeStateTrace stateTrace;
 
         private void ResolveReferences()
         {

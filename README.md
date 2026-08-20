@@ -7,9 +7,9 @@ source of truth for all real-vehicle behavior and APIs.
 ## Status
 
 Steps **1–11** are implemented: core kernel, vehicle, Python bridge, sensors,
-shared tile grid, structures/objects/triggers, runtime map editor,
+shared 5 cm competition mask, structures/objects/triggers, runtime map editor,
 scenario/timing/scoring, competition scoring + automated testing, and the
-template scene / project workflow / user scripts. See
+2026 preliminary/final workflow. See
 `docs/IMPLEMENTATION_STATUS.md` for details.
 
 ## Normal workflow
@@ -26,9 +26,18 @@ template scene / project workflow / user scripts. See
 ```
 
 The authoritative scene is `Assets/JajuchaSim/Scenes/JajuchaSimulator.unity`;
-it loads `Courses/template_course.json` at startup and enters Drive mode
+it loads `Courses/2026_preliminary.json` on first startup, remembers the last
+preliminary/final selection, and enters Drive mode
 automatically. See `docs/USER_WORKFLOW.md` for the full workflow (drive, map
 edit, test, batch).
+
+## VS Code workflow
+
+Open the project root (`C:\dev\jajucha-sim`) in VS Code. The included
+`.vscode` workspace configuration provides tasks for Python setup, opening the
+Unity simulator, checking the bridge, running `python/user/main.py`, and
+running Python tests. It also provides Python debug configurations for the
+user controller and pytest. See `docs/VSCODE_WORKFLOW.md`.
 
 ## World scale
 
@@ -45,7 +54,7 @@ root scale `(1,1,1)`.
 
 1. Open Unity Hub → Add project from disk → this folder.
 2. Open `Assets/JajuchaSim/Scenes/JajuchaSimulator.unity`.
-3. Press Play. The bootstrap loads the template course and enters Drive mode.
+3. Press Play. The bootstrap loads the selected 2026 course and enters Drive mode.
 
 ## Python workspace
 
@@ -98,7 +107,8 @@ Expected (Step 11): EditMode 473/473, PlayMode 48/48, Python 29/29,
 - `docs/DESIGN_DECISIONS.md` — ADR log (DD-001..025).
 - `docs/MANUAL_COMPATIBILITY.md` — `jchm` feature tracking + APPROXIMATE values.
 - `docs/CONFIGURATION.md` — kernel + application config fields.
-- `docs/COURSE_FORMAT.md` — course JSON format + template course.
+- `docs/COMPETITION_2026.md` — 2026 course, mission, signal, and practice defaults.
+- `docs/COURSE_FORMAT.md` — 2026 course JSON format.
 - `docs/TESTING.md`, `docs/SCORING.md`, `docs/TROUBLESHOOTING.md`,
   `docs/IMPLEMENTATION_STATUS.md`, `docs/CHANGELOG.md`.
 

@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "timestamp": "2026-08-20T02:37:22.8937781+09:00",
+  "before": {
+    "position_cm": {
+      "x": 350,
+      "y": 3.966503,
+      "z": 45
+    },
+    "rotation_deg": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "velocity_cm_s": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "command": {
+      "left": 0,
+      "right": 0,
+      "speed": 0
+    },
+    "driven_wheel_grounded": true
+  },
+  "after": {
+    "position_cm": {
+      "x": 350,
+      "y": 4.02,
+      "z": 246.7814
+    },
+    "rotation_deg": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "velocity_cm_s": {
+      "x": 0,
+      "y": -2.941608E-05,
+      "z": 153.0185
+    },
+    "command": {
+      "left": 0,
+      "right": 0,
+      "speed": 30
+    },
+    "driven_wheel_grounded": true
+  },
+  "distance_cm": 201.7814,
+  "screenshots": [
+    "C:\\dev\\jajucha-sim\\test-artifacts\\drive\\drive_before_1280x720.png",
+    "C:\\dev\\jajucha-sim\\test-artifacts\\drive\\drive_after_1280x720.png"
+  ]
+}

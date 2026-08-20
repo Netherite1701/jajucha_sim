@@ -1,0 +1,6 @@
+{
+  "passed": false,
+  "timestamp": "2026-08-20T02:41:17.5347052+09:00",
+  "error": "Trace did not reach a fresh Ready state",
+  "checks": {}
+}

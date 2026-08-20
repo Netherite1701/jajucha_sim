@@ -20,7 +20,7 @@ namespace JajuchaSim.Scenario
     /// Sidebar (updated every frame):
     ///   SCENARIO
     ///   State        RUNNING
-    ///   Signal       GREEN
+    ///   Signal       RELEASED
     ///   Elapsed      31.28 s
     ///   Slow Zone    outside
     ///   Collisions   0
@@ -30,7 +30,7 @@ namespace JajuchaSim.Scenario
     /// Controls:
     ///   [ Start Run ]  [ Abort Run ]
     ///   Start mode: [ Normal Signal | Immediate ]
-    ///   Signal preview (debug): [ RED ] [ YELLOW ] [ GREEN ]
+    ///   Signal preview (debug): [ LAMP 1 ] [ LAMP 4 ] [ RELEASE ]
     /// </summary>
     public sealed class ScenarioPanel : MonoBehaviour
     {
@@ -38,6 +38,7 @@ namespace JajuchaSim.Scenario
         public ScenarioManager Manager;
         public bool ShowControls = true;
         public bool ShowSignalOverride = false;
+        public bool BuildStandaloneUi = false;
 
         private SimulationManager _sim;
         private Text _contentText;
@@ -57,7 +58,7 @@ namespace JajuchaSim.Scenario
 
         private void Update()
         {
-            if (!_built) BuildUi();
+            if (BuildStandaloneUi && !_built) BuildUi();
             Refresh();
         }
 
@@ -183,16 +184,16 @@ namespace JajuchaSim.Scenario
         //  Actions (also usable from tests / other UI)
         // ================================================================
 
-        public void StartRun()
+        public bool StartRun()
         {
-            if (Manager == null) return;
+            if (Manager == null) return false;
             // Step 8.49: starting again after a finished/aborted run re-prepares
             // the run (reset → ready) before beginning the start sequence.
             if (Manager.State == ScenarioState.Finished || Manager.State == ScenarioState.Aborted)
                 Manager.ResetSimulation();
-            if (Manager.State != ScenarioState.Ready) return;
+            if (Manager.State != ScenarioState.Ready) return false;
             _resultsPanel?.Hide();
-            Manager.RequestStart(_startMode);
+            return Manager.RequestStart(_startMode);
         }
 
         public void AbortRun()
@@ -218,6 +219,7 @@ namespace JajuchaSim.Scenario
                 var go = new GameObject("ResultsPanel");
                 go.transform.SetParent(transform, false);
                 _resultsPanel = go.AddComponent<ResultsPanel>();
+                _resultsPanel.BuildStandaloneUi = BuildStandaloneUi;
             }
             _resultsPanel.Show(Manager);
         }
@@ -248,7 +250,7 @@ namespace JajuchaSim.Scenario
             if (ShowControls)
             {
                 float y = 10f;
-                var startBtn = MakeButton(canvasGo.transform, "Start Run", new Vector2(-250, y), new Vector2(110, 30), StartRun);
+                var startBtn = MakeButton(canvasGo.transform, "Start Run", new Vector2(-250, y), new Vector2(110, 30), () => StartRun());
                 var sr = startBtn.GetComponent<RectTransform>();
                 sr.anchorMin = new Vector2(1f, 0f);
                 sr.anchorMax = new Vector2(1f, 0f);
@@ -272,9 +274,9 @@ namespace JajuchaSim.Scenario
                 if (ShowSignalOverride)
                 {
                     float sy = y + 68;
-                    MakeButton(canvasGo.transform, "RED", new Vector2(-250, sy), new Vector2(72, 24), () => SetSignalDebug(StartSignalState.Red));
-                    MakeButton(canvasGo.transform, "YELLOW", new Vector2(-172, sy), new Vector2(72, 24), () => SetSignalDebug(StartSignalState.Yellow));
-                    MakeButton(canvasGo.transform, "GREEN", new Vector2(-94, sy), new Vector2(72, 24), () => SetSignalDebug(StartSignalState.Green));
+                    MakeButton(canvasGo.transform, "LAMP 1", new Vector2(-250, sy), new Vector2(72, 24), () => SetSignalDebug(StartSignalState.Lamp1));
+                    MakeButton(canvasGo.transform, "LAMP 4", new Vector2(-172, sy), new Vector2(72, 24), () => SetSignalDebug(StartSignalState.Lamp4));
+                    MakeButton(canvasGo.transform, "RELEASE", new Vector2(-94, sy), new Vector2(72, 24), () => SetSignalDebug(StartSignalState.Released));
                 }
             }
 

@@ -47,3 +47,6 @@ Desktop.ini
 # ---- Pi plan runtime artifacts ----
 /.pi-plan-logs/
 /.pi-plan-state/
+
+# ---- Local tool installers ----
+/.tools/

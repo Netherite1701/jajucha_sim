@@ -26,8 +26,14 @@ namespace JajuchaSim.Course
         Obstacle,
         /// <summary>Warning or informational sign.</summary>
         Sign,
-        /// <summary>Start signal / traffic light for race start.</summary>
-        StartSignal
+        /// <summary>2026 four-red-lamp start signal.</summary>
+        StartSignal,
+        /// <summary>2026 yellow-flag sign.</summary>
+        YellowFlag,
+        /// <summary>2026 PIT barrier sign.</summary>
+        PitBarrier,
+        /// <summary>2026 moving emergency-worker obstacle.</summary>
+        DynamicObstacle
     }
 
     /// <summary>

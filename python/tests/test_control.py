@@ -82,6 +82,11 @@ class TestControlSetMotor(unittest.TestCase):
         control.set_motor(10, 10, 30)
         self.assertEqual(self.mock_backend.set_motor_calls[1], (10, 10, 30))
 
+    def test_stop_motor_stops_and_centres_steering(self):
+        """stop_motor sends the manual-compatible zero command."""
+        control.stop_motor()
+        self.assertEqual(self.mock_backend.set_motor_calls[-1], (0, 0, 0))
+
 
 class TestControlErrors(unittest.TestCase):
     """Tests for error handling in control module."""

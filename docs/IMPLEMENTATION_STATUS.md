@@ -222,11 +222,11 @@ Built the competition/test environment on top of the Step-7 triggers:
 
 - `ScenarioManager` — explicit state machine (Idle → Ready → Countdown →
   Running → Finished/Aborted), listens to trigger/terminal/collision events,
-  controls the start-signal sequence (RED → YELLOW → GREEN), starts/stops the
+  controls the four-red-lamp 2026 start sequence and release buzzer, starts/stops the
   timer, finalizes results; never drives the vehicle or runs the ANN/FSM
 - `ScenarioDefinition` (JSON) — course-independent rules: start/finish
   triggers, max run time, start-signal durations, start timing mode
-  (signal-green vs start-gate-crossing), slow-zone configs with
+  (signal-release vs start-gate-crossing), slow-zone configs with
   Fail/Penalty/Informational violation modes, false-start rule, scoring
   enable, auto-save results
 - `RunSession` — per-run record (run id, course/scenario ids, start/end times,
@@ -243,7 +243,7 @@ Built the competition/test environment on top of the Step-7 triggers:
   driving view stays visible)
 - Result JSON export + auto-save to `Runs/run_XXXX.json`, reload support
 - Map-editor SCENARIO section (start/finish trigger pickers from placed ids,
-  max time, slow-zone speed, start mode, signal preview RED/YELLOW/GREEN)
+  max time, slow-zone speed, start mode, four-lamp/release signal preview)
 - jchm_sim automation API: `start_run`, `abort_run`, `get_run_status`,
   `get_result`, `wait_for_result(timeout)` (simulator-only, not student jchm)
 
@@ -319,17 +319,16 @@ simulator systems:
 - **Authoritative scene** `Assets/JajuchaSim/Scenes/JajuchaSimulator.unity`
   with the fixed hierarchy (`_Core/_Course/_Vehicle/_Sensors/_Bridge/
   _Scenario/_Observer/_RuntimeUI/_Services`) — configuration only; the course
-  is loaded from `Courses/template_course.json` and generated at runtime
+  is loaded from a selected 2026 preliminary/final course and generated at runtime
   (Step 11.2/11.3/11.29).
 - **`ApplicationBootstrap`** (new `JajuchaSim.App` assembly) — explicit ordered
   startup (config → kernel → data paths → course → runtime course → vehicle →
   sensors → bridge → scenario → UI → READY) with an explicit `BootstrapResult`
   (Success/FailedSystem/ErrorCode/Message) and an on-screen error display
   (Step 11.4/11.5).
-- **Template course** `Courses/template_course.json` — start, straight, curve,
-  tunnel, ramp, obstacle, slow sign, start signal, slow zone, two speed
-  terminals, finish, boundary lines, scoring documentation block
-  (Step 11.6–11.8).
+- **2026 courses** `Courses/2026_preliminary.json` and `Courses/2026_final.json`
+  — exact panel inventory, 5 cm mask, ordered checkpoints, path structures,
+  official print objects, and five day-of mission candidates.
 - **Application modes** `ApplicationMode` (Drive/MapEditor/SingleTest/
   BatchTest) with explicit `SetMode` transitions (Step 11.9/11.10).
 - **User Python workspace** — `python/examples/01…06`, `python/user/main.py`
@@ -351,7 +350,7 @@ simulator systems:
   the runtime remains procedural so there is one source per object (DD-022).
 
 Tests (added for Step 11): `BootstrapResultTests`, `ApplicationConfigTests`,
-`RuntimeDataPathsTests`, `TemplateCourseTests`, `SceneHierarchyValidationTests`
+`RuntimeDataPathsTests`, `Competition2026CourseTests`, `SceneHierarchyValidationTests`
 (EditMode); `WorkflowIntegrationTests`, `SceneBootstrapPlayModeTests`
 (PlayMode); `python/tests/test_examples.py`.
 

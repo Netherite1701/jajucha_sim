@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Jajucha: Debug user controller",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/python/user/main.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}\\python"
+      }
+    },
+    {
+      "name": "Jajucha: Debug Python tests",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "python/tests",
+        "-q"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}\\python"
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "passed": false,
+  "timestamp": "2026-08-20T02:40:05.7485939+09:00",
+  "error": "Scenario changed state despite rejected start",
+  "checks": {
+    "handshake": true,
+    "readyBeforeStart": true,
+    "startRejected": true,
+    "errorCode": "SCENARIO_NOT_READY",
+    "stayedReady": false
+  }
+}

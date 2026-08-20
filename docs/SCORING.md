@@ -134,12 +134,10 @@ Scenario → ScoreManager → RunResult path.
   speed terminal, objectives) with Run Again / Details / Export.
 - Map editor SCORING section — runtime-editable base score and penalty values.
 
-## Template course scoring (Step 11)
+## 2026 practice scoring
 
-The shipped template course (`Courses/template_course.json`) documents the
-intended scoring configuration (EXAMPLE / SIMULATOR_ONLY — not a competition
-replica): base score 100; line contact 5; course departure 5; collision 5;
-objective failure 10; max run time 60 s; slow-zone max speed 20 cm/s. The
-runtime scenario is built from the map-editor SCENARIO/SCORING sections whose
-defaults match this block, and manual runs and automated tests share the same
-`ScoreManager` path (DD-024).
+The supplied 2026 PDFs do not define these point values. The runtime UI and
+result JSON therefore label them `비공식 연습값`: base 100; line contact,
+course departure, and collision 5 each; false start, mission failure, and
+timeout 10 each; yellow-flag speed limit 20 cm/s. Manual and automated runs
+share the same `ScoreManager` path.

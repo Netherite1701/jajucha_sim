@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using JajuchaSim.Core;
 using JajuchaSim.Course;
+using JajuchaSim.Vehicle;
 using UnityEngine;
 
 namespace JajuchaSim.Scenario
@@ -16,7 +17,7 @@ namespace JajuchaSim.Scenario
     ///   - prepare run / control scenario state
     ///   - start/stop the official run timer (SimulationClock driven)
     ///   - listen to Step-7 course events and forward them to scoring rules
-    ///   - control the Step-7 StartSignal object (RED → YELLOW → GREEN)
+    ///   - control the 2026 four-red-lamp StartSignal object
     ///   - finalize results / export JSON
     ///
     /// It does NOT drive the car, run the ANN, run an FSM, render cameras, or
@@ -40,16 +41,27 @@ namespace JajuchaSim.Scenario
         private Vector3 _previousTelemetryPosition; // for finish-direction checks
 
         private ScenarioState _state = ScenarioState.Idle;
-        private StartSignalState _signal = StartSignalState.Off;
+        private StartSignalState _signal = StartSignalState.Waiting;
+        private SimulationRandom _random;
+        private int _litLampCount;
+        private bool _buzzerActive;
+        private double _buzzerRemaining;
+        private float _actualReleaseDelaySec;
 
-        // ---- countdown state (Step 8.8) ----
-        private enum CountdownPhase { None, Red, Yellow }
+        // ---- 2026 four-lamp countdown state ----
+        private enum CountdownPhase { None, Lamps, ReleaseDelay }
         private CountdownPhase _phase = CountdownPhase.None;
         private double _countdownRemaining;
 
         // ---- run bookkeeping ----
         private int _runCounter;
         private bool _timerStarted;
+        // The vehicle is intentionally spawned on the start checkpoint.  The
+        // geometric trigger detector therefore reports an initial "enter"
+        // while the countdown is being armed.  That overlap is not a crossed
+        // line and must not become a false start; a later exit/re-entry (or a
+        // non-zero motor command) is still handled normally.
+        private bool _suppressInitialStartTriggerEnter;
 
         // ---- event-bus subscriptions ----
         private Action<TriggerEnteredEvent> _onTriggerEntered;
@@ -71,6 +83,14 @@ namespace JajuchaSim.Scenario
         /// <summary>Raised once when a run finishes/aborts (UI / bridge).</summary>
         public event Action<RunSession> RunFinished;
 
+        /// <summary>
+        /// Optional main-thread preparation hook. The 2026 map editor uses it
+        /// to resolve the fixed/random mission immediately before both UI and
+        /// bridge starts, so no entry point can bypass mission selection.
+        /// Return false to reject the start without changing the Ready state.
+        /// </summary>
+        public Func<bool> BeforeStart { get; set; }
+
         public ScenarioManager(SimulationClock clock, SimulationEventBus events)
         {
             _clock = clock ?? throw new ArgumentNullException(nameof(clock));
@@ -85,6 +105,8 @@ namespace JajuchaSim.Scenario
 
         public ScenarioState State => _state;
         public StartSignalState Signal => _signal;
+        public StartLightSnapshot StartLight => new StartLightSnapshot(_signal, _litLampCount, _buzzerActive);
+        public float ActualReleaseDelaySec => _actualReleaseDelaySec;
         public RunSession Session { get; private set; } = new RunSession();
         public ScoreManager Score => _score;
         public RunTimer Timer => _timer;
@@ -92,6 +114,13 @@ namespace JajuchaSim.Scenario
         public CourseDocument Document => _document;
         public IReadOnlyList<IRunRule> Rules => _rules;
         public bool IsRunActive => _state == ScenarioState.Countdown || _state == ScenarioState.Running;
+
+        /// <summary>
+        /// True only after the four-lamp countdown has released the vehicle.
+        /// Bridge input is clamped to zero propulsion before this point.
+        /// </summary>
+        public bool IsMovementReleased => _state == ScenarioState.Running &&
+            _signal == StartSignalState.Released;
 
         /// <summary>Total debounced collision incidents this run (Step 8.20).</summary>
         public int CollisionCount => Session != null ? Session.Collisions.Count : 0;
@@ -102,6 +131,7 @@ namespace JajuchaSim.Scenario
 
         public void Initialize(SimulationContext context)
         {
+            _random = context?.Random ?? new SimulationRandom(2026UL);
             _onTriggerEntered = OnTriggerEntered;
             _onTriggerExited = OnTriggerExited;
             _onTerminalCrossed = OnSpeedTerminalCrossed;
@@ -119,6 +149,16 @@ namespace JajuchaSim.Scenario
         {
             UpdateTelemetry();
 
+            if (_buzzerActive)
+            {
+                _buzzerRemaining -= deltaTime;
+                if (_buzzerRemaining <= 0.0)
+                {
+                    _buzzerActive = false;
+                    _events.Publish(new ScenarioSignalChangedEvent(StartLight));
+                }
+            }
+
             if (_state == ScenarioState.Countdown)
             {
                 TickCountdown(deltaTime);
@@ -127,7 +167,7 @@ namespace JajuchaSim.Scenario
             {
                 // Step 8.24 Option B: timer starts when the vehicle crosses the
                 // start gate. Also handled on TriggerEntered; this covers the
-                // case where the vehicle is already on the line at GREEN.
+                // case where the vehicle is already on the line at release.
                 if (!_timerStarted && _definition != null &&
                     _definition.startTimingMode == StartTimingMode.StartGateCrossing)
                     TryStartTimerAtStartGate();
@@ -155,7 +195,7 @@ namespace JajuchaSim.Scenario
             else
             {
                 _state = ScenarioState.Idle;
-                SetSignalInternal(StartSignalState.Off);
+                SetSignalInternal(StartSignalState.Waiting);
                 _timer.Reset();
                 _score.Reset();
                 _phase = CountdownPhase.None;
@@ -204,7 +244,11 @@ namespace JajuchaSim.Scenario
             {
                 RunId = $"run_{_runCounter:0000}",
                 CourseId = definition.courseId,
-                ScenarioId = definition.scenarioId
+                ScenarioId = definition.scenarioId,
+                CompetitionStage = definition.competitionStage,
+                AdditionalMission = definition.additionalMission,
+                MissionCandidateId = definition.missionCandidateId,
+                MissionRandomSeed = definition.missionRandomSeed
             };
 
             _score.Reset();
@@ -215,6 +259,11 @@ namespace JajuchaSim.Scenario
             _timerStarted = false;
             _phase = CountdownPhase.None;
             _countdownRemaining = 0.0;
+            _litLampCount = 0;
+            _buzzerActive = false;
+            _buzzerRemaining = 0.0;
+            _actualReleaseDelaySec = 0f;
+            _suppressInitialStartTriggerEnter = false;
 
             _context = new ScenarioContext(_clock, _events, document, Session, _score, definition)
             {
@@ -225,34 +274,53 @@ namespace JajuchaSim.Scenario
                 _rules[i].Initialize(_context);
 
             // Initial signal state for a waiting run (Step 8.6).
-            SetSignalInternal(StartSignalState.Red);
+            SetSignalInternal(StartSignalState.Waiting);
             SetStateInternal(ScenarioState.Ready);
         }
 
         /// <summary>
         /// Begin the start sequence (Step 8.9). NormalSignal executes the
-        /// RED → YELLOW → GREEN countdown; Immediate goes straight to GREEN.
+        /// Four lamps at 1.5 s intervals, seeded 3–6 s hold, then release.
         /// </summary>
-        public void RequestStart(StartMode mode = StartMode.NormalSignal)
+        public bool RequestStart(StartMode mode = StartMode.NormalSignal)
         {
-            if (_state != ScenarioState.Ready) return;
-            if (_definition == null) return;
+            if (_state == ScenarioState.Finished || _state == ScenarioState.Aborted)
+                ResetSimulation();
+            if (_state != ScenarioState.Ready) return false;
+            if (_definition == null) return false;
+
+            if (BeforeStart != null && !BeforeStart())
+                return false;
 
             for (int i = 0; i < _rules.Count; i++)
                 _rules[i].OnRunStart();
 
-            if (mode == StartMode.Immediate || _definition.startMode == StartMode.Immediate)
+            // Prime the trigger detector's initial-overlap exception from the
+            // same ground-truth telemetry used for start-gate timing.  If no
+            // telemetry is wired (e.g. a unit test publishes an event
+            // directly), the first event remains a real crossing and is not
+            // suppressed.
+            if (mode != StartMode.Immediate && GetTelemetry != null &&
+                !string.IsNullOrEmpty(_definition.startTriggerId))
             {
-                SetSignalInternal(StartSignalState.Green);
-                EnterRunning();
-                return;
+                UpdateTelemetry();
+                _suppressInitialStartTriggerEnter =
+                    IsTelemetryInsideTrigger(_definition.startTriggerId);
             }
 
-            // Normal countdown: signal is already RED; hold red, then yellow, then green.
-            SetSignalInternal(StartSignalState.Red);
-            _phase = CountdownPhase.Red;
-            _countdownRemaining = Math.Max(0f, _definition.redDurationSec);
+            if (mode == StartMode.Immediate || _definition.startMode == StartMode.Immediate)
+            {
+                ReleaseStart();
+                EnterRunning();
+                return true;
+            }
+
+            _litLampCount = 1;
+            SetSignalInternal(StartSignalState.Lamp1);
+            _phase = CountdownPhase.Lamps;
+            _countdownRemaining = Math.Max(0.001f, _definition.lampIntervalSec);
             SetStateInternal(ScenarioState.Countdown);
+            return true;
         }
 
         /// <summary>
@@ -268,14 +336,54 @@ namespace JajuchaSim.Scenario
 
         /// <summary>
         /// Debug override for the start signal (Step 8.46/8.55). Lets a human
-        /// manually show RED/YELLOW/GREEN so ANN detection can be tested.
+        /// manually preview lamp counts and release so ANN detection can be tested.
         /// Does not alter the scenario state machine.
         /// </summary>
         public void SetSignalOverride(StartSignalState signal)
         {
             if (_state == ScenarioState.Idle) return;
-            if (_state == ScenarioState.Running && signal != StartSignalState.Green) return;
+            if (_state == ScenarioState.Running && signal != StartSignalState.Released) return;
+            _litLampCount = (int)signal >= (int)StartSignalState.Lamp1 && (int)signal <= (int)StartSignalState.Lamp4
+                ? (int)signal : 0;
             SetSignalInternal(signal);
+        }
+
+        /// <summary>
+        /// Records a motor input received while the start signal is still red
+        /// and lets the bridge enforce the no-motion invariant.  The input is
+        /// a false-start attempt even though propulsion is blocked, matching
+        /// the competition rule and keeping the result auditable.
+        /// </summary>
+        public void NotifyMotorCommandBeforeRelease(MotorCommand command)
+        {
+            if (_state != ScenarioState.Countdown || _signal == StartSignalState.Released)
+                return;
+            if (command == MotorCommand.Zero || _definition?.falseStart == null ||
+                !_definition.falseStart.enabled || Session.FalseStart)
+                return;
+
+            Session.FalseStart = true;
+            if (_score.Result != null)
+                _score.Result.FalseStart = true;
+            Session.Events.Add(new ScenarioEvent(_clock.Tick, _clock.Time,
+                "FALSE START: motor input before release"));
+
+            var cfg = _definition.falseStart;
+            if (cfg.violationMode == ViolationMode.Penalty)
+            {
+                _score.AddPenalty(new PenaltyRecord(
+                    "false_start",
+                    "Motor input before 2026 light release/buzzer",
+                    cfg.penalty,
+                    _clock.Tick,
+                    _clock.Time,
+                    "false_start",
+                    ""));
+            }
+            else if (cfg.violationMode == ViolationMode.Fail)
+            {
+                FinalizeRun(RunResultStatus.FalseStart);
+            }
         }
 
         /// <summary>True when a result is available (Finished/Aborted).</summary>
@@ -289,6 +397,17 @@ namespace JajuchaSim.Scenario
         private void OnTriggerEntered(TriggerEnteredEvent e)
         {
             if (!IsRunActive) return; // Step 8.51: finished results are frozen
+
+            if (e.Type == TriggerType.Start && _state == ScenarioState.Countdown &&
+                _suppressInitialStartTriggerEnter &&
+                MatchesConfiguredTrigger(_definition?.startTriggerId, e.TriggerId))
+            {
+                // Initial containment at spawn is not a line crossing.  Clear
+                // the one-shot guard so an actual re-entry before release is
+                // still recorded as a false start.
+                _suppressInitialStartTriggerEnter = false;
+                return;
+            }
 
             // Step 8.23/8.62: finish detection.
             if (e.Type == TriggerType.Finish && _state == ScenarioState.Running)
@@ -359,15 +478,23 @@ namespace JajuchaSim.Scenario
 
             _countdownRemaining -= deltaTime;
 
-            if (_phase == CountdownPhase.Red && _countdownRemaining <= 0.0)
+            if (_phase == CountdownPhase.Lamps && _countdownRemaining <= 0.0)
             {
-                _phase = CountdownPhase.Yellow;
-                _countdownRemaining = Math.Max(0f, _definition != null ? _definition.yellowDurationSec : 1f);
-                SetSignalInternal(StartSignalState.Yellow);
-                if (_countdownRemaining <= 0.0)
-                    CompleteCountdown();
+                if (_litLampCount < 4)
+                {
+                    _litLampCount++;
+                    SetSignalInternal((StartSignalState)_litLampCount);
+                    if (_litLampCount == 4)
+                        BeginReleaseDelay();
+                    else
+                        _countdownRemaining = Math.Max(0.001f, _definition != null ? _definition.lampIntervalSec : 1.5f);
+                }
+                else
+                {
+                    BeginReleaseDelay();
+                }
             }
-            else if (_phase == CountdownPhase.Yellow && _countdownRemaining <= 0.0)
+            else if (_phase == CountdownPhase.ReleaseDelay && _countdownRemaining <= 0.0)
             {
                 CompleteCountdown();
             }
@@ -376,17 +503,40 @@ namespace JajuchaSim.Scenario
         private void CompleteCountdown()
         {
             _phase = CountdownPhase.None;
-            SetSignalInternal(StartSignalState.Green);
+            ReleaseStart();
             EnterRunning();
+        }
+
+        private void BeginReleaseDelay()
+        {
+            _phase = CountdownPhase.ReleaseDelay;
+            float min = _definition != null ? _definition.releaseDelayMinSec : 3f;
+            float max = _definition != null ? _definition.releaseDelayMaxSec : 6f;
+            if (max < min) max = min;
+            _actualReleaseDelaySec = min + (_random?.NextFloat() ?? 0f) * (max - min);
+            // Publish the chosen delay immediately so the tick-level trace
+            // and bridge-visible session state stay truthful during the
+            // countdown, not only after finalization.
+            if (Session != null)
+                Session.StartReleaseDelaySec = _actualReleaseDelaySec;
+            _countdownRemaining = _actualReleaseDelaySec;
+        }
+
+        private void ReleaseStart()
+        {
+            _litLampCount = 0;
+            _buzzerActive = true;
+            _buzzerRemaining = Math.Max(0f, _definition != null ? _definition.buzzerDurationSec : 1f);
+            SetSignalInternal(StartSignalState.Released);
         }
 
         private void EnterRunning()
         {
             SetStateInternal(ScenarioState.Running);
-            LogEvent("SIGNAL GREEN");
+            LogEvent($"START RELEASE ({_actualReleaseDelaySec:0.000}s)");
 
             // Step 8.24: timer start policy.
-            if (_definition == null || _definition.startTimingMode == StartTimingMode.SignalGreen)
+            if (_definition == null || _definition.startTimingMode == StartTimingMode.SignalRelease)
             {
                 StartTimerNow();
             }
@@ -466,9 +616,10 @@ namespace JajuchaSim.Scenario
 
             Session.EndTime = _timer.EndTime;
             Session.Status = status;
+            Session.StartReleaseDelaySec = _actualReleaseDelaySec;
 
             for (int i = 0; i < _rules.Count; i++)
-                _rules[i].Finalize();
+                _rules[i].FinalizeRule();
 
             // Mirror raw measurements into the score result (raw data first,
             // points later — Step 8.42 / Step 10).
@@ -524,6 +675,20 @@ namespace JajuchaSim.Scenario
         public RunResultJson BuildResultJson()
         {
             var r = _score.Result;
+            bool dynamicObstacleCollision = Session.Collisions.Exists(c =>
+                string.Equals(c.ObjectId, CompetitionMissionPlanner.ObstacleId, StringComparison.Ordinal));
+            float measuredMissionSpeed = 0f;
+            bool hasMissionSpeed = false;
+            foreach (var speed in r.SpeedMeasurements)
+            {
+                if (!string.Equals(speed.PairId, "mission_speed_pair", StringComparison.Ordinal)) continue;
+                measuredMissionSpeed = speed.SpeedCmS;
+                hasMissionSpeed = true;
+            }
+            bool missionPassed = string.Equals(Session.AdditionalMission,
+                    AdditionalMissionType.DynamicObstacle.ToString(), StringComparison.Ordinal)
+                ? !dynamicObstacleCollision
+                : hasMissionSpeed && SpeedWithinLimit("mission_speed_pair", measuredMissionSpeed);
             var json = new RunResultJson
             {
                 runId = Session.RunId,
@@ -538,6 +703,16 @@ namespace JajuchaSim.Scenario
                 collisions = Session.Collisions.Count,
                 lineContacts = Session.LineContactCount,
                 courseDepartures = Session.CourseDepartureCount,
+                competitionStage = Session.CompetitionStage,
+                additionalMission = Session.AdditionalMission,
+                missionCandidateId = Session.MissionCandidateId,
+                missionRandomSeed = Session.MissionRandomSeed,
+                startReleaseDelaySec = Session.StartReleaseDelaySec,
+                practiceValuesOfficial = false,
+                practiceValueLabel = "비공식 연습값",
+                measuredSpeedCmS = measuredMissionSpeed,
+                dynamicObstacleCollision = dynamicObstacleCollision,
+                additionalMissionPassed = missionPassed,
                 violations = new ViolationsJson
                 {
                     lineContacts = Session.LineContactCount,
@@ -797,7 +972,7 @@ namespace JajuchaSim.Scenario
             if (_signal == next) return;
             _signal = next;
             if (_context != null) _context.Signal = _signal;
-            _events.Publish(new ScenarioSignalChangedEvent(_signal));
+            _events.Publish(new ScenarioSignalChangedEvent(StartLight));
             // Reflect the signal onto the placed start-signal object (Step 8.6).
             if (_document != null && _definition != null &&
                 !string.IsNullOrEmpty(_definition.startSignalObjectId))

@@ -44,7 +44,7 @@ namespace JajuchaSim.Scenario
                 $"{e.TerminalId} CROSS"));
         }
 
-        public override void Finalize()
+        public override void FinalizeRule()
         {
             foreach (var m in _measurements)
                 Ctx.Session.Measurements.Add(m);

@@ -182,5 +182,24 @@ namespace JajuchaSim.Course.Tests
             Assert.AreEqual(0, session.Document.Structures.Count);
             Assert.IsTrue(session.LastValidation.Any(r => r.IsError));
         }
+
+        [Test]
+        public void OfficialReadOnly_BlocksMutationButAllowsSelection()
+        {
+            _session.Document.PlaceObject(ObjectType.Obstacle, new GridCoordinate(2, 2));
+            _session.IsReadOnly = true;
+            _session.Tool = MapEditorTool.PlaceObstacle;
+
+            Assert.IsFalse(_session.Click(new GridCoordinate(3, 3)));
+            Assert.AreEqual(1, _session.Document.Objects.Count);
+
+            _session.Tool = MapEditorTool.Select;
+            Assert.IsTrue(_session.Click(new GridCoordinate(2, 2)));
+            Assert.IsNotNull(_session.SelectedObjectId);
+            Assert.IsFalse(_session.DeleteSelected());
+            Assert.IsFalse(_session.UndoLast());
+            Assert.IsFalse(_session.RedoLast());
+            Assert.AreEqual(CourseEditOrigin.OfficialReadOnly, _session.EditOrigin);
+        }
     }
 }

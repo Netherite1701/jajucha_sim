@@ -22,6 +22,9 @@ namespace JajuchaSim.Course
         /// <summary>Lookup grid kept in sync with instances + road tiles.</summary>
         public CourseGrid Grid { get; }
 
+        /// <summary>2026 competition metadata for shipped competition courses.</summary>
+        public Competition2026Data Competition2026 { get; private set; }
+
         public IReadOnlyList<StructureInstance> Structures => _structures;
         public IReadOnlyList<CourseObjectInstance> Objects => _objects;
         public IReadOnlyList<TriggerInstance> Triggers => _triggers;
@@ -174,6 +177,9 @@ namespace JajuchaSim.Course
                 ObjectType.Obstacle => "obstacle",
                 ObjectType.Sign => "slow_sign",
                 ObjectType.StartSignal => "start_signal",
+                ObjectType.YellowFlag => "yellow_flag",
+                ObjectType.PitBarrier => "pit_barrier",
+                ObjectType.DynamicObstacle => "dynamic_obstacle",
                 _ => "object"
             };
             id = EnsureUniqueId(id, prefix);
@@ -384,6 +390,7 @@ namespace JajuchaSim.Course
             var data = new CourseData
             {
                 tileSizeCm = Grid.TileSizeCm,
+                competition2026 = Competition2026,
                 road = Grid.AllRoadTiles().Select(CoordPair.FromGrid).ToArray(),
                 lines = Grid.AllLineTiles().Select(CoordPair.FromGrid).ToArray(),
                 structures = _structures.Select(ToStructureEntry).ToArray(),
@@ -397,6 +404,7 @@ namespace JajuchaSim.Course
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             var doc = new CourseDocument(data.tileSizeCm);
+            doc.Competition2026 = data.competition2026;
 
             if (data.road != null)
             {
@@ -426,7 +434,12 @@ namespace JajuchaSim.Course
                         HeightCm = e.heightCm > 0 ? e.heightCm : 55f,
                         WallThicknessCm = e.wallThicknessCm > 0 ? e.wallThicknessCm : 2f,
                         RiseCm = e.riseCm > 0 ? e.riseCm : (e.heightCm > 0 ? e.heightCm : 30f),
-                        Direction = GridOrientationUtil.ParseDirection(e.direction)
+                        Direction = GridOrientationUtil.ParseDirection(e.direction),
+                        Profile = string.IsNullOrEmpty(e.profile) ? "rectangular" : e.profile,
+                        OpeningWidthCm = e.openingWidthCm > 0 ? e.openingWidthCm : Competition2026Specification.TunnelOpeningWidthCm,
+                        RoofLongCm = e.roofLongCm > 0 ? e.roofLongCm : Competition2026Specification.TunnelRoofLongCm,
+                        RoofShortCm = e.roofShortCm > 0 ? e.roofShortCm : Competition2026Specification.TunnelRoofShortCm,
+                        PathPoints = e.pathPoints ?? Array.Empty<StructurePathPointData>()
                     };
                     if (type == StructureType.Ramp && inst.HeightCm <= 0)
                         inst.HeightCm = inst.RiseCm;
@@ -449,7 +462,9 @@ namespace JajuchaSim.Course
                     var inst = new CourseObjectInstance(id, type, e.tile.ToGrid())
                     {
                         RotationDeg = GridOrientationUtil.NormalizeRotation(e.rotationDeg),
-                        Footprint = ParseFootprint(e.footprint)
+                        Footprint = ParseFootprint(e.footprint),
+                        ObstacleWaitSec = e.obstacleWaitSec > 0f ? e.obstacleWaitSec : 3f,
+                        ObstacleExitSec = e.obstacleExitSec > 0f ? e.obstacleExitSec : 1f
                     };
                     doc.AddObjectInternal(inst);
                 }
@@ -704,6 +719,11 @@ namespace JajuchaSim.Course
                 wallThicknessCm = s.WallThicknessCm,
                 direction = GridOrientationUtil.DirectionToString(s.Direction),
                 riseCm = s.RiseCm
+                ,profile = s.Profile
+                ,openingWidthCm = s.OpeningWidthCm
+                ,roofLongCm = s.RoofLongCm
+                ,roofShortCm = s.RoofShortCm
+                ,pathPoints = s.PathPoints
             };
         }
 
@@ -722,7 +742,9 @@ namespace JajuchaSim.Course
                 type = type,
                 tile = CoordPair.FromGrid(o.Tile),
                 rotationDeg = o.RotationDeg,
-                footprint = FootprintToString(o.Footprint)
+                footprint = FootprintToString(o.Footprint),
+                obstacleWaitSec = o.Type == ObjectType.DynamicObstacle ? o.ObstacleWaitSec : 0f,
+                obstacleExitSec = o.Type == ObjectType.DynamicObstacle ? o.ObstacleExitSec : 0f
             };
         }
 

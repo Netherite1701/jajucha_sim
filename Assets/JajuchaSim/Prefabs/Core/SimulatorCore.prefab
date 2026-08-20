@@ -93,6 +93,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55555555555555555555555555555555, type: 3}
   m_Name: 
   m_EditorClassIdentifier: JajuchaSim.Core::JajuchaSim.Core.SimulationDebugHud
+  buildStandaloneUi: 0
 --- !u!1 &1200
 GameObject:
   m_ObjectHideFlags: 0

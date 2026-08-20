@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "timestamp": "2026-08-20T06:34:40.1321116+09:00",
+  "exe": "C:\\dev\\jajucha-sim\\dist\\JajuchaSimulator\\JajuchaSimulator.exe",
+  "stages": [
+    {
+      "stage": "preliminary",
+      "passed": true,
+      "handshake": true,
+      "officialReadOnly": true,
+      "roadTiles": 12399,
+      "lineTiles": 49,
+      "structures": 2,
+      "objects": 2,
+      "triggers": 2,
+      "lidarRayCount": 360,
+      "camera": "640x480",
+      "startAccepted": true,
+      "countdown": "Countdown",
+      "aborted": "Aborted"
+    },
+    {
+      "stage": "final",
+      "passed": true,
+      "handshake": true,
+      "officialReadOnly": true,
+      "roadTiles": 12399,
+      "lineTiles": 49,
+      "structures": 2,
+      "objects": 2,
+      "triggers": 2,
+      "lidarRayCount": 360,
+      "camera": "640x480",
+      "startAccepted": true,
+      "countdown": "Countdown",
+      "aborted": "Aborted"
+    }
+  ]
+}

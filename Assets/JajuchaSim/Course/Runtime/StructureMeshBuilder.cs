@@ -14,6 +14,7 @@ namespace JajuchaSim.Course
         private CourseDocument _document;
         private readonly List<GameObject> _spawned = new List<GameObject>();
         private Material _tunnelMat;
+        private Material _tunnelInteriorMat;
         private Material _rampMat;
 
         public void Bind(CourseDocument document)
@@ -35,12 +36,16 @@ namespace JajuchaSim.Course
                 Material mat = null;
                 if (s.Type == StructureType.Tunnel)
                 {
-                    data = TunnelGeometry.Build(s, ts);
+                    data = s.PathPoints != null && s.PathPoints.Length >= 2
+                        ? CompetitionPathGeometry.BuildTunnel(s)
+                        : TunnelGeometry.Build(s, ts);
                     mat = _tunnelMat;
                 }
                 else if (s.Type == StructureType.Ramp)
                 {
-                    data = RampGeometry.BuildSurface(s, ts);
+                    data = s.PathPoints != null && s.PathPoints.Length >= 2
+                        ? CompetitionPathGeometry.BuildHill(s)
+                        : RampGeometry.BuildSurface(s, ts);
                     mat = _rampMat;
                 }
                 if (data == null) continue;
@@ -64,50 +69,18 @@ namespace JajuchaSim.Course
                     mc.sharedMesh = mf.sharedMesh;
                 }
                 _spawned.Add(go);
-            }
 
-            // Simple object markers (cubes/signs)
-            foreach (var o in _document.Objects)
-            {
-                var go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                go.name = o.Id ?? o.Type.ToString();
-                go.transform.SetParent(transform, false);
-                var world = _document.Grid.GridToWorld(o.Tile);
-                float h = o.Type == ObjectType.Obstacle ? 15f : 25f;
-                go.transform.position = new Vector3(world.x, h * 0.5f, world.z);
-                go.transform.localScale = ObjectScale(o);
-                go.transform.rotation = Quaternion.Euler(0f, o.RotationDeg, 0f);
-                var r = go.GetComponent<MeshRenderer>();
-                r.sharedMaterial = new Material(Shader.Find("Standard") ?? Shader.Find("Unlit/Color"))
+                if (s.Type == StructureType.Tunnel && s.PathPoints != null && s.PathPoints.Length >= 2)
                 {
-                    color = ObjectColor(o.Type)
-                };
-                _spawned.Add(go);
+                    var interior = new GameObject((s.Id ?? "tunnel") + "_BlackInterior");
+                    interior.transform.SetParent(transform, false);
+                    interior.AddComponent<MeshFilter>().sharedMesh =
+                        CompetitionPathGeometry.BuildTunnelInteriorMask(s).ToUnityMesh();
+                    interior.AddComponent<MeshRenderer>().sharedMaterial = _tunnelInteriorMat;
+                    _spawned.Add(interior);
+                }
             }
-        }
 
-        private static Vector3 ObjectScale(CourseObjectInstance o)
-        {
-            int w = 1, d = 1;
-            switch (o.Footprint)
-            {
-                case ObstacleFootprint.Wide: w = 2; break;
-                case ObstacleFootprint.Barrier: w = 3; break;
-            }
-            float ts = 20f;
-            float y = o.Type == ObjectType.Obstacle ? 15f : (o.Type == ObjectType.StartSignal ? 30f : 20f);
-            return new Vector3(w * ts * 0.6f, y, d * ts * 0.4f);
-        }
-
-        private static Color ObjectColor(ObjectType t)
-        {
-            switch (t)
-            {
-                case ObjectType.Obstacle: return new Color(0.6f, 0.2f, 0.2f);
-                case ObjectType.Sign: return new Color(1f, 0.85f, 0.1f);
-                case ObjectType.StartSignal: return new Color(0.2f, 0.8f, 0.2f);
-                default: return Color.gray;
-            }
         }
 
         private void EnsureMaterials()
@@ -116,6 +89,11 @@ namespace JajuchaSim.Course
             {
                 var sh = Shader.Find("Standard") ?? Shader.Find("Unlit/Color");
                 _tunnelMat = new Material(sh) { color = new Color(0.45f, 0.45f, 0.5f) };
+            }
+            if (_tunnelInteriorMat == null)
+            {
+                var sh = Shader.Find("Unlit/Color") ?? Shader.Find("Standard");
+                _tunnelInteriorMat = new Material(sh) { color = Color.black };
             }
             if (_rampMat == null)
             {

@@ -29,12 +29,12 @@ namespace JajuchaSim.App.Tests
         public void Fail_FormatDisplay_IsReadable()
         {
             var r = BootstrapResult.Fail("CourseManager", BootstrapErrorCode.CourseNotFound,
-                "Default course file was not found.\n\nPath:\nCourses/template_course.json");
+                "Default course file was not found.\n\nPath:\nCourses/2026_preliminary.json");
             string display = r.FormatDisplay();
             StringAssert.Contains("Simulator startup failed", display);
             StringAssert.Contains("CourseManager", display);
             StringAssert.Contains("Default course file was not found", display);
-            StringAssert.Contains("Courses/template_course.json", display);
+            StringAssert.Contains("Courses/2026_preliminary.json", display);
             StringAssert.Contains("CourseNotFound", display);
         }
 

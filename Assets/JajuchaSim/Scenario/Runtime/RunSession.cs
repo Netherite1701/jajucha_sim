@@ -96,6 +96,11 @@ namespace JajuchaSim.Scenario
         public string RunId { get; set; } = "";
         public string CourseId { get; set; } = "";
         public string ScenarioId { get; set; } = "";
+        public string CompetitionStage { get; set; } = "";
+        public string AdditionalMission { get; set; } = "";
+        public string MissionCandidateId { get; set; } = "";
+        public ulong MissionRandomSeed { get; set; }
+        public float StartReleaseDelaySec { get; set; }
 
         /// <summary>Simulation time when the run timer started.</summary>
         public double StartTime { get; set; }
@@ -128,6 +133,11 @@ namespace JajuchaSim.Scenario
             RunId = "";
             CourseId = "";
             ScenarioId = "";
+            CompetitionStage = "";
+            AdditionalMission = "";
+            MissionCandidateId = "";
+            MissionRandomSeed = 0;
+            StartReleaseDelaySec = 0f;
             StartTime = 0.0;
             EndTime = 0.0;
             Status = RunResultStatus.None;

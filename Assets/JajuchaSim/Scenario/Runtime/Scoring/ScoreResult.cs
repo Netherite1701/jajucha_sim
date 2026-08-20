@@ -88,6 +88,16 @@ namespace JajuchaSim.Scenario
         public int collisions;
         public int lineContacts;
         public int courseDepartures;
+        public string competitionStage;
+        public string additionalMission;
+        public string missionCandidateId;
+        public ulong missionRandomSeed;
+        public float startReleaseDelaySec;
+        public bool practiceValuesOfficial = false;
+        public string practiceValueLabel = "비공식 연습값";
+        public float measuredSpeedCmS;
+        public bool dynamicObstacleCollision;
+        public bool additionalMissionPassed;
 
         /// <summary>Nested violation counters (Step 10.30 shape).</summary>
         public ViolationsJson violations = new ViolationsJson();

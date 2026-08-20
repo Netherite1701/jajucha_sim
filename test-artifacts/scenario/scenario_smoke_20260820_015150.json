@@ -1,0 +1,63 @@
+{
+  "passed": false,
+  "timestamp": "2026-08-20T01:52:19.1802584+09:00",
+  "exe": "C:\\dev\\jajucha-sim\\dist\\JajuchaSimulator\\JajuchaSimulator.exe",
+  "error": "Method invocation failed because [System.Object[]] does not contain a method named 'op_Multiply'.",
+  "checks": {
+    "handshake": true,
+    "readyBeforeStart": true,
+    "bridgeStartAccepted": true,
+    "countdownStarted": true,
+    "preReleaseCommandAck": true,
+    "preReleasePoseUnchanged": true,
+    "falseStartRecorded": true,
+    "preReleaseCommandZero": true,
+    "lampSequence": true
+  },
+  "lampFirstTicks": {
+    "1": 1130,
+    "2": 1236,
+    "3": 1375,
+    "4": 1532
+  },
+  "responses": [
+    {
+      "request": "get_run_status",
+      "id": 1,
+      "response": {
+        "type": "response",
+        "id": 1,
+        "ok": true,
+        "payload": {
+          "state": "Ready",
+          "signal": "Waiting",
+          "run_id": "run_0002",
+          "elapsed_sec": 0,
+          "has_result": false,
+          "collisions": 0,
+          "sim_time": 10.6899997610599,
+          "tick": 1069
+        }
+      }
+    },
+    {
+      "request": "start_run",
+      "id": 2,
+      "response": {
+        "type": "response",
+        "id": 2,
+        "ok": true
+      }
+    },
+    {
+      "request": "set_motor",
+      "id": 3,
+      "response": {
+        "type": "response",
+        "id": 3,
+        "ok": true
+      }
+    }
+  ],
+  "trace": "C:\\Users\\user\\AppData\\LocalLow\\DefaultCompany\\jajucha-sim\\JajuchaSim\\Logs\\state-trace.jsonl"
+}

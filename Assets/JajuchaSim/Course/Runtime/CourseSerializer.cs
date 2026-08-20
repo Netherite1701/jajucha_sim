@@ -68,6 +68,7 @@ namespace JajuchaSim.Course
     public sealed class CourseData
     {
         public float tileSizeCm = 20f;
+        public Competition2026Data competition2026;
         public CoordPair[] road = Array.Empty<CoordPair>();
 
         /// <summary>Boundary-line tiles painted on the road (Step 10).</summary>
@@ -94,6 +95,11 @@ namespace JajuchaSim.Course
             // Ramp-specific
             public string direction;      // "north" | "south" | "east" | "west"
             public float riseCm;          // same as heightCm, alias for clarity
+            public string profile;
+            public float openingWidthCm;
+            public float roofLongCm;
+            public float roofShortCm;
+            public StructurePathPointData[] pathPoints;
         }
 
         // ---- Object entry ---------------------------------------------
@@ -106,6 +112,8 @@ namespace JajuchaSim.Course
             public CoordPair tile;       // anchor tile
             public int rotationDeg;      // 0, 90, 180, 270
             public string footprint;     // "1x1", "2x1", "3x1" (optional, default "1x1")
+            public float obstacleWaitSec;
+            public float obstacleExitSec;
         }
 
         // ---- Trigger entry --------------------------------------------
@@ -178,8 +186,6 @@ namespace JajuchaSim.Course
     /// <summary>
     /// Converts between <see cref="CourseGrid"/> runtime data and
     /// <see cref="CourseData"/> (serializable JSON model).
-    ///
-    /// Also supports loading legacy (Step-6) format for backward compatibility.
     /// </summary>
     public static class CourseSerializer
     {
@@ -260,8 +266,6 @@ namespace JajuchaSim.Course
 
         /// <summary>
         /// Import a <see cref="CourseData"/> (current format) into a new <see cref="CourseGrid"/>.
-        /// Also attempts to import legacy format by falling back to
-        /// <see cref="FromDataV0"/>.
         /// </summary>
         public static CourseGrid ToGrid(CourseData data)
         {
@@ -376,8 +380,7 @@ namespace JajuchaSim.Course
         }
 
         /// <summary>
-        /// Deserialize a <see cref="CourseGrid"/> from a JSON string.
-        /// Supports both the current (Step-7) format and the legacy (Step-6) format.
+        /// Deserialize a <see cref="CourseGrid"/> from the current JSON format.
         /// Returns null on parse failure.
         /// </summary>
         public static CourseGrid FromJson(string json)
@@ -386,165 +389,12 @@ namespace JajuchaSim.Course
             {
                 if (string.IsNullOrEmpty(json)) return null;
 
-                // Legacy Step-6 format uses per-entry "tiles" arrays and has no "region".
-                // Prefer it when detected so JsonUtility doesn't silently drop those fields
-                // while parsing into the new CourseData shape.
-                if (IsLegacyFormat(json))
-                {
-                    var legacy = FromJsonV0(json);
-                    if (legacy != null) return legacy;
-                }
-
                 var data = JsonUtility.FromJson<CourseData>(json);
-                if (data != null)
-                {
-                    var grid = ToGrid(data);
-
-                    // Safety net: if the payload still looks tile-based and the new
-                    // parse produced no features, fall back to legacy.
-                    if (json.IndexOf("\"tiles\"", StringComparison.Ordinal) >= 0 &&
-                        grid.StructureTileCount == 0 && grid.TriggerTileCount == 0)
-                    {
-                        var legacy = FromJsonV0(json);
-                        if (legacy != null &&
-                            (legacy.StructureTileCount + legacy.TriggerTileCount +
-                             legacy.ObjectTileCount) >
-                            (grid.StructureTileCount + grid.TriggerTileCount +
-                             grid.ObjectTileCount))
-                        {
-                            return legacy;
-                        }
-                    }
-
-                    return grid;
-                }
-
-                return FromJsonV0(json);
+                return data != null ? ToGrid(data) : null;
             }
             catch (Exception ex)
             {
                 Debug.LogError($"[CourseSerializer] Failed to parse course JSON: {ex.Message}");
-                return null;
-            }
-        }
-
-        /// <summary>
-        /// Heuristic: legacy format has "tiles" arrays and no "region" objects.
-        /// </summary>
-        internal static bool IsLegacyFormat(string json)
-        {
-            if (string.IsNullOrEmpty(json)) return false;
-            bool hasTiles = json.IndexOf("\"tiles\"", StringComparison.Ordinal) >= 0;
-            bool hasRegion = json.IndexOf("\"region\"", StringComparison.Ordinal) >= 0;
-            return hasTiles && !hasRegion;
-        }
-
-        // ================================================================
-        //  Legacy (Step-6) format support
-        // ================================================================
-
-        /// <summary>
-        /// Old format used in Step 6 — grouped entries by type.
-        /// Schema:
-        /// <code>
-        /// {
-        ///   "tileSizeCm": 20,
-        ///   "road": [{"x":10,"z":10}, ...],
-        ///   "structures": [{"type":"tunnel","tiles":[{"x":10,"z":11},...]}, ...],
-        ///   "objects": [{"type":"obstacle","tile":{"x":9,"z":11}}, ...],
-        ///   "triggers": [{"type":"slow_zone","tiles":[{"x":5,"z":5},...]}, ...]
-        /// }
-        /// </code>
-        /// </summary>
-        [Serializable]
-        private sealed class CourseDataV0
-        {
-            public float tileSizeCm = 20f;
-            public CoordPair[] road;
-            public StructureEntryV0[] structures;
-            public ObjectEntryV0[] objects;
-            public TriggerEntryV0[] triggers;
-
-            [Serializable]
-            public sealed class StructureEntryV0
-            {
-                public string type;
-                public CoordPair[] tiles;
-            }
-
-            [Serializable]
-            public sealed class ObjectEntryV0
-            {
-                public string type;
-                public CoordPair tile;
-            }
-
-            [Serializable]
-            public sealed class TriggerEntryV0
-            {
-                public string type;
-                public CoordPair[] tiles;
-            }
-        }
-
-        /// <summary>Try to parse JSON as legacy (Step-6) format.</summary>
-        private static CourseGrid FromJsonV0(string json)
-        {
-            try
-            {
-                var data = JsonUtility.FromJson<CourseDataV0>(json);
-                if (data == null) return null;
-
-                var grid = new CourseGrid(data.tileSizeCm);
-
-                if (data.road != null)
-                {
-                    foreach (var pair in data.road)
-                        grid.SetRoad(pair.ToGrid());
-                }
-
-                if (data.structures != null)
-                {
-                    foreach (var entry in data.structures)
-                    {
-                        var type = ParseStructureType(entry.type);
-                        if (entry.tiles != null)
-                        {
-                            foreach (var pair in entry.tiles)
-                                grid.SetStructure(pair.ToGrid(), type);
-                        }
-                    }
-                }
-
-                if (data.objects != null)
-                {
-                    foreach (var entry in data.objects)
-                    {
-                        if (entry.tile != null)
-                        {
-                            var type = ParseObjectType(entry.type);
-                            grid.SetObject(entry.tile.ToGrid(), type);
-                        }
-                    }
-                }
-
-                if (data.triggers != null)
-                {
-                    foreach (var entry in data.triggers)
-                    {
-                        var type = ParseTriggerType(entry.type);
-                        if (entry.tiles != null)
-                        {
-                            foreach (var pair in entry.tiles)
-                                grid.SetTrigger(pair.ToGrid(), type);
-                        }
-                    }
-                }
-
-                return grid;
-            }
-            catch
-            {
                 return null;
             }
         }
@@ -567,6 +417,9 @@ namespace JajuchaSim.Course
             if (s == "obstacle") return ObjectType.Obstacle;
             if (s == "sign" || s == "slow_sign") return ObjectType.Sign;
             if (s == "startsignal" || s == "start_signal") return ObjectType.StartSignal;
+            if (s == "yellowflag" || s == "yellow_flag") return ObjectType.YellowFlag;
+            if (s == "pitbarrier" || s == "pit_barrier") return ObjectType.PitBarrier;
+            if (s == "dynamicobstacle" || s == "dynamic_obstacle") return ObjectType.DynamicObstacle;
             return ObjectType.None;
         }
 

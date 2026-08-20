@@ -5,7 +5,7 @@ REM Usage:
 REM   scripts\run_simulator.bat [--course NAME] [--mode MODE] [--simulation-speed N] [--no-debug-ui] [--batch-config FILE]
 REM
 REM Example:
-REM   scripts\run_simulator.bat --course template_course --mode Drive
+REM   scripts\run_simulator.bat --course 2026_preliminary --mode Drive
 
 setlocal
 set ROOT=%~dp0..

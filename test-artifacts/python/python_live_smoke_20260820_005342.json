@@ -1,0 +1,7 @@
+{
+  "passed": false,
+  "timestamp": 1787154815.7139094,
+  "checks": {
+    "handshake_and_status": true
+  }
+}

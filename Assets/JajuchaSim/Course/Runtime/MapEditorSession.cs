@@ -11,6 +11,13 @@ namespace JajuchaSim.Course
         Drive
     }
 
+    /// <summary>Whether the active document is an official course or a user copy.</summary>
+    public enum CourseEditOrigin
+    {
+        OfficialReadOnly,
+        PracticeCopy
+    }
+
     /// <summary>Active placement/editing tool.</summary>
     public enum MapEditorTool
     {
@@ -56,6 +63,13 @@ namespace JajuchaSim.Course
     public sealed class MapEditorSession
     {
         public CourseDocument Document { get; private set; }
+
+        /// <summary>Official course documents remain selectable but cannot be mutated.</summary>
+        public bool IsReadOnly { get; set; }
+
+        public CourseEditOrigin EditOrigin => IsReadOnly
+            ? CourseEditOrigin.OfficialReadOnly
+            : CourseEditOrigin.PracticeCopy;
 
         /// <summary>Replace document without clearing the undo stack (used by snapshot undo/redo).</summary>
         internal void SetDocumentQuiet(CourseDocument document)
@@ -151,6 +165,7 @@ namespace JajuchaSim.Course
 
         public void BeginDrag(GridCoordinate start)
         {
+            if (IsReadOnly || Mode != MapEditorMode.Edit) return;
             IsDragging = true;
             DragStart = start;
             DragCurrent = start;
@@ -198,7 +213,7 @@ namespace JajuchaSim.Course
         /// <summary>Commit the current drag as a placement for the active tool.</summary>
         public bool EndDrag()
         {
-            if (!IsDragging) return false;
+            if (IsReadOnly || !IsDragging) return false;
             IsDragging = false;
             var region = CurrentDragRegion();
             return ApplyToolOnRegion(region);
@@ -211,6 +226,16 @@ namespace JajuchaSim.Course
         public bool Click(GridCoordinate tile)
         {
             if (Mode != MapEditorMode.Edit) return false;
+
+            if (IsReadOnly)
+            {
+                if (Tool == MapEditorTool.Select)
+                {
+                    SelectAt(tile);
+                    return true;
+                }
+                return false;
+            }
 
             switch (Tool)
             {
@@ -263,7 +288,7 @@ namespace JajuchaSim.Course
 
         public bool Paint(IEnumerable<GridCoordinate> tiles)
         {
-            if (Mode != MapEditorMode.Edit) return false;
+            if (IsReadOnly || Mode != MapEditorMode.Edit) return false;
             var list = tiles.ToList();
             if (list.Count == 0) return false;
 
@@ -296,6 +321,7 @@ namespace JajuchaSim.Course
 
         public bool DeleteSelected()
         {
+            if (IsReadOnly) return false;
             if (SelectedStructureId != null)
             {
                 var id = SelectedStructureId;
@@ -334,7 +360,7 @@ namespace JajuchaSim.Course
 
         public bool MoveSelected(int dx, int dz)
         {
-            if (dx == 0 && dz == 0) return false;
+            if (IsReadOnly || dx == 0 && dz == 0) return false;
 
             if (SelectedStructureId != null)
             {
@@ -365,6 +391,7 @@ namespace JajuchaSim.Course
 
         public bool RotateSelected()
         {
+            if (IsReadOnly) return false;
             if (SelectedStructureId != null)
             {
                 var id = SelectedStructureId;
@@ -400,6 +427,7 @@ namespace JajuchaSim.Course
         /// </summary>
         public void ExecuteWithSnapshot(Action mutation, string description)
         {
+            if (IsReadOnly || mutation == null) return;
             string before = Document.ToJson(pretty: false);
             mutation();
             string after = Document.ToJson(pretty: false);
@@ -410,6 +438,7 @@ namespace JajuchaSim.Course
 
         public bool UndoLast()
         {
+            if (IsReadOnly) return false;
             bool ok = Undo.Undo(Document.Grid);
             if (ok) DocumentChanged?.Invoke();
             return ok;
@@ -417,6 +446,7 @@ namespace JajuchaSim.Course
 
         public bool RedoLast()
         {
+            if (IsReadOnly) return false;
             bool ok = Undo.Redo(Document.Grid);
             if (ok) DocumentChanged?.Invoke();
             return ok;

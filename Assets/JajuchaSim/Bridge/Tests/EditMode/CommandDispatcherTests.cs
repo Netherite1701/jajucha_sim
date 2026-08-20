@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using JajuchaSim.Core;
+using JajuchaSim.Course;
 using JajuchaSim.Sensors;
+using JajuchaSim.Scenario;
 using JajuchaSim.Vehicle;
 using NUnit.Framework;
 using UnityEngine;
@@ -139,6 +141,68 @@ namespace JajuchaSim.Bridge.Tests
         }
 
         [Test]
+        public void SetMotor_DuringCountdown_IsBlockedAndReportsFalseStart()
+        {
+            var scenario = new ScenarioManager(_simulation.Clock, _simulation.Events);
+            scenario.Initialize(_simulation.Context);
+            var document = new CourseDocument(20f);
+            document.PlaceTrigger(TriggerType.Start, new GridRegion(0, 0, 2, 1), id: "start_line");
+            document.PlaceTrigger(TriggerType.Finish, new GridRegion(0, 10, 2, 1), id: "finish_line");
+            var definition = ScenarioDefinition.Default();
+            definition.startTriggerId = "start_line";
+            definition.finishTriggerId = "finish_line";
+            definition.falseStart.enabled = true;
+            definition.falseStart.violationMode = ViolationMode.Penalty;
+            definition.lampIntervalSec = 1f;
+            scenario.PrepareRun(definition, document);
+            scenario.RequestStart();
+            _dispatcher.Scenario = scenario;
+
+            _connection.InjectMessage(BridgeProtocol.Serialize(new BridgeMessage
+            {
+                Type = "command", Id = 14, Name = "set_motor",
+                Payload = new Dictionary<string, object>
+                {
+                    ["left"] = 5, ["right"] = 5, ["speed"] = 10
+                }
+            }));
+            _dispatcher.ProcessQueue();
+
+            Assert.AreEqual(MotorCommand.Zero, _vehicle.CurrentCommand);
+            Assert.IsTrue(scenario.Session.FalseStart);
+            Assert.IsFalse(scenario.IsMovementReleased);
+        }
+
+        [Test]
+        public void StartRun_WhenPreparationRejects_ReturnsNotReadyAndStaysReady()
+        {
+            var scenario = new ScenarioManager(_simulation.Clock, _simulation.Events);
+            scenario.Initialize(_simulation.Context);
+            var document = new CourseDocument(20f);
+            document.PlaceTrigger(TriggerType.Start, new GridRegion(0, 0, 2, 1), id: "start_line");
+            document.PlaceTrigger(TriggerType.Finish, new GridRegion(0, 10, 2, 1), id: "finish_line");
+            var definition = ScenarioDefinition.Default();
+            definition.startTriggerId = "start_line";
+            definition.finishTriggerId = "finish_line";
+            scenario.PrepareRun(definition, document);
+            scenario.BeforeStart = () => false;
+            _dispatcher.Scenario = scenario;
+
+            _connection.InjectMessage(BridgeProtocol.Serialize(new BridgeMessage
+            {
+                Type = "command", Id = 15, Name = "start_run",
+                Payload = new Dictionary<string, object>()
+            }));
+            _dispatcher.ProcessQueue();
+
+            var response = BridgeProtocol.Deserialize(_connection.LastSent);
+            Assert.IsNotNull(response);
+            Assert.IsFalse(response.Ok);
+            Assert.AreEqual("SCENARIO_NOT_READY", response.Error?.Code);
+            Assert.AreEqual(ScenarioState.Ready, scenario.State);
+        }
+
+        [Test]
         public void SetMotor_MissingPayload_ReturnsError()
         {
             var cmd = new BridgeMessage
@@ -271,6 +335,11 @@ namespace JajuchaSim.Bridge.Tests
             Assert.IsTrue(response.Ok);
             Assert.IsNotNull(response.Payload);
             Assert.That(response.Payload, Does.ContainKey("vehicle"));
+            var vehicle = response.Payload["vehicle"] as Dictionary<string, object>;
+            Assert.IsNotNull(vehicle);
+            Assert.That(vehicle, Does.ContainKey("position_cm"));
+            Assert.That(vehicle, Does.ContainKey("rotation_deg"));
+            Assert.That(vehicle, Does.ContainKey("velocity_cm_s"));
         }
 
         // --- sim_start ---

@@ -13,6 +13,7 @@ namespace JajuchaSim.Core
     [RequireComponent(typeof(SimulationManager))]
     public class SimulationDebugHud : MonoBehaviour
     {
+        [SerializeField] private bool buildStandaloneUi = false;
         private SimulationManager _manager;
         private Text _statusText;
         private bool _uiBuilt;
@@ -20,14 +21,15 @@ namespace JajuchaSim.Core
         private void OnEnable()
         {
             _manager = GetComponent<SimulationManager>();
-            BuildUi();
+            if (buildStandaloneUi)
+                BuildUi();
         }
 
         private void Update()
         {
             if (_manager == null)
                 return;
-            if (!_uiBuilt)
+            if (buildStandaloneUi && !_uiBuilt)
                 BuildUi();
 
             if (_statusText != null)

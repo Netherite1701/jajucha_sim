@@ -1,0 +1,91 @@
+{
+  "passed": false,
+  "timestamp": "2026-08-20T01:53:40.3765911+09:00",
+  "exe": "C:\\dev\\jajucha-sim\\dist\\JajuchaSimulator\\JajuchaSimulator.exe",
+  "error": "Vehicle did not respond to motor input after release",
+  "checks": {
+    "handshake": true,
+    "readyBeforeStart": true,
+    "bridgeStartAccepted": true,
+    "countdownStarted": true,
+    "preReleaseCommandAck": true,
+    "preReleasePoseUnchanged": true,
+    "falseStartRecorded": true,
+    "preReleaseCommandZero": true,
+    "lampSequence": true,
+    "lampIntervalsSec": [
+      1.5,
+      1.51,
+      1.51
+    ],
+    "lampIntervalsWithinTolerance": true,
+    "releaseDelaySec": 3.3992390632629395,
+    "releaseDelayWithinRange": true,
+    "postReleaseCommandAck": true,
+    "postReleasePoseChanged": false
+  },
+  "lampFirstTicks": {
+    "1": 1088,
+    "2": 1238,
+    "3": 1389,
+    "4": 1540
+  },
+  "responses": [
+    {
+      "request": "get_run_status",
+      "id": 1,
+      "response": {
+        "type": "response",
+        "id": 1,
+        "ok": true,
+        "payload": {
+          "state": "Ready",
+          "signal": "Waiting",
+          "run_id": "run_0002",
+          "elapsed_sec": 0,
+          "has_result": false,
+          "collisions": 0,
+          "sim_time": 10.8399997577071,
+          "tick": 1084
+        }
+      }
+    },
+    {
+      "request": "start_run",
+      "id": 2,
+      "response": {
+        "type": "response",
+        "id": 2,
+        "ok": true
+      }
+    },
+    {
+      "request": "set_motor",
+      "id": 3,
+      "response": {
+        "type": "response",
+        "id": 3,
+        "ok": true
+      }
+    },
+    {
+      "request": "set_motor",
+      "id": 4,
+      "response": {
+        "type": "response",
+        "id": 4,
+        "ok": true
+      }
+    },
+    {
+      "request": "set_motor",
+      "id": 5,
+      "response": {
+        "type": "response",
+        "id": 5,
+        "ok": true
+      }
+    }
+  ],
+  "trace": "C:\\Users\\user\\AppData\\LocalLow\\DefaultCompany\\jajucha-sim\\JajuchaSim\\Logs\\state-trace.jsonl"
+}

@@ -58,7 +58,7 @@ application-level workflow:
 
 ```json
 {
-  "defaultCourse": "template_course",
+  "defaultCourse": "2026_preliminary",
   "bridgePort": 8765,
   "debugUiEnabled": true,
   "observerMode": "chase",
@@ -90,7 +90,7 @@ command-line overrides (--course, --mode, --simulation-speed,
 
 | Field | Type | Default | Meaning |
 |---|---|---|---|
-| `defaultCourse` | string | `template_course` | Course name/path loaded at startup. |
+| `defaultCourse` | string | `2026_preliminary` | 2026 course loaded at first startup; the saved stage wins thereafter. |
 | `bridgePort` | int | 8765 | Python bridge TCP port. |
 | `debugUiEnabled` | bool | true | Whether the full debug UI is shown. |
 | `observerMode` | string | `chase` | Observer camera mode (chase/top/free). |

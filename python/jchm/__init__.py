@@ -13,7 +13,8 @@ No code changes are needed between real and simulated runs.
 """
 
 from . import camera
+from . import lidar
 from . import control
 from ._backend import get_backend, set_backend, BackendType
 
-__all__ = ["camera", "control", "get_backend", "set_backend", "BackendType"]
+__all__ = ["camera", "lidar", "control", "get_backend", "set_backend", "BackendType"]

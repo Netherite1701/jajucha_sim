@@ -1,0 +1,130 @@
+{
+  "passed": true,
+  "timestamp": "2026-08-20T02:02:47.6430584+09:00",
+  "checks": {
+    "handshake": true,
+    "readyBeforeStart": true,
+    "startRejected": true,
+    "errorCode": "SCENARIO_NOT_READY",
+    "stayedReady": true
+  },
+  "response": {
+    "type": "response",
+    "id": 2,
+    "ok": false,
+    "error": {
+      "code": "SCENARIO_NOT_READY",
+      "message": "Scenario is not ready or the 2026 mission is not configured."
+    }
+  },
+  "trace": {
+    "recordType": "tick",
+    "tick": 643,
+    "simTime": 6.4299998562783,
+    "appMode": "Drive",
+    "ready": true,
+    "simulationState": "Running",
+    "scenarioState": "Ready",
+    "signal": {
+      "phase": "Waiting",
+      "litLampCount": 0,
+      "released": false,
+      "buzzerActive": false
+    },
+    "vehicle": {
+      "positionCm": {
+        "x": 350.0,
+        "y": 3.977085590362549,
+        "z": 45.386470794677734
+      },
+      "rotationDeg": {
+        "x": 0.054763346910476685,
+        "y": 3.824386085593545E-10,
+        "z": 4.0412646644914785E-14
+      },
+      "velocityCmS": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.43839186429977417
+      },
+      "command": {
+        "left": 0,
+        "right": 0,
+        "speed": 0
+      }
+    },
+    "course": {
+      "stage": "preliminary",
+      "origin": "OfficialReadOnly",
+      "readOnly": true,
+      "documentHash": "88d4c40afa1d4486b4e3e8e6d36728f477fe5c4370c18d5a7a6e5a41c056e831",
+      "roadTiles": 12399,
+      "lineTiles": 49,
+      "structures": 2,
+      "objects": 2,
+      "triggers": 2
+    },
+    "session": {
+      "runId": "run_0002",
+      "courseId": "2026_preliminary",
+      "stage": "preliminary",
+      "mission": "",
+      "candidate": "",
+      "seed": 0,
+      "releaseDelaySec": 0.0,
+      "status": "None",
+      "falseStart": false,
+      "collisions": 0,
+      "lineContacts": 0,
+      "departures": 0,
+      "score": 0.0,
+      "measurements": 0
+    },
+    "sensors": {
+      "leftTick": 634,
+      "centerTick": 634,
+      "rightTick": 634,
+      "leftWidth": 640,
+      "leftHeight": 480,
+      "centerWidth": 640,
+      "centerHeight": 480,
+      "rightWidth": 640,
+      "rightHeight": 480,
+      "lidarFrameId": 129,
+      "lidarTick": 642,
+      "lidarRayCount": 360,
+      "lidarAngleMinDeg": 0.0,
+      "lidarAngleMaxDeg": 359.0,
+      "lidarMaxDistanceCm": 1000.0,
+      "lidarNearestCm": 228.6275634765625
+    },
+    "ui": {
+      "activeTab": "Drive",
+      "collapsed": false,
+      "windowPosition": {
+        "x": 18.0,
+        "y": -18.0,
+        "z": 0.0
+      },
+      "windowSize": {
+        "x": 760.0,
+        "y": 700.0,
+        "z": 0.0
+      }
+    },
+    "bridge": {
+      "connected": false,
+      "lastCommandTick": 610
+    }
+  },
+  "preferences": {
+    "lastStage": "preliminary",
+    "mode": 0,
+    "missionType": 0,
+    "candidateId": "",
+    "randomSeed": 2026,
+    "practiceSpeedLimitCmS": 20,
+    "obstacleWaitSec": 3,
+    "obstacleExitSec": 1
+  }
+}

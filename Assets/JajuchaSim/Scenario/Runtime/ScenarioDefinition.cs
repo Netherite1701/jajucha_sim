@@ -8,10 +8,10 @@ namespace JajuchaSim.Scenario
     /// </summary>
     public enum StartMode
     {
-        /// <summary>Execute the normal RED → YELLOW → GREEN countdown.</summary>
+        /// <summary>Execute the normal 2026 four-red-lamp countdown.</summary>
         NormalSignal = 0,
 
-        /// <summary>Skip the countdown and go straight to GREEN (development).</summary>
+        /// <summary>Skip the countdown and go straight to release (development).</summary>
         Immediate
     }
 
@@ -20,8 +20,8 @@ namespace JajuchaSim.Scenario
     /// </summary>
     public enum StartTimingMode
     {
-        /// <summary>Timer starts when the start signal turns GREEN.</summary>
-        SignalGreen = 0,
+        /// <summary>Timer starts when all lamps turn off and release is signalled.</summary>
+        SignalRelease = 0,
 
         /// <summary>Timer starts when the vehicle crosses the start trigger.</summary>
         StartGateCrossing
@@ -112,6 +112,11 @@ namespace JajuchaSim.Scenario
 
         /// <summary>Scenario id used for the run session.</summary>
         public string scenarioId = "scenario";
+        public string competitionStage = "";
+        public string additionalMission = "";
+        public string missionCandidateId = "";
+        public ulong missionRandomSeed;
+        public bool practiceValuesOfficial = false;
 
         /// <summary>Object id of the start signal (StartSignal type). Optional.</summary>
         public string startSignalObjectId = "";
@@ -126,22 +131,16 @@ namespace JajuchaSim.Scenario
         public float maxRunTimeSec = 180f;
 
         /// <summary>When the official run timer starts (see <see cref="StartTimingMode"/>).</summary>
-        public StartTimingMode startTimingMode = StartTimingMode.SignalGreen;
+        public StartTimingMode startTimingMode = StartTimingMode.SignalRelease;
 
         /// <summary>Default start mode used by the UI [Start Run] button.</summary>
         public StartMode startMode = StartMode.NormalSignal;
 
-        // ---- Start signal sequence (Step 8.8) ----
-        public float redDurationSec = 2f;
-        public float yellowDurationSec = 1f;
-
-        /// <summary>Green stays on indefinitely once reached (typical).</summary>
-        public bool greenPersistent = true;
-
-        // ---- Prepared for random start timing (Step 8.47), disabled by default ----
-        public bool randomStartDelayEnabled = false;
-        public float randomStartDelayMinSec = 0f;
-        public float randomStartDelayMaxSec = 0f;
+        // ---- 2026 four-lamp start sequence ----
+        public float lampIntervalSec = 1.5f;
+        public float releaseDelayMinSec = 3f;
+        public float releaseDelayMaxSec = 6f;
+        public float buzzerDurationSec = 1f;
 
         // ---- Scoring (Step 10.18) ----
         /// <summary>When false: timing/events still work, no final points/penalties.</summary>
@@ -193,18 +192,21 @@ namespace JajuchaSim.Scenario
                 name = name,
                 courseId = courseId,
                 scenarioId = scenarioId,
+                competitionStage = competitionStage,
+                additionalMission = additionalMission,
+                missionCandidateId = missionCandidateId,
+                missionRandomSeed = missionRandomSeed,
+                practiceValuesOfficial = practiceValuesOfficial,
                 startSignalObjectId = startSignalObjectId,
                 startTriggerId = startTriggerId,
                 finishTriggerId = finishTriggerId,
                 maxRunTimeSec = maxRunTimeSec,
                 startTimingMode = startTimingMode,
                 startMode = startMode,
-                redDurationSec = redDurationSec,
-                yellowDurationSec = yellowDurationSec,
-                greenPersistent = greenPersistent,
-                randomStartDelayEnabled = randomStartDelayEnabled,
-                randomStartDelayMinSec = randomStartDelayMinSec,
-                randomStartDelayMaxSec = randomStartDelayMaxSec,
+                lampIntervalSec = lampIntervalSec,
+                releaseDelayMinSec = releaseDelayMinSec,
+                releaseDelayMaxSec = releaseDelayMaxSec,
+                buzzerDurationSec = buzzerDurationSec,
                 scoringEnabled = scoringEnabled,
                 scoring = scoring?.Clone() ?? new ScoringConfig(),
                 requireFinishDirection = requireFinishDirection,

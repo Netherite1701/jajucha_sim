@@ -27,9 +27,7 @@ namespace JajuchaSim.Scenario.Tests
                     doc.SetRoad(new GridCoordinate(x, z));
 
             def = ScenarioDefinition.Default();
-            def.startTimingMode = StartTimingMode.SignalGreen;
-            def.redDurationSec = 0.01f;
-            def.yellowDurationSec = 0.01f;
+            def.startTimingMode = StartTimingMode.SignalRelease;
             manager.PrepareRun(def, doc);
             return manager;
         }
@@ -67,9 +65,7 @@ namespace JajuchaSim.Scenario.Tests
             def.maxRunTimeSec = 0.5f;
             def.scoring.baseScore = 100f;
             def.scoring.timeoutPenalty = 7f;
-            def.startTimingMode = StartTimingMode.SignalGreen;
-            def.redDurationSec = 0.01f;
-            def.yellowDurationSec = 0.01f;
+            def.startTimingMode = StartTimingMode.SignalRelease;
             manager.PrepareRun(def, doc);
             manager.RequestStart(StartMode.Immediate);
 

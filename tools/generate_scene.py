@@ -222,7 +222,8 @@ mono(1140000110, 1000101, G_SIM_MANAGER, "JajuchaSim.Core::JajuchaSim.Core.Simul
     "simulationSystemBehaviours": "".join([
         "\n  - {fileID: 1140000331}\n  - {fileID: 1140000441}"])
 })
-mono(1140000111, 1000101, G_SIM_HUD, "JajuchaSim.Core::JajuchaSim.Core.SimulationDebugHud", {})
+mono(1140000111, 1000101, G_SIM_HUD, "JajuchaSim.Core::JajuchaSim.Core.SimulationDebugHud", {
+    "buildStandaloneUi": "0"})
 go(1000102, "SimulationClock", components=[4000102])
 transform(4000102, 1000102, (0,0,0), father=4000100)
 go(1000103, "SimulationRunner", components=[4000103, 1140000113])
@@ -268,7 +269,8 @@ transform(4000300, 1000300, (0,0,0), children=[4000301], father=ROOT_T)
 go(1000301, "JajuchaVehicle", components=[4000301, 1140000331])
 transform(4000301, 1000301, (0,0,0), father=4000300)
 mono(1140000331, 1000301, G_VEHICLE_BEHAV, "JajuchaSim.Vehicle::JajuchaSim.Vehicle.VehicleSystemBehaviour", {
-    "vehicleConfig": "{fileID: 0}"})
+    "vehicleConfig": "{fileID: 0}",
+    "visualPrefab": "{fileID: 2000, guid: b11b0000000000000000000000000002, type: 3}"})
 
 # ---- _Sensors ----
 go(1000400, "_Sensors", components=[4000400])
@@ -391,6 +393,15 @@ transform(4000804, 1000804, (0,0,0), father=4000800)
 mono(1140000884, 1000804, G_MAP_EDITOR, "JajuchaSim.MapEditor::JajuchaSim.MapEditor.MapEditorHud", {
     "_tileSizeCm": "20",
     "_defaultSaveName": "course.json",
+    "_roadLayerRoot": "{fileID: 4000203}",
+    "_structureLayerRoot": "{fileID: 4000204}",
+    "_objectLayerRoot": "{fileID: 4000205}",
+    "_triggerLayerRoot": "{fileID: 4000207}",
+    "_obstaclePrefab": "{fileID: 5000, guid: b11b0000000000000000000000000005, type: 3}",
+    "_slowSignPrefab": "{fileID: 5000, guid: b11b0000000000000000000000000006, type: 3}",
+    "_startSignalPrefab": "{fileID: 5000, guid: b11b0000000000000000000000000007, type: 3}",
+    "_speedTerminalPrefab": "{fileID: 5000, guid: b11b0000000000000000000000000008, type: 3}",
+    "_buildStandaloneUi": "0",
 })
 
 # ---- _Services ----
@@ -410,6 +421,7 @@ mono(1140000994, 1000904, G_SHUTDOWN, "JajuchaSim.App::JajuchaSim.App.Applicatio
 # ---- Root components ----
 mono(1140000100, ROOT_GO, G_ERROR_DISPLAY, "JajuchaSim.App::JajuchaSim.App.BootstrapErrorDisplay", {})
 mono(1140000101, ROOT_GO, G_STATUS_BAR, "JajuchaSim.App::JajuchaSim.App.RuntimeStatusBar", {
+    "buildStandaloneUi": "0",
     "bootstrap": "{fileID: 1140000115}"})
 
 # ---- Directional Light ----

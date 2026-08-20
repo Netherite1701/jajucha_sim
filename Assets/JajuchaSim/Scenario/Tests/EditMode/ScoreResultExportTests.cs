@@ -133,8 +133,9 @@ namespace JajuchaSim.Scenario.Tests
             def.startTriggerId = "start_line";
             def.finishTriggerId = "finish_line";
             def.maxRunTimeSec = 180f;
-            def.redDurationSec = 2f;
-            def.yellowDurationSec = 1f;
+            def.lampIntervalSec = 1.5f;
+            def.releaseDelayMinSec = 3f;
+            def.releaseDelayMaxSec = 6f;
             def.slowZones[0].maxSpeedCmS = 20f;
             def.slowZones[0].violationMode = ViolationMode.Penalty;
             def.slowZones[0].penalty = 5f;
@@ -148,8 +149,9 @@ namespace JajuchaSim.Scenario.Tests
             Assert.AreEqual(def.startTriggerId, parsed.startTriggerId);
             Assert.AreEqual(def.finishTriggerId, parsed.finishTriggerId);
             Assert.AreEqual(def.maxRunTimeSec, parsed.maxRunTimeSec, 1e-4f);
-            Assert.AreEqual(def.redDurationSec, parsed.redDurationSec, 1e-4f);
-            Assert.AreEqual(def.yellowDurationSec, parsed.yellowDurationSec, 1e-4f);
+            Assert.AreEqual(def.lampIntervalSec, parsed.lampIntervalSec, 1e-4f);
+            Assert.AreEqual(def.releaseDelayMinSec, parsed.releaseDelayMinSec, 1e-4f);
+            Assert.AreEqual(def.releaseDelayMaxSec, parsed.releaseDelayMaxSec, 1e-4f);
             Assert.AreEqual(1, parsed.slowZones.Count);
             Assert.AreEqual(20f, parsed.slowZones[0].maxSpeedCmS, 1e-4f);
             Assert.AreEqual(ViolationMode.Penalty, parsed.slowZones[0].violationMode);

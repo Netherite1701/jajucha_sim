@@ -1,0 +1,677 @@
+{
+  "passed": true,
+  "timestamp": "2026-08-20T01:55:41.5517209+09:00",
+  "exe": "C:\\dev\\jajucha-sim\\dist\\JajuchaSimulator\\JajuchaSimulator.exe",
+  "checks": {
+    "handshake": true,
+    "readyBeforeStart": true,
+    "bridgeStartAccepted": true,
+    "countdownStarted": true,
+    "preReleaseCommandAck": true,
+    "preReleasePoseUnchanged": true,
+    "falseStartRecorded": true,
+    "preReleaseCommandZero": true,
+    "lampSequence": true,
+    "lampIntervalsSec": [
+      1.5,
+      1.51,
+      1.51
+    ],
+    "lampIntervalsWithinTolerance": true,
+    "releaseDelaySec": 3.3992390632629395,
+    "releaseDelayWithinRange": true,
+    "postReleaseCommandAck": true,
+    "postReleaseMaxDisplacementCm": 0.5025815944264279,
+    "postReleasePoseChanged": true,
+    "resultMissionRecorded": true,
+    "resultCandidateRecorded": true,
+    "resultSeedRecorded": true,
+    "resultDelayMatchesTrace": true,
+    "resultFalseStartRecorded": true,
+    "finalStateAborted": true,
+    "finalResultStable": true
+  },
+  "lampFirstTicks": {
+    "1": 1108,
+    "2": 1258,
+    "3": 1409,
+    "4": 1560
+  },
+  "responses": [
+    {
+      "request": "get_run_status",
+      "id": 1,
+      "response": {
+        "type": "response",
+        "id": 1,
+        "ok": true,
+        "payload": {
+          "state": "Ready",
+          "signal": "Waiting",
+          "run_id": "run_0002",
+          "elapsed_sec": 0,
+          "has_result": false,
+          "collisions": 0,
+          "sim_time": 11.0499997530133,
+          "tick": 1105
+        }
+      }
+    },
+    {
+      "request": "start_run",
+      "id": 2,
+      "response": {
+        "type": "response",
+        "id": 2,
+        "ok": true
+      }
+    },
+    {
+      "request": "set_motor",
+      "id": 3,
+      "response": {
+        "type": "response",
+        "id": 3,
+        "ok": true
+      }
+    },
+    {
+      "request": "set_motor",
+      "id": 4,
+      "response": {
+        "type": "response",
+        "id": 4,
+        "ok": true
+      }
+    },
+    {
+      "request": "set_motor",
+      "id": 5,
+      "response": {
+        "type": "response",
+        "id": 5,
+        "ok": true
+      }
+    },
+    {
+      "request": "abort_run",
+      "id": 6,
+      "response": {
+        "type": "response",
+        "id": 6,
+        "ok": true
+      }
+    },
+    {
+      "request": "get_result",
+      "id": 7,
+      "response": {
+        "type": "response",
+        "id": 7,
+        "ok": true,
+        "payload": {
+          "result": "{\n    \"runId\": \"run_0003\",\n    \"course\": \"2026_preliminary\",\n    \"scenario\": \"2026_preliminary\",\n    \"status\": \"aborted\",\n    \"elapsedSec\": 2.5999999418854715,\n    \"completed\": false,\n    \"timedOut\": false,\n    \"aborted\": true,\n    \"falseStart\": true,\n    \"collisions\": 0,\n    \"lineContacts\": 12,\n    \"courseDepartures\": 0,\n    \"competitionStage\": \"preliminary\",\n    \"additionalMission\": \"YellowFlagSpeed\",\n    \"missionCandidateId\": \"candidate_1\",\n    \"missionRandomSeed\": 2028,\n    \"startReleaseDelaySec\": 3.3992390632629396,\n    \"practiceValuesOfficial\": false,\n    \"practiceValueLabel\": \"비공식 연습값\",\n    \"measuredSpeedCmS\": 0.0,\n    \"dynamicObstacleCollision\": false,\n    \"additionalMissionPassed\": false,\n    \"violations\": {\n        \"lineContacts\": 12,\n        \"collisions\": 0\n    },\n    \"baseScore\": 100.0,\n    \"totalPenalty\": 80.0,\n    \"score\": 20.0,\n    \"slowZones\": [],\n    \"speedGates\": [],\n    \"collisionList\": [],\n    \"penalties\": [\n        {\n            \"ruleId\": \"false_start\",\n            \"reason\": \"Motor input before 2026 light release/buzzer\",\n            \"value\": 10.0,\n            \"simulationTime\": 11.239999748766423,\n            \"eventType\": \"false_start\",\n            \"targetId\": \"\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 19.00999957509339,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 19.659999560564758,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 19.67999956011772,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 19.699999559670688,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 19.719999559223653,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 19.7499995585531,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 20.48999954201281,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 20.689999537542464,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 20.749999536201359,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 20.769999535754324,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 20.789999535307289,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 20.819999534636737,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"ObjectiveRule\",\n            \"reason\": \"Objective practice_speed_limit failed\",\n            \"value\": 10.0,\n            \"simulationTime\": 21.599999517202379,\n            \"eventType\": \"objective_failure\",\n            \"targetId\": \"practice_speed_limit\"\n        }\n    ],\n    \"objectives\": [\n        {\n            \"id\": \"practice_speed_limit\",\n            \"type\": \"speedpair\",\n            \"targetId\": \"mission_speed_pair\",\n            \"status\": \"failed\",\n            \"passed\": false,\n            \"penalty\": 10.0\n        }\n    ],\n    \"speedMeasurements\": [],\n    \"events\": [\n        {\n            \"time\": 11.239999748766423,\n            \"tick\": 1124,\n            \"message\": \"FALSE START: motor input before release\"\n        },\n        {\n            \"time\": 18.999999575316907,\n            \"tick\": 1900,\n            \"message\": \"START RELEASE (3.399s)\"\n        },\n        {\n            \"time\": 18.999999575316907,\n            \"tick\": 1900,\n            \"message\": \"RUN START\"\n        },\n        {\n            \"time\": 19.00999957509339,\n            \"tick\": 1901,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 19.659999560564758,\n            \"tick\": 1966,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 19.67999956011772,\n            \"tick\": 1968,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 19.699999559670688,\n            \"tick\": 1970,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 19.719999559223653,\n            \"tick\": 1972,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 19.7499995585531,\n            \"tick\": 1975,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 20.48999954201281,\n            \"tick\": 2049,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 20.689999537542464,\n            \"tick\": 2069,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 20.749999536201359,\n            \"tick\": 2075,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 20.769999535754324,\n            \"tick\": 2077,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 20.789999535307289,\n            \"tick\": 2079,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 20.819999534636737,\n            \"tick\": 2082,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 21.599999517202379,\n            \"tick\": 2160,\n            \"message\": \"practice_speed_limit FAIL\"\n        },\n        {\n            \"time\": 21.599999517202379,\n            \"tick\": 2160,\n            \"message\": \"RUN ABORTED\"\n        }\n    ]\n}"
+        }
+      }
+    },
+    {
+      "request": "get_result",
+      "id": 8,
+      "response": {
+        "type": "response",
+        "id": 8,
+        "ok": true,
+        "payload": {
+          "result": "{\n    \"runId\": \"run_0003\",\n    \"course\": \"2026_preliminary\",\n    \"scenario\": \"2026_preliminary\",\n    \"status\": \"aborted\",\n    \"elapsedSec\": 2.5999999418854715,\n    \"completed\": false,\n    \"timedOut\": false,\n    \"aborted\": true,\n    \"falseStart\": true,\n    \"collisions\": 0,\n    \"lineContacts\": 12,\n    \"courseDepartures\": 0,\n    \"competitionStage\": \"preliminary\",\n    \"additionalMission\": \"YellowFlagSpeed\",\n    \"missionCandidateId\": \"candidate_1\",\n    \"missionRandomSeed\": 2028,\n    \"startReleaseDelaySec\": 3.3992390632629396,\n    \"practiceValuesOfficial\": false,\n    \"practiceValueLabel\": \"비공식 연습값\",\n    \"measuredSpeedCmS\": 0.0,\n    \"dynamicObstacleCollision\": false,\n    \"additionalMissionPassed\": false,\n    \"violations\": {\n        \"lineContacts\": 12,\n        \"collisions\": 0\n    },\n    \"baseScore\": 100.0,\n    \"totalPenalty\": 80.0,\n    \"score\": 20.0,\n    \"slowZones\": [],\n    \"speedGates\": [],\n    \"collisionList\": [],\n    \"penalties\": [\n        {\n            \"ruleId\": \"false_start\",\n            \"reason\": \"Motor input before 2026 light release/buzzer\",\n            \"value\": 10.0,\n            \"simulationTime\": 11.239999748766423,\n            \"eventType\": \"false_start\",\n            \"targetId\": \"\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 19.00999957509339,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 19.659999560564758,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 19.67999956011772,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 19.699999559670688,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 19.719999559223653,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 19.7499995585531,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 20.48999954201281,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 20.689999537542464,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 20.749999536201359,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 20.769999535754324,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 20.789999535307289,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"LineContactRule\",\n            \"reason\": \"Vehicle footprint touched boundary line line_72_12\",\n            \"value\": 5.0,\n            \"simulationTime\": 20.819999534636737,\n            \"eventType\": \"line_contact\",\n            \"targetId\": \"line_72_12\"\n        },\n        {\n            \"ruleId\": \"ObjectiveRule\",\n            \"reason\": \"Objective practice_speed_limit failed\",\n            \"value\": 10.0,\n            \"simulationTime\": 21.599999517202379,\n            \"eventType\": \"objective_failure\",\n            \"targetId\": \"practice_speed_limit\"\n        }\n    ],\n    \"objectives\": [\n        {\n            \"id\": \"practice_speed_limit\",\n            \"type\": \"speedpair\",\n            \"targetId\": \"mission_speed_pair\",\n            \"status\": \"failed\",\n            \"passed\": false,\n            \"penalty\": 10.0\n        }\n    ],\n    \"speedMeasurements\": [],\n    \"events\": [\n        {\n            \"time\": 11.239999748766423,\n            \"tick\": 1124,\n            \"message\": \"FALSE START: motor input before release\"\n        },\n        {\n            \"time\": 18.999999575316907,\n            \"tick\": 1900,\n            \"message\": \"START RELEASE (3.399s)\"\n        },\n        {\n            \"time\": 18.999999575316907,\n            \"tick\": 1900,\n            \"message\": \"RUN START\"\n        },\n        {\n            \"time\": 19.00999957509339,\n            \"tick\": 1901,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 19.659999560564758,\n            \"tick\": 1966,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 19.67999956011772,\n            \"tick\": 1968,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 19.699999559670688,\n            \"tick\": 1970,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 19.719999559223653,\n            \"tick\": 1972,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 19.7499995585531,\n            \"tick\": 1975,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 20.48999954201281,\n            \"tick\": 2049,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 20.689999537542464,\n            \"tick\": 2069,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 20.749999536201359,\n            \"tick\": 2075,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 20.769999535754324,\n            \"tick\": 2077,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 20.789999535307289,\n            \"tick\": 2079,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 20.819999534636737,\n            \"tick\": 2082,\n            \"message\": \"LINE_CONTACT\"\n        },\n        {\n            \"time\": 21.599999517202379,\n            \"tick\": 2160,\n            \"message\": \"practice_speed_limit FAIL\"\n        },\n        {\n            \"time\": 21.599999517202379,\n            \"tick\": 2160,\n            \"message\": \"RUN ABORTED\"\n        }\n    ]\n}"
+        }
+      }
+    }
+  ],
+  "countdownSnapshot": {
+    "recordType": "tick",
+    "tick": 1122,
+    "simTime": 11.219999749213457,
+    "appMode": "Drive",
+    "ready": true,
+    "simulationState": "Running",
+    "scenarioState": "Countdown",
+    "signal": {
+      "phase": "Lamp1",
+      "litLampCount": 1,
+      "released": false,
+      "buzzerActive": false
+    },
+    "vehicle": {
+      "positionCm": {
+        "x": 350.0,
+        "y": 3.977083444595337,
+        "z": 45.0
+      },
+      "rotationDeg": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "velocityCmS": {
+        "x": 0.0,
+        "y": 1.2335777682892513E-05,
+        "z": 0.0
+      },
+      "command": {
+        "left": 0,
+        "right": 0,
+        "speed": 0
+      }
+    },
+    "course": {
+      "stage": "preliminary",
+      "origin": "PracticeCopy",
+      "readOnly": false,
+      "documentHash": "309bda9c4177c28d7762621c0cad578bbdefe284fed17fe6eec4d76466d7b1e4",
+      "roadTiles": 12399,
+      "lineTiles": 49,
+      "structures": 2,
+      "objects": 3,
+      "triggers": 4
+    },
+    "session": {
+      "runId": "run_0003",
+      "courseId": "2026_preliminary",
+      "stage": "preliminary",
+      "mission": "YellowFlagSpeed",
+      "candidate": "candidate_1",
+      "seed": 2028,
+      "releaseDelaySec": 0.0,
+      "status": "None",
+      "falseStart": false,
+      "collisions": 0,
+      "lineContacts": 0,
+      "departures": 0,
+      "score": 0.0,
+      "measurements": 0
+    },
+    "sensors": {
+      "leftTick": 1111,
+      "centerTick": 1111,
+      "rightTick": 1111,
+      "leftWidth": 640,
+      "leftHeight": 480,
+      "centerWidth": 640,
+      "centerHeight": 480,
+      "rightWidth": 640,
+      "rightHeight": 480,
+      "lidarFrameId": 225,
+      "lidarTick": 1122,
+      "lidarRayCount": 360,
+      "lidarAngleMinDeg": 0.0,
+      "lidarAngleMaxDeg": 359.0,
+      "lidarMaxDistanceCm": 1000.0,
+      "lidarNearestCm": 35.9206428527832
+    },
+    "ui": {
+      "activeTab": "Sensors",
+      "collapsed": false,
+      "windowPosition": {
+        "x": 18.0,
+        "y": -18.0,
+        "z": 0.0
+      },
+      "windowSize": {
+        "x": 760.0,
+        "y": 700.0,
+        "z": 0.0
+      }
+    },
+    "bridge": {
+      "connected": true,
+      "lastCommandTick": -1
+    }
+  },
+  "releaseSnapshot": {
+    "recordType": "tick",
+    "tick": 1902,
+    "simTime": 19.01999957486987,
+    "appMode": "Drive",
+    "ready": true,
+    "simulationState": "Running",
+    "scenarioState": "Running",
+    "signal": {
+      "phase": "Released",
+      "litLampCount": 0,
+      "released": true,
+      "buzzerActive": true
+    },
+    "vehicle": {
+      "positionCm": {
+        "x": 350.0,
+        "y": 3.977083444595337,
+        "z": 45.0
+      },
+      "rotationDeg": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      },
+      "velocityCmS": {
+        "x": 0.0,
+        "y": 1.2335777682892513E-05,
+        "z": 0.0
+      },
+      "command": {
+        "left": 0,
+        "right": 0,
+        "speed": 0
+      }
+    },
+    "course": {
+      "stage": "preliminary",
+      "origin": "PracticeCopy",
+      "readOnly": false,
+      "documentHash": "309bda9c4177c28d7762621c0cad578bbdefe284fed17fe6eec4d76466d7b1e4",
+      "roadTiles": 12399,
+      "lineTiles": 49,
+      "structures": 2,
+      "objects": 3,
+      "triggers": 4
+    },
+    "session": {
+      "runId": "run_0003",
+      "courseId": "2026_preliminary",
+      "stage": "preliminary",
+      "mission": "YellowFlagSpeed",
+      "candidate": "candidate_1",
+      "seed": 2028,
+      "releaseDelaySec": 3.3992390632629395,
+      "status": "None",
+      "falseStart": true,
+      "collisions": 0,
+      "lineContacts": 1,
+      "departures": 0,
+      "score": 0.0,
+      "measurements": 0
+    },
+    "sensors": {
+      "leftTick": 1894,
+      "centerTick": 1894,
+      "rightTick": 1894,
+      "leftWidth": 640,
+      "leftHeight": 480,
+      "centerWidth": 640,
+      "centerHeight": 480,
+      "rightWidth": 640,
+      "rightHeight": 480,
+      "lidarFrameId": 381,
+      "lidarTick": 1902,
+      "lidarRayCount": 360,
+      "lidarAngleMinDeg": 0.0,
+      "lidarAngleMaxDeg": 359.0,
+      "lidarMaxDistanceCm": 1000.0,
+      "lidarNearestCm": 35.9206428527832
+    },
+    "ui": {
+      "activeTab": "Sensors",
+      "collapsed": false,
+      "windowPosition": {
+        "x": 18.0,
+        "y": -18.0,
+        "z": 0.0
+      },
+      "windowSize": {
+        "x": 760.0,
+        "y": 700.0,
+        "z": 0.0
+      }
+    },
+    "bridge": {
+      "connected": true,
+      "lastCommandTick": 1124
+    }
+  },
+  "abortedSnapshot": {
+    "recordType": "tick",
+    "tick": 2162,
+    "simTime": 21.619999516755342,
+    "appMode": "Drive",
+    "ready": true,
+    "simulationState": "Running",
+    "scenarioState": "Aborted",
+    "signal": {
+      "phase": "Released",
+      "litLampCount": 0,
+      "released": true,
+      "buzzerActive": false
+    },
+    "vehicle": {
+      "positionCm": {
+        "x": 349.7255859375,
+        "y": 3.9770851135253906,
+        "z": 45.242305755615234
+      },
+      "rotationDeg": {
+        "x": 359.99420166015625,
+        "y": 1.3610707521438599,
+        "z": 0.0025478783063590527
+      },
+      "velocityCmS": {
+        "x": 0.0015763029223307967,
+        "y": -8.540153430658393E-06,
+        "z": -5.202102329349145E-06
+      },
+      "command": {
+        "left": 0,
+        "right": 0,
+        "speed": 0
+      }
+    },
+    "course": {
+      "stage": "preliminary",
+      "origin": "PracticeCopy",
+      "readOnly": false,
+      "documentHash": "309bda9c4177c28d7762621c0cad578bbdefe284fed17fe6eec4d76466d7b1e4",
+      "roadTiles": 12399,
+      "lineTiles": 49,
+      "structures": 2,
+      "objects": 3,
+      "triggers": 4
+    },
+    "session": {
+      "runId": "run_0003",
+      "courseId": "2026_preliminary",
+      "stage": "preliminary",
+      "mission": "YellowFlagSpeed",
+      "candidate": "candidate_1",
+      "seed": 2028,
+      "releaseDelaySec": 3.3992390632629395,
+      "status": "Aborted",
+      "falseStart": true,
+      "collisions": 0,
+      "lineContacts": 12,
+      "departures": 0,
+      "score": 20.0,
+      "measurements": 0
+    },
+    "sensors": {
+      "leftTick": 2151,
+      "centerTick": 2151,
+      "rightTick": 2151,
+      "leftWidth": 640,
+      "leftHeight": 480,
+      "centerWidth": 640,
+      "centerHeight": 480,
+      "rightWidth": 640,
+      "rightHeight": 480,
+      "lidarFrameId": 433,
+      "lidarTick": 2162,
+      "lidarRayCount": 360,
+      "lidarAngleMinDeg": 0.0,
+      "lidarAngleMaxDeg": 359.0,
+      "lidarMaxDistanceCm": 1000.0,
+      "lidarNearestCm": 36.011993408203125
+    },
+    "ui": {
+      "activeTab": "Sensors",
+      "collapsed": false,
+      "windowPosition": {
+        "x": 18.0,
+        "y": -18.0,
+        "z": 0.0
+      },
+      "windowSize": {
+        "x": 760.0,
+        "y": 700.0,
+        "z": 0.0
+      }
+    },
+    "bridge": {
+      "connected": true,
+      "lastCommandTick": 2158
+    }
+  },
+  "result": {
+    "runId": "run_0003",
+    "course": "2026_preliminary",
+    "scenario": "2026_preliminary",
+    "status": "aborted",
+    "elapsedSec": 2.5999999418854713,
+    "completed": false,
+    "timedOut": false,
+    "aborted": true,
+    "falseStart": true,
+    "collisions": 0,
+    "lineContacts": 12,
+    "courseDepartures": 0,
+    "competitionStage": "preliminary",
+    "additionalMission": "YellowFlagSpeed",
+    "missionCandidateId": "candidate_1",
+    "missionRandomSeed": 2028,
+    "startReleaseDelaySec": 3.3992390632629395,
+    "practiceValuesOfficial": false,
+    "practiceValueLabel": "비공식 연습값",
+    "measuredSpeedCmS": 0.0,
+    "dynamicObstacleCollision": false,
+    "additionalMissionPassed": false,
+    "violations": {
+      "lineContacts": 12,
+      "collisions": 0
+    },
+    "baseScore": 100.0,
+    "totalPenalty": 80.0,
+    "score": 20.0,
+    "slowZones": [],
+    "speedGates": [],
+    "collisionList": [],
+    "penalties": [
+      {
+        "ruleId": "false_start",
+        "reason": "Motor input before 2026 light release/buzzer",
+        "value": 10.0,
+        "simulationTime": 11.239999748766422,
+        "eventType": "false_start",
+        "targetId": ""
+      },
+      {
+        "ruleId": "LineContactRule",
+        "reason": "Vehicle footprint touched boundary line line_72_12",
+        "value": 5.0,
+        "simulationTime": 19.00999957509339,
+        "eventType": "line_contact",
+        "targetId": "line_72_12"
+      },
+      {
+        "ruleId": "LineContactRule",
+        "reason": "Vehicle footprint touched boundary line line_72_12",
+        "value": 5.0,
+        "simulationTime": 19.659999560564756,
+        "eventType": "line_contact",
+        "targetId": "line_72_12"
+      },
+      {
+        "ruleId": "LineContactRule",
+        "reason": "Vehicle footprint touched boundary line line_72_12",
+        "value": 5.0,
+        "simulationTime": 19.67999956011772,
+        "eventType": "line_contact",
+        "targetId": "line_72_12"
+      },
+      {
+        "ruleId": "LineContactRule",
+        "reason": "Vehicle footprint touched boundary line line_72_12",
+        "value": 5.0,
+        "simulationTime": 19.699999559670687,
+        "eventType": "line_contact",
+        "targetId": "line_72_12"
+      },
+      {
+        "ruleId": "LineContactRule",
+        "reason": "Vehicle footprint touched boundary line line_72_12",
+        "value": 5.0,
+        "simulationTime": 19.719999559223652,
+        "eventType": "line_contact",
+        "targetId": "line_72_12"
+      },
+      {
+        "ruleId": "LineContactRule",
+        "reason": "Vehicle footprint touched boundary line line_72_12",
+        "value": 5.0,
+        "simulationTime": 19.7499995585531,
+        "eventType": "line_contact",
+        "targetId": "line_72_12"
+      },
+      {
+        "ruleId": "LineContactRule",
+        "reason": "Vehicle footprint touched boundary line line_72_12",
+        "value": 5.0,
+        "simulationTime": 20.48999954201281,
+        "eventType": "line_contact",
+        "targetId": "line_72_12"
+      },
+      {
+        "ruleId": "LineContactRule",
+        "reason": "Vehicle footprint touched boundary line line_72_12",
+        "value": 5.0,
+        "simulationTime": 20.689999537542462,
+        "eventType": "line_contact",
+        "targetId": "line_72_12"
+      },
+      {
+        "ruleId": "LineContactRule",
+        "reason": "Vehicle footprint touched boundary line line_72_12",
+        "value": 5.0,
+        "simulationTime": 20.749999536201358,
+        "eventType": "line_contact",
+        "targetId": "line_72_12"
+      },
+      {
+        "ruleId": "LineContactRule",
+        "reason": "Vehicle footprint touched boundary line line_72_12",
+        "value": 5.0,
+        "simulationTime": 20.769999535754323,
+        "eventType": "line_contact",
+        "targetId": "line_72_12"
+      },
+      {
+        "ruleId": "LineContactRule",
+        "reason": "Vehicle footprint touched boundary line line_72_12",
+        "value": 5.0,
+        "simulationTime": 20.789999535307288,
+        "eventType": "line_contact",
+        "targetId": "line_72_12"
+      },
+      {
+        "ruleId": "LineContactRule",
+        "reason": "Vehicle footprint touched boundary line line_72_12",
+        "value": 5.0,
+        "simulationTime": 20.819999534636736,
+        "eventType": "line_contact",
+        "targetId": "line_72_12"
+      },
+      {
+        "ruleId": "ObjectiveRule",
+        "reason": "Objective practice_speed_limit failed",
+        "value": 10.0,
+        "simulationTime": 21.599999517202377,
+        "eventType": "objective_failure",
+        "targetId": "practice_speed_limit"
+      }
+    ],
+    "objectives": [
+      {
+        "id": "practice_speed_limit",
+        "type": "speedpair",
+        "targetId": "mission_speed_pair",
+        "status": "failed",
+        "passed": false,
+        "penalty": 10.0
+      }
+    ],
+    "speedMeasurements": [],
+    "events": [
+      {
+        "time": 11.239999748766422,
+        "tick": 1124,
+        "message": "FALSE START: motor input before release"
+      },
+      {
+        "time": 18.999999575316906,
+        "tick": 1900,
+        "message": "START RELEASE (3.399s)"
+      },
+      {
+        "time": 18.999999575316906,
+        "tick": 1900,
+        "message": "RUN START"
+      },
+      {
+        "time": 19.00999957509339,
+        "tick": 1901,
+        "message": "LINE_CONTACT"
+      },
+      {
+        "time": 19.659999560564756,
+        "tick": 1966,
+        "message": "LINE_CONTACT"
+      },
+      {
+        "time": 19.67999956011772,
+        "tick": 1968,
+        "message": "LINE_CONTACT"
+      },
+      {
+        "time": 19.699999559670687,
+        "tick": 1970,
+        "message": "LINE_CONTACT"
+      },
+      {
+        "time": 19.719999559223652,
+        "tick": 1972,
+        "message": "LINE_CONTACT"
+      },
+      {
+        "time": 19.7499995585531,
+        "tick": 1975,
+        "message": "LINE_CONTACT"
+      },
+      {
+        "time": 20.48999954201281,
+        "tick": 2049,
+        "message": "LINE_CONTACT"
+      },
+      {
+        "time": 20.689999537542462,
+        "tick": 2069,
+        "message": "LINE_CONTACT"
+      },
+      {
+        "time": 20.749999536201358,
+        "tick": 2075,
+        "message": "LINE_CONTACT"
+      },
+      {
+        "time": 20.769999535754323,
+        "tick": 2077,
+        "message": "LINE_CONTACT"
+      },
+      {
+        "time": 20.789999535307288,
+        "tick": 2079,
+        "message": "LINE_CONTACT"
+      },
+      {
+        "time": 20.819999534636736,
+        "tick": 2082,
+        "message": "LINE_CONTACT"
+      },
+      {
+        "time": 21.599999517202377,
+        "tick": 2160,
+        "message": "practice_speed_limit FAIL"
+      },
+      {
+        "time": 21.599999517202377,
+        "tick": 2160,
+        "message": "RUN ABORTED"
+      }
+    ]
+  },
+  "trace": "C:\\Users\\user\\AppData\\LocalLow\\DefaultCompany\\jajucha-sim\\JajuchaSim\\Logs\\state-trace.jsonl"
+}

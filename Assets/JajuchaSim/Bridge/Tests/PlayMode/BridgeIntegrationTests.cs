@@ -228,6 +228,17 @@ namespace JajuchaSim.Bridge.Tests
             Assert.IsTrue(resp.Ok);
             Assert.IsNotNull(resp.Payload);
             Assert.That(resp.Payload, Does.ContainKey("vehicle"));
+            var vehicle = resp.Payload["vehicle"] as Dictionary<string, object>;
+            Assert.IsNotNull(vehicle);
+            Assert.That(vehicle, Does.ContainKey("position_cm"));
+            Assert.That(vehicle, Does.ContainKey("rotation_deg"));
+            Assert.That(vehicle, Does.ContainKey("velocity_cm_s"));
+            var position = vehicle["position_cm"] as Dictionary<string, object>;
+            Assert.IsNotNull(position);
+            Assert.AreEqual(_vehicle.VehicleRoot.transform.position.x,
+                System.Convert.ToSingle(position["x"]), 0.001f);
+            Assert.AreEqual(_vehicle.VehicleRoot.transform.position.z,
+                System.Convert.ToSingle(position["z"]), 0.001f);
         }
 
         [UnityTest]

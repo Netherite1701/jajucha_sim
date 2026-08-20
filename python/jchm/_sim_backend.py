@@ -46,7 +46,10 @@ class SimulatorBackend:
 
     DEFAULT_HOST = "127.0.0.1"
     DEFAULT_PORT = 8765
-    DEFAULT_TIMEOUT = 1.0  # seconds per request
+    # Unity may spend the first frame loading the official course and sensor
+    # RenderTextures before servicing the bridge thread.  Keep the timeout
+    # long enough for that startup while still bounding a stuck request.
+    DEFAULT_TIMEOUT = 5.0  # seconds per request
     RECONNECT_ATTEMPTS = 1  # one reconnect attempt per call
 
     def __init__(self, host: str = None, port: int = None):
@@ -211,6 +214,50 @@ class SimulatorBackend:
         _log(f"get_depth() -> {width}x{height}")
         return depth
 
+    def get_lidar(self) -> Dict[str, Any]:
+        """Get one horizontal lidar scan and its geometry metadata.
+
+        Distances are returned in centimetres as a little-endian float32
+        NumPy array.  The dictionary keeps frame/tick metadata available to
+        diagnostics while :mod:`jchm.lidar` exposes the convenient array API.
+        """
+        self._ensure_connected()
+        header, binary = self._send_command_binary("get_lidar", {})
+
+        if not header.get("ok", False):
+            error = header.get("error", {})
+            code = error.get("code", "UNKNOWN")
+            msg = error.get("message", "No details")
+            raise RuntimeError(f"get_lidar failed: [{code}] {msg}")
+
+        ray_count = int(header.get("ray_count", header.get("width", 0)))
+        if ray_count < 1 or header.get("payload_type") != "lidar":
+            raise RuntimeError(f"get_lidar received invalid header: {header}")
+        expected = ray_count * 4
+        if header.get("format") != "float32_le" or len(binary) != expected:
+            raise RuntimeError(
+                f"get_lidar received invalid payload: format={header.get('format')}, "
+                f"expected={expected}, got={len(binary)}"
+            )
+
+        distances = np.frombuffer(binary, dtype="<f4").copy()
+        if distances.shape != (ray_count,) or not np.isfinite(distances).all():
+            raise RuntimeError("get_lidar returned non-finite or incorrectly shaped distances")
+
+        result = {
+            "distances_cm": distances,
+            "frame_id": int(header.get("frame_id", 0)),
+            "simulation_tick": int(header.get("scan_tick", 0)),
+            "simulation_time": float(header.get("scan_time", 0.0)),
+            "ray_count": ray_count,
+            "angle_min_deg": float(header.get("angle_min_deg", 0.0)),
+            "angle_max_deg": float(header.get("angle_max_deg", 0.0)),
+            "angle_increment_deg": float(header.get("angle_increment_deg", 0.0)),
+            "max_distance_cm": float(header.get("max_distance_cm", 0.0)),
+        }
+        _log(f"get_lidar() -> {ray_count} rays frame #{result['frame_id']}")
+        return result
+
     def disconnect(self):
         """Close the connection to the simulator."""
         with self._lock:
@@ -250,13 +297,21 @@ class SimulatorBackend:
             self._sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1)
             self._connected = True
             _log(f"connected {self._host}:{self._port}")
-        except (socket.timeout, ConnectionRefusedError) as e:
+        except socket.timeout:
             self._connected = False
             raise JchmConnectionError(
                 f"JCHM Simulator connection failed.\n"
                 f"Expected simulator at: {self._host}:{self._port}\n"
                 f"Start Jajucha Simulator and try again.\n"
-                f"Underlying error: {e}"
+                "Underlying error: connection timed out"
+            )
+        except ConnectionRefusedError as e:
+            self._connected = False
+            raise JchmConnectionError(
+                f"JCHM Simulator connection failed.\n"
+                f"Expected simulator at: {self._host}:{self._port}\n"
+                f"Start Jajucha Simulator and try again.\n"
+                "Underlying error: connection refused"
             ) from e
         except OSError as e:
             self._connected = False
@@ -369,7 +424,10 @@ class SimulatorBackend:
         if self._sock is None:
             return None
 
-        buf = []
+        # Accumulate raw bytes and decode only after the newline.  Decoding
+        # each recv(1) byte independently corrupts multi-byte UTF-8 fields
+        # such as the Korean practice-value label in get_result responses.
+        buf = bytearray()
         try:
             while True:
                 byte = self._sock.recv(1)
@@ -379,13 +437,13 @@ class SimulatorBackend:
                 if byte == b"\n":
                     break
                 if byte != b"\r":
-                    buf.append(byte.decode("utf-8"))
+                    buf.extend(byte)
         except socket.timeout:
             return None
         except OSError:
             return None
 
-        return "".join(buf)
+        return bytes(buf).decode("utf-8")
 
     def _send_command_binary(self, name: str, payload: Dict) -> Tuple[Dict, bytes]:
         """

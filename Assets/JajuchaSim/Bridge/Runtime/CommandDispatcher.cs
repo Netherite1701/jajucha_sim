@@ -33,6 +33,7 @@ namespace JajuchaSim.Bridge
 
         // Latest-wins motor tracking
         private int _lastMotorCommandId = -1;
+        private long _lastCommandTick = -1;
 
         // Watchdog timing (wall time)
         private float _lastMotorCommandRealtime = float.PositiveInfinity;
@@ -63,6 +64,9 @@ namespace JajuchaSim.Bridge
         public ScenarioManager Scenario { get; set; }
 
         public bool HandshakeComplete => _handshakeComplete;
+
+        /// <summary>Simulation tick at which the last motor command was applied.</summary>
+        public long LastCommandTick => _lastCommandTick;
 
         /// <summary>
         /// Called once per simulation tick (or per Update) to consume pending
@@ -173,6 +177,10 @@ namespace JajuchaSim.Bridge
                     HandleGetDepth(msg);
                     break;
 
+                case "get_lidar":
+                    HandleGetLidar(msg);
+                    break;
+
                 case "get_status":
                     HandleGetStatus(msg);
                     break;
@@ -253,7 +261,18 @@ namespace JajuchaSim.Bridge
             // but we skip sending a response for older commands that got
             // overtaken — actually, for set_motor we apply all and respond to all)
             var cmd = new MotorCommand(left, right, speed);
+
+            // During the 2026 countdown, motor input is a false-start attempt
+            // but cannot move the vehicle.  Keep the applied command at zero so
+            // the internal Transform/bridge state satisfies the release gate.
+            if (Scenario != null && Scenario.State == ScenarioState.Countdown &&
+                !Scenario.StartLight.Released)
+            {
+                Scenario.NotifyMotorCommandBeforeRelease(cmd);
+                cmd = MotorCommand.Zero;
+            }
             _vehicle.SetMotorCommand(cmd);
+            _lastCommandTick = _simulation.Clock != null ? _simulation.Clock.Tick : -1;
 
             // Update watchdog timer
             _lastMotorCommandRealtime = Time.realtimeSinceStartup;
@@ -274,6 +293,11 @@ namespace JajuchaSim.Bridge
         private void HandleGetStatus(BridgeMessage msg)
         {
             var mc = _vehicle.CurrentCommand;
+            var root = _vehicle.VehicleRoot != null ? _vehicle.VehicleRoot.transform : null;
+            var rb = _vehicle.ChassisRigidbody;
+            var position = rb != null ? rb.position : (root != null ? root.position : Vector3.zero);
+            var rotation = rb != null ? rb.rotation : (root != null ? root.rotation : Quaternion.identity);
+            var velocity = rb != null ? rb.linearVelocity : Vector3.zero;
             var response = new BridgeMessage
             {
                 Type = "response",
@@ -286,12 +310,35 @@ namespace JajuchaSim.Bridge
                     ["sim_time"] = _simulation.Clock.Time,
                     ["vehicle"] = new Dictionary<string, object>
                     {
+                        // The simulator's world convention is 1 Unity unit =
+                        // 1 cm.  These additive fields expose ground-truth
+                        // pose so external tests can compare bridge state with
+                        // Unity's actual vehicle transform.
+                        ["position_cm"] = new Dictionary<string, object>
+                        {
+                            ["x"] = position.x,
+                            ["y"] = position.y,
+                            ["z"] = position.z
+                        },
+                        ["rotation_deg"] = new Dictionary<string, object>
+                        {
+                            ["x"] = rotation.eulerAngles.x,
+                            ["y"] = rotation.eulerAngles.y,
+                            ["z"] = rotation.eulerAngles.z
+                        },
+                        ["velocity_cm_s"] = new Dictionary<string, object>
+                        {
+                            ["x"] = velocity.x,
+                            ["y"] = velocity.y,
+                            ["z"] = velocity.z
+                        },
                         ["command"] = new Dictionary<string, object>
                         {
                             ["left"] = mc.Left,
                             ["right"] = mc.Right,
                             ["speed"] = mc.Speed
-                        }
+                        },
+                        ["driven_wheel_grounded"] = _vehicle.DrivenWheelGrounded
                     }
                 }
             };
@@ -367,7 +414,12 @@ namespace JajuchaSim.Bridge
             try
             {
                 var mode = Scenario.Definition != null ? Scenario.Definition.startMode : StartMode.NormalSignal;
-                Scenario.RequestStart(mode);
+                if (!Scenario.RequestStart(mode))
+                {
+                    SendError(msg.Id, "SCENARIO_NOT_READY",
+                        "Scenario is not ready or the 2026 mission is not configured.");
+                    return;
+                }
                 SendOk(msg.Id);
                 SimLog.Info("[BRIDGE] start_run");
             }
@@ -552,6 +604,46 @@ namespace JajuchaSim.Bridge
 
             SimLog.Info($"[BRIDGE] get_depth() -> {depthFrame.Width}x{depthFrame.Height} frame #{depthFrame.FrameId}");
             _connection.SendJsonWithBinary(headerJson, depthFrame.Data);
+        }
+
+        private void HandleGetLidar(BridgeMessage msg)
+        {
+            if (_sensors == null || _sensors.Lidar == null)
+            {
+                SendError(msg.Id, "SENSOR_NOT_AVAILABLE", "Lidar sensor system is not initialized.");
+                return;
+            }
+
+            var scan = _sensors.Lidar.LatestScan;
+            if (scan == null)
+            {
+                SendError(msg.Id, "NO_FRAME", "No lidar scan available yet.");
+                return;
+            }
+
+            byte[] data = scan.ToFloat32Bytes();
+            var headerMsg = new BridgeMessage
+            {
+                Type = "response",
+                Id = msg.Id,
+                Ok = true,
+                PayloadType = "lidar",
+                ImageWidth = scan.RayCount,
+                ImageHeight = 1,
+                ImageFormat = "float32_le",
+                ImageLength = data.Length,
+                LidarFrameId = scan.FrameId,
+                LidarSimulationTick = scan.SimulationTick,
+                LidarSimulationTime = scan.SimulationTime,
+                LidarRayCount = scan.RayCount,
+                LidarAngleMinDeg = scan.AngleMinDeg,
+                LidarAngleMaxDeg = scan.AngleMaxDeg,
+                LidarAngleIncrementDeg = scan.AngleIncrementDeg,
+                LidarMaxDistanceCm = scan.MaxDistanceCm
+            };
+            string headerJson = BridgeProtocol.Serialize(headerMsg);
+            SimLog.Info($"[BRIDGE] get_lidar -> {scan.RayCount} rays frame #{scan.FrameId}");
+            _connection.SendJsonWithBinary(headerJson, data);
         }
 
         // --- Helpers ---

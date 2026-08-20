@@ -4,7 +4,8 @@
     "references": [
         "JajuchaSim.Scenario",
         "JajuchaSim.Core",
-        "JajuchaSim.Course"
+        "JajuchaSim.Course",
+        "JajuchaSim.Vehicle"
     ],
     "includePlatforms": [
         "Editor"

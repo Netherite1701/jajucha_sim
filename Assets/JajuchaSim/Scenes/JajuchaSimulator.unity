@@ -258,6 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55555555555555555555555555555555, type: 3}
   m_Name: 
   m_EditorClassIdentifier: JajuchaSim.Core::JajuchaSim.Core.SimulationDebugHud
+  buildStandaloneUi: 0
 --- !u!1 &1000102
 GameObject:
   m_ObjectHideFlags: 0
@@ -767,6 +768,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: JajuchaSim.Vehicle::JajuchaSim.Vehicle.VehicleSystemBehaviour
   vehicleConfig: {fileID: 0}
+  visualPrefab: {fileID: 2000, guid: b11b0000000000000000000000000002, type: 3}
 --- !u!1 &1000400
 GameObject:
   m_ObjectHideFlags: 0
@@ -1466,6 +1468,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: JajuchaSim.MapEditor::JajuchaSim.MapEditor.MapEditorHud
   _tileSizeCm: 20
   _defaultSaveName: course.json
+  _roadLayerRoot: {fileID: 4000203}
+  _structureLayerRoot: {fileID: 4000204}
+  _objectLayerRoot: {fileID: 4000205}
+  _triggerLayerRoot: {fileID: 4000207}
+  _obstaclePrefab: {fileID: 5000, guid: b11b0000000000000000000000000005, type: 3}
+  _slowSignPrefab: {fileID: 5000, guid: b11b0000000000000000000000000006, type: 3}
+  _startSignalPrefab: {fileID: 5000, guid: b11b0000000000000000000000000007, type: 3}
+  _speedTerminalPrefab: {fileID: 5000, guid: b11b0000000000000000000000000008, type: 3}
+  _buildStandaloneUi: 0
 --- !u!1 &1000900
 GameObject:
   m_ObjectHideFlags: 0
@@ -1664,6 +1675,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a11b00000000000000000000000000c4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: JajuchaSim.App::JajuchaSim.App.RuntimeStatusBar
+  buildStandaloneUi: 0
   bootstrap: {fileID: 1140000115}
 --- !u!1 &1001000
 GameObject:

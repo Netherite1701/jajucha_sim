@@ -31,10 +31,19 @@ namespace JajuchaSim.Vehicle
         public float dragCoefficient = 0.5f;
 
         [Header("Geometry")]
-        [Tooltip("Wheelbase (distance between front and rear axles) in cm.")]
+        [Tooltip("Confirmed overall vehicle width in cm, measured outside-to-outside: 17.76 cm.")]
+        public float overallWidthCm = 17.76f;
+
+        [Tooltip("Confirmed overall vehicle length in cm, measured front-to-rear: 24.5 cm.")]
+        public float overallLengthCm = 24.5f;
+
+        [Tooltip("Physics wheelbase tuning in cm. The physical reference wheelbase is measured separately below; the existing WheelCollider model remains tuned at 25 cm until its suspension geometry is recalibrated.")]
         public float wheelBase = 25f;
 
-        [Tooltip("Track width (distance between left and right wheels) in cm.")]
+        [Tooltip("Measured physical wheelbase in cm: approximately 18.295 cm. Use this when the WheelCollider suspension model is recalibrated.")]
+        public float measuredWheelBaseCm = 18.295f;
+
+        [Tooltip("Wheel-center track width used by the current stable WheelCollider tuning, in cm. Physical wheel track remains unconfirmed.")]
         public float trackWidth = 20f;
 
         [Tooltip("Wheel radius in cm.")]

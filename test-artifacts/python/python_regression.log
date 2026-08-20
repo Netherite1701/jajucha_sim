@@ -1,0 +1,46 @@
+[jchm-sim] connected 127.0.0.1:8765
+[jchm-sim] handshake complete
+[jchm-sim] get_status({})
+[jchm-sim] ack id=1
+[jchm-sim] get_image({"location": "left"})
+[jchm-sim] header id=2 type=image length=921600
+[jchm-sim] get_image(left) -> 640x480 rgb24
+[jchm-sim] get_image({"location": "center"})
+[jchm-sim] header id=3 type=image length=921600
+[jchm-sim] get_image(center) -> 640x480 rgb24
+[jchm-sim] get_image({"location": "right"})
+[jchm-sim] header id=4 type=image length=921600
+[jchm-sim] get_image(right) -> 640x480 rgb24
+[jchm-sim] get_depth({})
+[jchm-sim] header id=5 type=depth length=307200
+[jchm-sim] get_depth() -> 640x480
+[jchm-sim] get_lidar({})
+[jchm-sim] header id=6 type=lidar length=1440
+[jchm-sim] get_lidar() -> 360 rays frame #68
+[jchm-sim] set_motor({"left": 8, "right": 8, "speed": 8})
+[jchm-sim] ack id=7
+[jchm-sim] get_status({})
+[jchm-sim] ack id=8
+[jchm-sim] set_motor({"left": 0, "right": 0, "speed": 0})
+[jchm-sim] ack id=9
+[jchm-sim] get_status({})
+[jchm-sim] ack id=10
+[jchm-sim] sim_pause({})
+[jchm-sim] ack id=11
+[jchm-sim] get_status({})
+[jchm-sim] ack id=12
+[jchm-sim] get_status({})
+[jchm-sim] ack id=13
+[jchm-sim] sim_step({})
+[jchm-sim] ack id=14
+[jchm-sim] get_status({})
+[jchm-sim] ack id=15
+[jchm-sim] sim_reset({})
+[jchm-sim] ack id=16
+[jchm-sim] get_status({})
+[jchm-sim] ack id=17
+[jchm-sim] set_motor({"left": 0, "right": 0, "speed": 0})
+[jchm-sim] ack id=18
+[jchm-sim] disconnected
+C:\dev\jajucha-sim\test-artifacts\python\python_live_smoke_20260820_062759.json
+Python live smoke passed.

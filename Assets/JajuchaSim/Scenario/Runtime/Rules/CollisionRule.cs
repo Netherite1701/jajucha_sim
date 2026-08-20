@@ -45,7 +45,7 @@ namespace JajuchaSim.Scenario
             }
         }
 
-        public override void Finalize()
+        public override void FinalizeRule()
         {
             foreach (var i in _incidents)
                 Ctx.Session.Collisions.Add(i);

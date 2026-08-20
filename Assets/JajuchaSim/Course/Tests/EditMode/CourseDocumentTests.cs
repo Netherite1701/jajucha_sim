@@ -110,7 +110,7 @@ namespace JajuchaSim.Course.Tests
             Assert.AreEqual(90, sign.RotationDeg);
             Assert.AreEqual(ObjectType.Sign, doc.Grid.GetObject(new GridCoordinate(1, 1)));
             Assert.AreEqual(ObjectType.StartSignal, doc.Grid.GetObject(new GridCoordinate(2, 2)));
-            Assert.AreEqual(StartSignalState.Off, signal.SignalState);
+            Assert.AreEqual(StartSignalState.Waiting, signal.SignalState);
         }
 
         // ---- Triggers -------------------------------------------------

@@ -9,7 +9,7 @@ namespace JajuchaSim.App.Tests
         public void Defaults_AreSane()
         {
             var c = ApplicationConfig.Default();
-            Assert.AreEqual("template_course", c.defaultCourse);
+            Assert.AreEqual("2026_preliminary", c.defaultCourse);
             Assert.AreEqual(8765, c.bridgePort);
             Assert.IsTrue(c.debugUiEnabled);
             Assert.AreEqual("chase", c.observerMode);
@@ -35,9 +35,9 @@ namespace JajuchaSim.App.Tests
         [Test]
         public void Load_EmptyOrInvalid_FallsBackToDefaults()
         {
-            Assert.AreEqual("template_course", ApplicationConfig.Load("").defaultCourse);
-            Assert.AreEqual("template_course", ApplicationConfig.Load(null).defaultCourse);
-            Assert.AreEqual("template_course", ApplicationConfig.Load("{not json").defaultCourse);
+            Assert.AreEqual("2026_preliminary", ApplicationConfig.Load("").defaultCourse);
+            Assert.AreEqual("2026_preliminary", ApplicationConfig.Load(null).defaultCourse);
+            Assert.AreEqual("2026_preliminary", ApplicationConfig.Load("{not json").defaultCourse);
         }
 
         [Test]
@@ -47,7 +47,14 @@ namespace JajuchaSim.App.Tests
                 "{\"bridgePort\":999999,\"simulationSpeed\":-3,\"defaultCourse\":\"\"}");
             Assert.AreEqual(8765, c.bridgePort);
             Assert.AreEqual(1.0f, c.simulationSpeed);
-            Assert.AreEqual("template_course", c.defaultCourse);
+            Assert.AreEqual("2026_preliminary", c.defaultCourse);
+        }
+
+        [Test]
+        public void LegacyCourseSetting_MigratesWithoutLoadingLegacyCourse()
+        {
+            var c = ApplicationConfig.Load("{\"defaultCourse\":\"template_course\"}");
+            Assert.AreEqual("2026_preliminary", c.defaultCourse);
         }
 
         [Test]
@@ -76,7 +83,7 @@ namespace JajuchaSim.App.Tests
             var c = ApplicationConfig.Default();
             var applied = c.ApplyCommandLine(null);
             Assert.AreEqual(0, applied.Length);
-            Assert.AreEqual("template_course", c.defaultCourse);
+            Assert.AreEqual("2026_preliminary", c.defaultCourse);
         }
 
         [Test]

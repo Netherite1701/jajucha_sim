@@ -61,6 +61,16 @@ namespace JajuchaSim.Bridge
 
         /// <summary>Binary payload length in bytes.</summary>
         public int ImageLength { get; set; }
+
+        // --- Lidar response fields ---
+        public long LidarFrameId { get; set; }
+        public long LidarSimulationTick { get; set; }
+        public double LidarSimulationTime { get; set; }
+        public int LidarRayCount { get; set; }
+        public float LidarAngleMinDeg { get; set; }
+        public float LidarAngleMaxDeg { get; set; }
+        public float LidarAngleIncrementDeg { get; set; }
+        public float LidarMaxDistanceCm { get; set; }
     }
 
     /// <summary>

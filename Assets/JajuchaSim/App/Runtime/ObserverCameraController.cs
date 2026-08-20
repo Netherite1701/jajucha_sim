@@ -28,6 +28,20 @@ namespace JajuchaSim.App
     /// </summary>
     public sealed class ObserverCameraController : MonoBehaviour
     {
+        public readonly struct CameraState
+        {
+            public readonly ObserverCameraMode Mode;
+            public readonly Vector3 Position;
+            public readonly Quaternion Rotation;
+
+            public CameraState(ObserverCameraMode mode, Vector3 position, Quaternion rotation)
+            {
+                Mode = mode;
+                Position = position;
+                Rotation = rotation;
+            }
+        }
+
         [SerializeField] private Camera observerCamera;
         [SerializeField] private Transform target;
         [SerializeField] private float chaseHeightCm = 150f;
@@ -40,6 +54,9 @@ namespace JajuchaSim.App
 
         private Vector3 _freeAngle = new Vector3(45f, 0f, 0f);
         private float _freeDistance = 600f;
+        private bool _restoreTransformNextFrame;
+        private Vector3 _restoredPosition;
+        private Quaternion _restoredRotation;
 
         private void Awake()
         {
@@ -58,6 +75,26 @@ namespace JajuchaSim.App
         public void SetMode(ObserverCameraMode mode)
         {
             Mode = mode;
+        }
+
+        public CameraState CaptureState()
+        {
+            var cam = observerCamera != null ? observerCamera : Camera.main;
+            return new CameraState(Mode, cam != null ? cam.transform.position : Vector3.zero,
+                cam != null ? cam.transform.rotation : Quaternion.identity);
+        }
+
+        public void RestoreState(CameraState state)
+        {
+            Mode = state.Mode;
+            _restoredPosition = state.Position;
+            _restoredRotation = state.Rotation;
+            _restoreTransformNextFrame = true;
+            if (observerCamera != null)
+            {
+                observerCamera.transform.position = state.Position;
+                observerCamera.transform.rotation = state.Rotation;
+            }
         }
 
         public void CycleMode()
@@ -93,6 +130,14 @@ namespace JajuchaSim.App
         {
             if (observerCamera == null)
                 return;
+
+            if (_restoreTransformNextFrame)
+            {
+                observerCamera.transform.position = _restoredPosition;
+                observerCamera.transform.rotation = _restoredRotation;
+                _restoreTransformNextFrame = false;
+                return;
+            }
 
             switch (Mode)
             {

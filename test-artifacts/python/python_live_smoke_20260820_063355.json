@@ -1,0 +1,148 @@
+{
+  "passed": true,
+  "timestamp": 1787175231.6908393,
+  "checks": {
+    "handshake_and_status": true,
+    "three_cameras": true,
+    "depth": true,
+    "lidar_manual_contract": true,
+    "motor_changes_pose": true,
+    "motor_displacement_cm": 19.657278846526548,
+    "stop_motor_zeroes_command": true,
+    "pause_freezes_tick": true,
+    "step_exactly_one_tick": true,
+    "reset_zeroes_tick_and_speed": true,
+    "reset_returns_course_start": true
+  },
+  "cameras": {
+    "left": {
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "dtype": "uint8",
+      "path": "C:\\dev\\jajucha-sim\\test-artifacts\\python\\left_camera_python.png"
+    },
+    "center": {
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "dtype": "uint8",
+      "path": "C:\\dev\\jajucha-sim\\test-artifacts\\python\\center_camera_python.png"
+    },
+    "right": {
+      "shape": [
+        480,
+        640,
+        3
+      ],
+      "dtype": "uint8",
+      "path": "C:\\dev\\jajucha-sim\\test-artifacts\\python\\right_camera_python.png"
+    }
+  },
+  "depth": {
+    "shape": [
+      480,
+      640
+    ],
+    "dtype": "uint8",
+    "path": "C:\\dev\\jajucha-sim\\test-artifacts\\python\\center_depth_python.png"
+  },
+  "lidar": {
+    "ray_count": 360,
+    "angle_min_deg": 0.0,
+    "angle_max_deg": 359.0,
+    "distance_min_mm": 2245.0,
+    "distance_max_mm": 10000.0,
+    "path": "C:\\dev\\jajucha-sim\\test-artifacts\\python\\lidar_python.png"
+  },
+  "status": {
+    "initial": {
+      "state": "Running",
+      "tick": 195,
+      "sim_time": 1.9499999564141,
+      "vehicle": {
+        "position_cm": {
+          "x": 350,
+          "y": 3.966504,
+          "z": 45
+        },
+        "rotation_deg": {
+          "x": 0,
+          "y": 270,
+          "z": 0
+        },
+        "velocity_cm_s": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "command": {
+          "left": 0,
+          "right": 0,
+          "speed": 0
+        },
+        "driven_wheel_grounded": true
+      }
+    },
+    "after_motor": {
+      "state": "Running",
+      "tick": 379,
+      "sim_time": 3.7899999152869,
+      "vehicle": {
+        "position_cm": {
+          "x": 330.4733,
+          "y": 3.92239,
+          "z": 47.26199
+        },
+        "rotation_deg": {
+          "x": 0,
+          "y": 282.9458,
+          "z": 0
+        },
+        "velocity_cm_s": {
+          "x": -39.99687,
+          "y": 0,
+          "z": 9.194138
+        },
+        "command": {
+          "left": 8,
+          "right": 8,
+          "speed": 8
+        },
+        "driven_wheel_grounded": true
+      }
+    },
+    "after_reset": {
+      "state": "Ready",
+      "tick": 0,
+      "sim_time": 0,
+      "vehicle": {
+        "position_cm": {
+          "x": 350,
+          "y": 4,
+          "z": 45
+        },
+        "rotation_deg": {
+          "x": 0,
+          "y": 270,
+          "z": 0
+        },
+        "velocity_cm_s": {
+          "x": 0,
+          "y": 0,
+          "z": 0
+        },
+        "command": {
+          "left": 0,
+          "right": 0,
+          "speed": 0
+        },
+        "driven_wheel_grounded": true
+      }
+    }
+  }
+}

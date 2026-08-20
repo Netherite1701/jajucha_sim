@@ -216,13 +216,13 @@ Consequences: One place to wire; the scene validation test keeps it honest.
 
 Status: Accepted
 
-Context: The template scene should not permanently contain the full road and
+Context: The runtime scene should not permanently contain the full road and
 structures; the course file must stay authoritative.
 
 Decision: The scene contains system roots, managers, the vehicle behaviour,
 observer camera, runtime UI, and services only. The course loads from
-`Courses/template_course.json` and is generated at runtime under the course
-roots. Users edit and save courses through the map editor.
+the selected `Courses/2026_preliminary.json` or `Courses/2026_final.json` and
+is generated at runtime under the course roots.
 
 Consequences: Course data is version-controlled and testable in isolation;
 scene files stay small.
@@ -270,19 +270,21 @@ executable.
 Consequences: `ApplicationBootstrap`, `CourseManager`, `RuntimeFileLogger`,
 and friends live in `JajuchaSim.App` and never import `UnityEditor`.
 
-## DD-021 — One template course
+## DD-021 — 2026 competition courses are authoritative
 
 Status: Accepted
 
-Context: Users need a small, working course that exercises every major system.
+Context: Training geometry must match the supplied 2026 documents, while the
+day-of additional mission and location remain unknown.
 
-Decision: `Courses/template_course.json` is the single shipped default course
-(start, straight, curve, tunnel, ramp, obstacle, slow sign, start signal,
-slow zone, two speed terminals, finish, boundary lines, scoring config
-documentation). It is EXAMPLE/SIMULATOR_ONLY and not a competition replica.
+Decision: ship preliminary and final 2026 courses as the only defaults. The
+official print artwork drives both the visible surface and the 5 cm logical
+mask. Mission type/location are selected before every first run or drawn from
+a recorded seed in Random mode. Unspecified scoring/timing values are labelled
+`비공식 연습값`.
 
-Consequences: Bootstrap can load a known-good course on startup; tests validate
-it end-to-end.
+Consequences: the simulator does not present an example layout as an official
+course, and every random training run is reproducible.
 
 ## DD-022 — One authoritative vehicle prefab
 

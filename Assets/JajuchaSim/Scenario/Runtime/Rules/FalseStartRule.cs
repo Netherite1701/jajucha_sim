@@ -5,7 +5,7 @@ namespace JajuchaSim.Scenario
     /// <summary>
     /// Optional false-start rule (Step 8.25).
     ///
-    /// If the vehicle crosses the start trigger while the signal is not GREEN
+    /// If the vehicle crosses the start trigger before release
     /// (still RED/YELLOW during countdown, or before the run), a FalseStart is
     /// recorded. With violationMode Fail the run is aborted with the
     /// <see cref="RunResultStatus.FalseStart"/> status.
@@ -22,9 +22,9 @@ namespace JajuchaSim.Scenario
             if (e.Type != TriggerType.Start) return;
             var cfg = Ctx.Definition?.falseStart;
             if (cfg == null || !cfg.enabled) return;
-            if (Ctx.State == ScenarioState.Running) return; // signal is GREEN
+            if (Ctx.State == ScenarioState.Running) return; // released
 
-            // Signal is not GREEN → false start.
+            // Release has not occurred → false start.
             Ctx.Session.FalseStart = true;
             Ctx.Score.Result.FalseStart = true;
             Ctx.Session.Events.Add(new ScenarioEvent(Ctx.Tick, Ctx.Time, "FALSE START"));
@@ -33,7 +33,7 @@ namespace JajuchaSim.Scenario
             {
                 Ctx.Score.AddPenalty(new PenaltyRecord(
                     RuleId,
-                    "Crossed start line before GREEN",
+                    "Crossed start line before 2026 light release/buzzer",
                     cfg.penalty,
                     Ctx.Tick,
                     Ctx.Time,

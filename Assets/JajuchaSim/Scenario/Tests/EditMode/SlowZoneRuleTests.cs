@@ -28,9 +28,7 @@ namespace JajuchaSim.Scenario.Tests
 
             var def = ScenarioDefinition.Default();
             def.name = "Slow Zone Test";
-            def.startTimingMode = StartTimingMode.SignalGreen;
-            def.redDurationSec = 0.01f;
-            def.yellowDurationSec = 0.01f;
+            def.startTimingMode = StartTimingMode.SignalRelease;
             def.finishTriggerId = "finish_line";
 
             manager.PrepareRun(def, doc);

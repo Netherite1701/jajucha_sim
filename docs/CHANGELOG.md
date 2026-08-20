@@ -46,10 +46,10 @@ simulator knows ground truth for scoring; the student's Python only sees the
 simulated cameras and jchm interface (never `STARTED` flags or scores):
 
 - `ScenarioManager` state machine Idle → Ready → Countdown → Running →
-  Finished/Aborted, start-signal sequence (RED → YELLOW → GREEN, configurable
-  durations), immediate or normal start mode, abort with propulsion stop
+  Finished/Aborted, 2026 four-lamp seeded start sequence, immediate or normal
+  start mode, abort with propulsion stop
 - `ScenarioDefinition` JSON: start/finish triggers, max run time, start timing
-  mode (signal-green vs start-gate-crossing), slow-zone rules with
+  mode (signal-release vs start-gate-crossing), slow-zone rules with
   Fail/Penalty/Informational modes, false-start rule, scoring enable, result
   auto-save
 - `RunTimer` derived from `SimulationClock` ticks — deterministic at any
@@ -64,7 +64,7 @@ simulated cameras and jchm interface (never `STARTED` flags or scores):
 - Runtime `ScenarioPanel` sidebar and `ResultsPanel` overlay (Run Again /
   Details / Export Result), driving view stays visible
 - Map-editor SCENARIO section: start/finish trigger pickers from placed ids,
-  max time, slow-zone speed, start mode, signal preview (RED/YELLOW/GREEN)
+  max time, slow-zone speed, start mode, signal preview
 - jchm_sim automation API: `start_run`, `abort_run`, `get_run_status`,
   `get_result`, `wait_for_result(timeout)` (simulator-only test harness)
 
@@ -242,7 +242,7 @@ product with a repeatable workflow.
   startup independent of Awake order) and `SetBridgeConfig`
 - `MapEditorHud` gained public course loading + drive/edit entry + automatic
   scenario configuration
-- Template course `Courses/template_course.json` exercising every major system
+- 2026 preliminary/final courses replaced the former example course
 - User Python workspace: `python/examples/01…06`, `python/user/main.py` +
   `README.md`, `python/requirements.txt`
 - Scripts: `setup_python.ps1/.sh`, `activate_python.ps1`,

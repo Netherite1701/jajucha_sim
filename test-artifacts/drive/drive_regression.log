@@ -1,0 +1,8 @@
+Vehicle did not remain grounded during safe drive (distance=198.532100795269, grounded=False, heightStable=True)
+At C:\dev\jajucha-sim\scripts\test_drive_visual_windows.ps1:110 char:32
++ ... t.passed) { throw "Vehicle did not remain grounded during safe drive  ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Vehicle did not...ghtStable=True):String) [], RuntimeException
+    + FullyQualifiedErrorId : Vehicle did not remain grounded during safe drive (distance=198.532100795269, grounded=F 
+   alse, heightStable=True)
+ 

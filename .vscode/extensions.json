@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "ms-python.debugpy",
+    "visualstudiotoolsforunity.vstuc"
+  ],
+  "unwantedRecommendations": [
+    "ms-dotnettools.csdevkit"
+  ]
+}

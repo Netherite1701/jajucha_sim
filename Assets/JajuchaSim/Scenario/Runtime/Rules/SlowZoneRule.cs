@@ -77,7 +77,7 @@ namespace JajuchaSim.Scenario
             }
         }
 
-        public override void Finalize()
+        public override void FinalizeRule()
         {
             // Any zone still active when the run ends: close it at current time.
             foreach (var kv in _active)

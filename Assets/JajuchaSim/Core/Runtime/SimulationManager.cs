@@ -39,6 +39,14 @@ namespace JajuchaSim.Core
         public SimulationRandom Random { get; private set; }
         public SimulationContext Context { get; private set; }
 
+        /// <summary>
+        /// Raised after all simulation systems and the authoritative physics
+        /// step have completed for a tick.  Diagnostics and deterministic
+        /// tests use this event to observe the post-physics state rather than
+        /// a render-frame approximation.
+        /// </summary>
+        public event Action<long, double> TickCompleted;
+
         // accumulator for fixed-timestep scheduling
         private double _accumulator;
 
@@ -292,6 +300,16 @@ namespace JajuchaSim.Core
             // 2. Advance Unity physics by exactly one fixed step. This is the
             //    sole authoritative location for physics progression.
             Physics.Simulate(Clock.FixedDeltaTime);
+
+            // 3. Let physics-owning systems restore post-simulation
+            // invariants before diagnostics and bridge snapshots observe the
+            // tick. This keeps a zero-speed vehicle fully stationary even
+            // when WheelCollider contact resolution produces residual drift.
+            for (int i = 0; i < _systems.Count; i++)
+                if (_systems[i] is IPostPhysicsSimulationSystem postPhysics)
+                    postPhysics.PostPhysicsStep(Clock.FixedDeltaTime);
+
+            TickCompleted?.Invoke(Clock.Tick, Clock.Time);
         }
 
         private void EnsureInitialized()

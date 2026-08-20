@@ -17,6 +17,7 @@ namespace JajuchaSim.Scenario
     {
         [Header("Wiring")]
         public ScenarioManager Manager;
+        public bool BuildStandaloneUi = false;
 
         private Text _contentText;
         private Text _toastText;
@@ -27,7 +28,7 @@ namespace JajuchaSim.Scenario
 
         private void Update()
         {
-            if (!_built) BuildUi();
+            if (BuildStandaloneUi && !_built) BuildUi();
             Refresh();
         }
 
@@ -40,7 +41,7 @@ namespace JajuchaSim.Scenario
         /// <summary>Refresh the panel text now (also called every frame).</summary>
         public void RefreshPanel()
         {
-            if (!_built) BuildUi();
+            if (BuildStandaloneUi && !_built) BuildUi();
             Refresh();
         }
 
@@ -119,6 +120,8 @@ namespace JajuchaSim.Scenario
             }
 
             var sb = new System.Text.StringBuilder();
+            if (!string.IsNullOrEmpty(Manager.Session?.CompetitionStage))
+                sb.AppendLine("비공식 연습값");
             sb.AppendLine("SCORING");
             sb.AppendLine("──────────────────────");
             sb.AppendLine();

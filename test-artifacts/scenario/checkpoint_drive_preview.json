@@ -1,0 +1,299 @@
+{
+  "passed": false,
+  "course": "Courses\\2026_preliminary.json",
+  "checkpoints": [
+    {
+      "id": "start",
+      "x_cm": 350.0,
+      "z_cm": 45.0
+    },
+    {
+      "id": "s_curve",
+      "x_cm": 220.0,
+      "z_cm": 175.0
+    },
+    {
+      "id": "right_angle",
+      "x_cm": 265.0,
+      "z_cm": 315.0
+    },
+    {
+      "id": "u_tunnel",
+      "x_cm": 130.0,
+      "z_cm": 175.0
+    },
+    {
+      "id": "straight_hill",
+      "x_cm": 45.0,
+      "z_cm": 450.0
+    },
+    {
+      "id": "hill_exit",
+      "x_cm": 365.0,
+      "z_cm": 495.0
+    },
+    {
+      "id": "zigzag",
+      "x_cm": 545.0,
+      "z_cm": 495.0
+    },
+    {
+      "id": "obstacle_section",
+      "x_cm": 860.0,
+      "z_cm": 355.0
+    },
+    {
+      "id": "curve",
+      "x_cm": 945.0,
+      "z_cm": 85.0
+    },
+    {
+      "id": "finish",
+      "x_cm": 630.0,
+      "z_cm": 45.0
+    }
+  ],
+  "visited": [],
+  "snapshots": [
+    {
+      "time": 1787163305.7811925,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 350.0,
+        "z": 44.99917
+      },
+      "yaw_deg": 1.318249e-06,
+      "distance_cm": 40.00000000861125,
+      "desired_yaw_deg": -89.99881111257528,
+      "steering": -8,
+      "speed": 4
+    },
+    {
+      "time": 1787163305.9269667,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 349.7898,
+        "z": 47.61449
+      },
+      "yaw_deg": 355.6808,
+      "distance_cm": 39.87560334339909,
+      "desired_yaw_deg": -93.7593607958417,
+      "steering": -8,
+      "speed": 4
+    },
+    {
+      "time": 1787163306.0723066,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 349.3351,
+        "z": 50.62778
+      },
+      "yaw_deg": 353.3684,
+      "distance_cm": 39.73565149507934,
+      "desired_yaw_deg": -98.1422069749241,
+      "steering": -8,
+      "speed": 4
+    },
+    {
+      "time": 1787163306.2187867,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 348.5948,
+        "z": 53.3442
+      },
+      "yaw_deg": 347.6652,
+      "distance_cm": 39.48650732440135,
+      "desired_yaw_deg": -102.19958711302748,
+      "steering": -8,
+      "speed": 4
+    },
+    {
+      "time": 1787163306.3625107,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 347.7676,
+        "z": 56.44586
+      },
+      "yaw_deg": 346.7755,
+      "distance_cm": 39.463898957143115,
+      "desired_yaw_deg": -106.85997264554601,
+      "steering": -8,
+      "speed": 4
+    },
+    {
+      "time": 1787163306.5013335,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 346.9369,
+        "z": 58.95986
+      },
+      "yaw_deg": 345.4569,
+      "distance_cm": 39.48686202814296,
+      "desired_yaw_deg": -110.70348641260125,
+      "steering": -8,
+      "speed": 4
+    },
+    {
+      "time": 1787163306.6453788,
+      "state": "Running",
+      "target": "s_curve",
+      "position_cm": {
+        "x": 346.1147,
+        "z": 61.6783
+      },
+      "yaw_deg": 342.5289,
+      "distance_cm": 39.77985981599234,
+      "desired_yaw_deg": -114.78818792245889,
+      "steering": -8,
+      "speed": 4
+    }
+  ],
+  "handshake": true,
+  "initial_run_state": "Aborted",
+  "start_response": {
+    "type": "response",
+    "id": 8,
+    "ok": true
+  },
+  "released": true,
+  "route_cell_count": 569,
+  "route_preview_cells": [
+    [
+      70,
+      9
+    ],
+    [
+      69,
+      9
+    ],
+    [
+      68,
+      9
+    ],
+    [
+      67,
+      9
+    ],
+    [
+      66,
+      9
+    ],
+    [
+      65,
+      9
+    ],
+    [
+      64,
+      9
+    ],
+    [
+      63,
+      9
+    ],
+    [
+      62,
+      9
+    ],
+    [
+      61,
+      9
+    ],
+    [
+      60,
+      9
+    ],
+    [
+      59,
+      9
+    ],
+    [
+      58,
+      9
+    ],
+    [
+      57,
+      9
+    ],
+    [
+      57,
+      10
+    ],
+    [
+      57,
+      11
+    ],
+    [
+      57,
+      12
+    ],
+    [
+      57,
+      13
+    ],
+    [
+      57,
+      14
+    ],
+    [
+      57,
+      15
+    ],
+    [
+      57,
+      16
+    ],
+    [
+      57,
+      17
+    ],
+    [
+      56,
+      17
+    ],
+    [
+      56,
+      18
+    ],
+    [
+      55,
+      18
+    ],
+    [
+      54,
+      18
+    ],
+    [
+      53,
+      18
+    ],
+    [
+      52,
+      18
+    ],
+    [
+      51,
+      18
+    ],
+    [
+      50,
+      18
+    ]
+  ],
+  "route_distance_cm": 2840.0,
+  "final_state_before_abort": "Running",
+  "final_pose": [
+    345.1827,
+    64.42522,
+    337.999
+  ],
+  "visited_count": 0,
+  "target_count": 9,
+  "abort_reason": "finish_not_reached",
+  "snapshot_count": 7
+}

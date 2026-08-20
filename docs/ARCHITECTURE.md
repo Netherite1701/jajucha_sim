@@ -28,7 +28,7 @@ Assets/JajuchaSim/
   Testing/     Controller-agnostic test/batch runner (Steps 10)
   App/         Authoritative scene bootstrap, modes, data paths, logs (Step 11)
   Debug/       Runtime debug panels
-  UI/          Driving view + HUD (map editor HUD under MapEditor)
+  UI/          Single legacy-style SimulatorDashboardUI canvas
 ```
 
 Each subsystem owns its code and exposes explicit interfaces. No giant manager
@@ -43,7 +43,7 @@ serializes the references so resolution is deterministic.)
 `Assets/JajuchaSim/Scenes/JajuchaSimulator.unity` is the **one** runtime scene
 (Step 11). It contains configuration (roots, managers, vehicle behaviour,
 observer camera, runtime UI, services) — the course itself is loaded from
-`Courses/template_course.json` and generated at runtime (Step 11.29).
+`Courses/2026_preliminary.json` or `Courses/2026_final.json` and generated at runtime.
 
 Fixed hierarchy (stable, validated by `SceneHierarchyValidationTests`):
 
@@ -59,8 +59,7 @@ JajuchaSimulator
 ├─ _Bridge    JajuchaBridgeServer
 ├─ _Scenario  ScenarioManager, ScoreManager, TestRunner
 ├─ _Observer  ObserverCamera, ObserverCameraController
-├─ _RuntimeUI MainViewport, MinimalHUD, DebugUI, MapEditorUI, ScoringUI,
-│             TestingUI
+├─ _RuntimeUI MainViewport and controller-only legacy panels
 └─ _Services  SaveLoadService, RuntimeFileDialogService, ScreenshotService,
               ApplicationShutdownService
 ```
@@ -71,6 +70,15 @@ bridge → scenario → UI → READY. Every step returns an explicit
 `BootstrapResult` (Success / FailedSystem / ErrorCode / Message); failures are
 shown on screen, never left as a NullReferenceException (Step 11.4/11.5).
 Random `Awake`/`Start` ordering never defines system initialization.
+
+`ApplicationBootstrap.StepInitUi` creates one `SimulatorDashboardCanvas` and
+binds `Assets/JajuchaSim/App/Runtime/SimulatorDashboardUI.cs`. Its tabs are
+`주행`, `코스 편집`, `채점`, `센서`, and `디버그`; ScenarioPanel, ResultsPanel,
+ScoringPanel, SimulationDebugHud, and RuntimeStatusBar remain data/control
+facades with standalone rendering disabled in the authoritative scene. The
+official 2026 JSON is loaded as `OfficialReadOnly`; editing starts only after
+`연습용 복사본 만들기`, and practice saves are written under the user's
+`Courses/Practice` data directory.
 
 ## Dependency direction (one way, upward)
 

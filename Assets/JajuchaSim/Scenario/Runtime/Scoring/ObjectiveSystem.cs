@@ -269,7 +269,7 @@ namespace JajuchaSim.Scenario
             }
         }
 
-        public override void Finalize()
+        public override void FinalizeRule()
         {
             // Resolve anything still pending (Step 10.14/10.15): incomplete
             // required objectives fail; untouched non-required objectives are

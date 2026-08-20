@@ -27,9 +27,7 @@ namespace JajuchaSim.Scenario.Tests
 
             var def = ScenarioDefinition.Default();
             def.name = "Course Departure Test";
-            def.startTimingMode = StartTimingMode.SignalGreen;
-            def.redDurationSec = 0.01f;
-            def.yellowDurationSec = 0.01f;
+            def.startTimingMode = StartTimingMode.SignalRelease;
             def.scoring.courseDeparturePenalty = 6f;
 
             manager.PrepareRun(def, doc);

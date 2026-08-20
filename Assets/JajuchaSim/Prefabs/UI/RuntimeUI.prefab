@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: JajuchaSim.MapEditor::JajuchaSim.MapEditor.MapEditorHud
   _tileSizeCm: 20
   _defaultSaveName: course.json
+  _buildStandaloneUi: 0
 --- !u!1 &3100
 GameObject:
   m_ObjectHideFlags: 0

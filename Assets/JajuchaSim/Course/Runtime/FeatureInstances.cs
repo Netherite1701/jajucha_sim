@@ -54,6 +54,13 @@ namespace JajuchaSim.Course
         public GridDirection Direction = GridDirection.North;
         public float RiseCm = 30f;
 
+        // 2026 path-following tunnel / hill profile.
+        public string Profile = "rectangular";
+        public float OpeningWidthCm = 39f;
+        public float RoofLongCm = 26f;
+        public float RoofShortCm = 9.8f;
+        public StructurePathPointData[] PathPoints = Array.Empty<StructurePathPointData>();
+
         public StructureInstance() { }
 
         public StructureInstance(string id, StructureType type, GridRegion region)
@@ -74,6 +81,12 @@ namespace JajuchaSim.Course
                 WallThicknessCm = WallThicknessCm,
                 Direction = Direction,
                 RiseCm = RiseCm
+                ,Profile = Profile
+                ,OpeningWidthCm = OpeningWidthCm
+                ,RoofLongCm = RoofLongCm
+                ,RoofShortCm = RoofShortCm
+                ,PathPoints = PathPoints == null ? Array.Empty<StructurePathPointData>() :
+                    (StructurePathPointData[])PathPoints.Clone()
             };
         }
     }
@@ -90,9 +103,11 @@ namespace JajuchaSim.Course
         public GridCoordinate Tile;
         public int RotationDeg; // 0, 90, 180, 270
         public ObstacleFootprint Footprint = ObstacleFootprint.Small;
+        public float ObstacleWaitSec = 3f;
+        public float ObstacleExitSec = 1f;
 
         /// <summary>Runtime state for start signals.</summary>
-        public StartSignalState SignalState = StartSignalState.Off;
+        public StartSignalState SignalState = StartSignalState.Waiting;
 
         public CourseObjectInstance() { }
 
@@ -141,6 +156,8 @@ namespace JajuchaSim.Course
                 Tile = Tile,
                 RotationDeg = RotationDeg,
                 Footprint = Footprint,
+                ObstacleWaitSec = ObstacleWaitSec,
+                ObstacleExitSec = ObstacleExitSec,
                 SignalState = SignalState
             };
         }
@@ -149,10 +166,12 @@ namespace JajuchaSim.Course
     /// <summary>Start-signal lamp state.</summary>
     public enum StartSignalState
     {
-        Off = 0,
-        Red,
-        Yellow,
-        Green
+        Waiting = 0,
+        Lamp1 = 1,
+        Lamp2 = 2,
+        Lamp3 = 3,
+        Lamp4 = 4,
+        Released = 5
     }
 
     /// <summary>

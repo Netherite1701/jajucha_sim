@@ -1,0 +1,285 @@
+{
+  "passed": true,
+  "timestamp": "2026-08-20T02:10:48.0540256+09:00",
+  "exe": "C:\\dev\\jajucha-sim\\dist\\JajuchaSimulator\\JajuchaSimulator.exe",
+  "checks": {
+    "handshake": true,
+    "initialState": "Running",
+    "initialPosition": {
+      "x": 350,
+      "y": 3.966503,
+      "z": 45
+    },
+    "motorAccepted": true,
+    "positionChangedAfterMotor": true,
+    "pauseAck": true,
+    "pauseFreezesTick": true,
+    "pauseFreezesPosition": true,
+    "stepAck": true,
+    "stepExactlyOneTick": true,
+    "resetAck": true,
+    "resetTickZero": true,
+    "resetSpeedZero": true,
+    "resetVelocityZero": true
+  },
+  "responses": [
+    {
+      "request": "get_status",
+      "id": 1,
+      "response": {
+        "type": "response",
+        "id": 1,
+        "ok": true,
+        "payload": {
+          "state": "Running",
+          "tick": 194,
+          "sim_time": 1.93999995663762,
+          "vehicle": {
+            "position_cm": {
+              "x": 350,
+              "y": 3.966503,
+              "z": 45
+            },
+            "rotation_deg": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "velocity_cm_s": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "command": {
+              "left": 0,
+              "right": 0,
+              "speed": 0
+            },
+            "driven_wheel_grounded": true
+          }
+        }
+      }
+    },
+    {
+      "request": "set_motor",
+      "id": 2,
+      "response": {
+        "type": "response",
+        "id": 2,
+        "ok": true
+      }
+    },
+    {
+      "request": "get_status",
+      "id": 3,
+      "response": {
+        "type": "response",
+        "id": 3,
+        "ok": true,
+        "payload": {
+          "state": "Running",
+          "tick": 328,
+          "sim_time": 3.27999992668629,
+          "vehicle": {
+            "position_cm": {
+              "x": 327.8126,
+              "y": -60.74528,
+              "z": 43.4164
+            },
+            "rotation_deg": {
+              "x": 38.8001,
+              "y": 1.611234,
+              "z": 2.455451
+            },
+            "velocity_cm_s": {
+              "x": -32.23563,
+              "y": -344.5266,
+              "z": -6.991931
+            },
+            "command": {
+              "left": 8,
+              "right": 8,
+              "speed": 8
+            },
+            "driven_wheel_grounded": false
+          }
+        }
+      }
+    },
+    {
+      "request": "sim_pause",
+      "id": 4,
+      "response": {
+        "type": "response",
+        "id": 4,
+        "ok": true
+      }
+    },
+    {
+      "request": "get_status",
+      "id": 5,
+      "response": {
+        "type": "response",
+        "id": 5,
+        "ok": true,
+        "payload": {
+          "state": "Paused",
+          "tick": 334,
+          "sim_time": 3.33999992534518,
+          "vehicle": {
+            "position_cm": {
+              "x": 325.912,
+              "y": -83.09093,
+              "z": 43.00417
+            },
+            "rotation_deg": {
+              "x": 310.5088,
+              "y": 179.4499,
+              "z": 163.6539
+            },
+            "velocity_cm_s": {
+              "x": -31.28057,
+              "y": -392.1577,
+              "z": -6.784778
+            },
+            "command": {
+              "left": 8,
+              "right": 8,
+              "speed": 8
+            },
+            "driven_wheel_grounded": false
+          }
+        }
+      }
+    },
+    {
+      "request": "get_status",
+      "id": 6,
+      "response": {
+        "type": "response",
+        "id": 6,
+        "ok": true,
+        "payload": {
+          "state": "Paused",
+          "tick": 334,
+          "sim_time": 3.33999992534518,
+          "vehicle": {
+            "position_cm": {
+              "x": 325.912,
+              "y": -83.09093,
+              "z": 43.00417
+            },
+            "rotation_deg": {
+              "x": 310.5088,
+              "y": 179.4499,
+              "z": 163.6539
+            },
+            "velocity_cm_s": {
+              "x": -31.28057,
+              "y": -392.1577,
+              "z": -6.784778
+            },
+            "command": {
+              "left": 8,
+              "right": 8,
+              "speed": 8
+            },
+            "driven_wheel_grounded": false
+          }
+        }
+      }
+    },
+    {
+      "request": "sim_step",
+      "id": 7,
+      "response": {
+        "type": "response",
+        "id": 7,
+        "ok": true
+      }
+    },
+    {
+      "request": "get_status",
+      "id": 8,
+      "response": {
+        "type": "response",
+        "id": 8,
+        "ok": true,
+        "payload": {
+          "state": "Paused",
+          "tick": 335,
+          "sim_time": 3.34999992512167,
+          "vehicle": {
+            "position_cm": {
+              "x": 325.6007,
+              "y": -87.09051,
+              "z": 42.93666
+            },
+            "rotation_deg": {
+              "x": 338.4966,
+              "y": 174.86,
+              "z": 165.575
+            },
+            "velocity_cm_s": {
+              "x": -31.12417,
+              "y": -399.9579,
+              "z": -6.750854
+            },
+            "command": {
+              "left": 8,
+              "right": 8,
+              "speed": 8
+            },
+            "driven_wheel_grounded": false
+          }
+        }
+      }
+    },
+    {
+      "request": "sim_reset",
+      "id": 9,
+      "response": {
+        "type": "response",
+        "id": 9,
+        "ok": true
+      }
+    },
+    {
+      "request": "get_status",
+      "id": 10,
+      "response": {
+        "type": "response",
+        "id": 10,
+        "ok": true,
+        "payload": {
+          "state": "Ready",
+          "tick": 0,
+          "sim_time": 0,
+          "vehicle": {
+            "position_cm": {
+              "x": 350,
+              "y": 4,
+              "z": 45
+            },
+            "rotation_deg": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "velocity_cm_s": {
+              "x": 0,
+              "y": 0,
+              "z": 0
+            },
+            "command": {
+              "left": 0,
+              "right": 0,
+              "speed": 0
+            },
+            "driven_wheel_grounded": false
+          }
+        }
+      }
+    }
+  ]
+}

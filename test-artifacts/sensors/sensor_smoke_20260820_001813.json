@@ -1,0 +1,46 @@
+﻿{
+    "passed":  true,
+    "timestamp":  "2026-08-20T00:18:26.3483610+09:00",
+    "cameras":  {
+                    "left":  {
+                                 "frame_id":  null,
+                                 "width":  640,
+                                 "height":  480,
+                                 "format":  "rgb24",
+                                 "length":  921600,
+                                 "path":  "C:\\dev\\jajucha-sim\\test-artifacts\\sensors\\left_camera.png",
+                                 "nonzero":  true
+                             },
+                    "center":  {
+                                   "frame_id":  null,
+                                   "width":  640,
+                                   "height":  480,
+                                   "format":  "rgb24",
+                                   "length":  921600,
+                                   "path":  "C:\\dev\\jajucha-sim\\test-artifacts\\sensors\\center_camera.png",
+                                   "nonzero":  true
+                               },
+                    "right":  {
+                                  "frame_id":  null,
+                                  "width":  640,
+                                  "height":  480,
+                                  "format":  "rgb24",
+                                  "length":  921600,
+                                  "path":  "C:\\dev\\jajucha-sim\\test-artifacts\\sensors\\right_camera.png",
+                                  "nonzero":  true
+                              },
+                    "depth":  {
+                                  "frame_id":  null,
+                                  "width":  640,
+                                  "height":  480,
+                                  "format":  "gray8",
+                                  "length":  307200,
+                                  "path":  "C:\\dev\\jajucha-sim\\test-artifacts\\sensors\\center_depth.png",
+                                  "nonzero":  false
+                              }
+                },
+    "lidar":  {
+                  "supported":  false,
+                  "reason":  "No lidar endpoint/component is present in the current project; the implemented manual-compatible sensor surface is three RGB cameras plus center depth."
+              }
+}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace JajuchaSim.Bridge
@@ -83,6 +84,18 @@ namespace JajuchaSim.Bridge
                     AppendInt(sb, "length", msg.ImageLength);
                 }
 
+                if (msg.LidarRayCount > 0)
+                {
+                    sb.Append(','); AppendLong(sb, "frame_id", msg.LidarFrameId);
+                    sb.Append(','); AppendLong(sb, "scan_tick", msg.LidarSimulationTick);
+                    sb.Append(','); AppendDouble(sb, "scan_time", msg.LidarSimulationTime);
+                    sb.Append(','); AppendInt(sb, "ray_count", msg.LidarRayCount);
+                    sb.Append(','); AppendFloat(sb, "angle_min_deg", msg.LidarAngleMinDeg);
+                    sb.Append(','); AppendFloat(sb, "angle_max_deg", msg.LidarAngleMaxDeg);
+                    sb.Append(','); AppendFloat(sb, "angle_increment_deg", msg.LidarAngleIncrementDeg);
+                    sb.Append(','); AppendFloat(sb, "max_distance_cm", msg.LidarMaxDistanceCm);
+                }
+
                 if (msg.Payload != null && msg.Payload.Count > 0)
                 {
                     sb.Append(',');
@@ -163,6 +176,22 @@ namespace JajuchaSim.Bridge
                     msg.ImageFormat = fmt as string ?? "";
                 if (dict.TryGetValue("length", out var len))
                     msg.ImageLength = Convert.ToInt32(len);
+                if (dict.TryGetValue("frame_id", out var frameId))
+                    msg.LidarFrameId = Convert.ToInt64(frameId);
+                if (dict.TryGetValue("scan_tick", out var scanTick))
+                    msg.LidarSimulationTick = Convert.ToInt64(scanTick);
+                if (dict.TryGetValue("scan_time", out var scanTime))
+                    msg.LidarSimulationTime = Convert.ToDouble(scanTime);
+                if (dict.TryGetValue("ray_count", out var rayCount))
+                    msg.LidarRayCount = Convert.ToInt32(rayCount);
+                if (dict.TryGetValue("angle_min_deg", out var angleMin))
+                    msg.LidarAngleMinDeg = Convert.ToSingle(angleMin);
+                if (dict.TryGetValue("angle_max_deg", out var angleMax))
+                    msg.LidarAngleMaxDeg = Convert.ToSingle(angleMax);
+                if (dict.TryGetValue("angle_increment_deg", out var angleIncrement))
+                    msg.LidarAngleIncrementDeg = Convert.ToSingle(angleIncrement);
+                if (dict.TryGetValue("max_distance_cm", out var maxDistance))
+                    msg.LidarMaxDistanceCm = Convert.ToSingle(maxDistance);
 
                 if (dict.TryGetValue("payload", out var payloadObj))
                 {
@@ -224,6 +253,21 @@ namespace JajuchaSim.Bridge
             sb.Append('"');
             sb.Append(':');
             sb.Append(value);
+        }
+
+        private static void AppendLong(StringBuilder sb, string key, long value)
+        {
+            sb.Append('"'); sb.Append(key); sb.Append("\":"); sb.Append(value.ToString(CultureInfo.InvariantCulture));
+        }
+
+        private static void AppendDouble(StringBuilder sb, string key, double value)
+        {
+            sb.Append('"'); sb.Append(key); sb.Append("\":"); sb.Append(value.ToString("R", CultureInfo.InvariantCulture));
+        }
+
+        private static void AppendFloat(StringBuilder sb, string key, float value)
+        {
+            sb.Append('"'); sb.Append(key); sb.Append("\":"); sb.Append(value.ToString("R", CultureInfo.InvariantCulture));
         }
 
         private static void AppendBool(StringBuilder sb, string key, bool value)

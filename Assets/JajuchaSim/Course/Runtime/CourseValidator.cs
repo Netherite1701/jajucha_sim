@@ -97,6 +97,13 @@ namespace JajuchaSim.Course
 
             results.AddRange(Validate(doc.Grid));
 
+            if (doc.Competition2026 != null)
+            {
+                foreach (string error in Competition2026Specification.ValidateDocument(doc))
+                    results.Add(new ValidationResult(ValidationResult.Severity.Error,
+                        error, doc.Competition2026.courseId, "competition_2026"));
+            }
+
             // Unique IDs
             var seen = new HashSet<string>();
             void CheckId(string id, string kind)
@@ -124,7 +131,21 @@ namespace JajuchaSim.Course
                 }
                 else
                 {
-                    results.AddRange(ValidateStructurePlacement(doc.Grid, s.Region, s.Type)
+                    var placementResults = ValidateStructurePlacement(doc.Grid, s.Region, s.Type);
+                    // Official 2026 ramp regions describe the complete three-
+                    // panel collision footprint, while the 5 cm road mask
+                    // intentionally covers only the drivable lane through
+                    // that footprint. Keep the generic editor warning, but
+                    // do not reject an otherwise valid official competition
+                    // ramp for the lane-vs-supporting-panel mismatch.
+                    if (doc.Competition2026 != null && s.Type == StructureType.Ramp)
+                    {
+                        placementResults = placementResults
+                            .Where(r => !(r.IsError && r.FeatureType == "ramp" &&
+                                r.Message.StartsWith("Ramp requires road coverage", StringComparison.Ordinal)))
+                            .ToList();
+                    }
+                    results.AddRange(placementResults
                         .Select(r => new ValidationResult(r.Level, r.Message, s.Id, r.FeatureType)));
                 }
             }

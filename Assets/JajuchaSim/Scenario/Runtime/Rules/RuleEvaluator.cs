@@ -80,7 +80,7 @@ namespace JajuchaSim.Scenario
 
     /// <summary>
     /// Modular run-rule interface (Step 8.40):
-    ///   OnRunStart / OnEvent (typed) / OnTick / Finalize
+    ///   OnRunStart / OnEvent (typed) / OnTick / FinalizeRule
     /// </summary>
     public interface IRunRule
     {
@@ -93,7 +93,7 @@ namespace JajuchaSim.Scenario
         void OnSpeedTerminalCrossed(SpeedTerminalCrossedEvent e);
         void OnSpeedMeasured(SpeedMeasuredEvent e);
         void OnVehicleCollision(VehicleCollisionEvent e);
-        void Finalize();
+        void FinalizeRule();
     }
 
     /// <summary>
@@ -115,6 +115,6 @@ namespace JajuchaSim.Scenario
         public virtual void OnSpeedTerminalCrossed(SpeedTerminalCrossedEvent e) { }
         public virtual void OnSpeedMeasured(SpeedMeasuredEvent e) { }
         public virtual void OnVehicleCollision(VehicleCollisionEvent e) { }
-        public virtual void Finalize() { }
+        public virtual void FinalizeRule() { }
     }
 }

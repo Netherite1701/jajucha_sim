@@ -23,6 +23,7 @@ namespace JajuchaSim.Sensors
         [SerializeField] private CameraConfig leftCameraConfig;
         [SerializeField] private CameraConfig centerCameraConfig;
         [SerializeField] private CameraConfig rightCameraConfig;
+        [SerializeField] private LidarConfig lidarConfig;
 
         private CameraSensorSystem _sensorSystem;
 
@@ -31,6 +32,8 @@ namespace JajuchaSim.Sensors
         /// Null until <see cref="Initialize"/> is called.
         /// </summary>
         public CameraSensorSystem SensorSystem => _sensorSystem;
+
+        public LidarSensorSystem Lidar => _sensorSystem != null ? _sensorSystem.Lidar : null;
 
         protected override void OnInitialize(SimulationContext context)
         {
@@ -60,12 +63,18 @@ namespace JajuchaSim.Sensors
                 rightCameraConfig = ScriptableObject.CreateInstance<CameraConfig>();
                 rightCameraConfig.name = "RightCameraConfig (default)";
             }
+            if (lidarConfig == null)
+            {
+                lidarConfig = ScriptableObject.CreateInstance<LidarConfig>();
+                lidarConfig.name = "LidarConfig (default)";
+            }
 
             _sensorSystem = new CameraSensorSystem(
                 vehicleBehaviour.VehicleSystem,
                 leftCameraConfig,
                 centerCameraConfig,
-                rightCameraConfig);
+                rightCameraConfig,
+                lidarConfig);
 
             _sensorSystem.Initialize(context);
             SimLog.Info("[SENSOR] CameraSensorSystemBehaviour initialized");

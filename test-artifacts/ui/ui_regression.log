@@ -1,0 +1,28 @@
+Simulator window handle: 0x7537828
+Capture 01_ready: client=(639,311) 1280x720, window=(631,280)-(1927,1039), foreground=0x7537828
+Click client (590,30) -> screen (1229,341), foreground=0x7537828
+Click client (590,30) -> screen (1229,341), foreground=0x7537828
+Click client (195,64) -> screen (834,375), foreground=0x7537828
+Capture 02_course_official: client=(639,311) 1280x720, window=(631,280)-(1927,1039), foreground=0x7537828
+Click client (125,160) -> screen (764,471), foreground=0x7537828
+Capture 03_course_practice: client=(639,311) 1280x720, window=(631,280)-(1927,1039), foreground=0x7537828
+Capture 05_map_editor: client=(639,311) 1280x720, window=(631,280)-(1927,1039), foreground=0x7537828
+Click client (230,218) -> screen (869,529), foreground=0x7537828
+Click client (1100,600) -> screen (1739,911), foreground=0x7537828
+Click client (1000,600) -> screen (1639,911), foreground=0x7537828
+Click client (75,510) -> screen (714,821), foreground=0x7537828
+Click client (178,510) -> screen (817,821), foreground=0x7537828
+Capture 06_map_editor_edited: client=(639,311) 1280x720, window=(631,280)-(1927,1039), foreground=0x7537828
+Click client (386,510) -> screen (1025,821), foreground=0x7537828
+Click client (386,510) -> screen (1025,821), foreground=0x7537828
+Click client (507,510) -> screen (1146,821), foreground=0x7537828
+Click client (500,466) -> screen (1139,777), foreground=0x7537828
+Capture 09_course_lifecycle: client=(639,311) 1280x720, window=(631,280)-(1927,1039), foreground=0x7537828
+Click client (75,64) -> screen (714,375), foreground=0x7537828
+Click client (510,158) -> screen (1149,469), foreground=0x7537828
+Click client (510,190) -> screen (1149,501), foreground=0x7537828
+Click client (510,220) -> screen (1149,531), foreground=0x7537828
+Capture 04_drive_configured: client=(639,311) 1280x720, window=(631,280)-(1927,1039), foreground=0x7537828
+Click client (480,64) -> screen (1119,375), foreground=0x7537828
+Capture 08_sensors_dashboard: client=(639,311) 1280x720, window=(631,280)-(1927,1039), foreground=0x7537828
+UI smoke test passed. Trace: C:\Users\user\AppData\LocalLow\DefaultCompany\jajucha-sim\JajuchaSim\Logs\state-trace.jsonl

@@ -14,11 +14,11 @@ Python with `python/requirements.txt` installed).
    .\dist\JajuchaSimulator\JajuchaSimulator.exe
    ```
    Expect: window opens, status bar shows `READY`, mode `Drive`, and the
-   template course is loaded (vehicle visible in the viewport).
+   2026 preliminary course is loaded (vehicle visible in the viewport).
 
-2. **Load template course**
-   The bootstrap loads `Courses/template_course.json` automatically. Verify the
-   status bar shows `READY` and the vehicle sits at the start.
+2. **Load the 2026 course**
+   The bootstrap loads `Courses/2026_preliminary.json` on first launch and the
+   last selected stage thereafter. Verify `READY` and select a mission before Start Run.
 
 3. **Open Map Editor** — press `F2` (or use the runtime UI). Expect: simulation
    pauses, top-down camera, tile grid/editor palette visible.

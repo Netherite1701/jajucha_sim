@@ -1,0 +1,10 @@
+[build] Unity: C:\Program Files\Unity\Hub\Editor\6000.3.20f1\Editor\Unity.exe
+[build] Skipping validation (-SkipValidation).
+[build] Running Unity EditMode tests...
+[build] EditMode tests passed: 493.
+[build] Building Windows standalone...
+[build] Assembling distribution...
+
+[build] Distribution created at: C:\dev\jajucha-sim\dist\JajuchaSimulator
+[build] Contents: JajuchaSimulator.exe, JajuchaSimulator_Data/, Courses/, Config/, Scripts/, Python/, Docs/, README.md
+[build] Launch with: .\scripts\run_simulator.ps1

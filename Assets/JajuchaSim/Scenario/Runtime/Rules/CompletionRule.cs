@@ -8,7 +8,7 @@ namespace JajuchaSim.Scenario
     /// </summary>
     public sealed class CompletionRule : RuleEvaluator
     {
-        public override void Finalize()
+        public override void FinalizeRule()
         {
             var r = Ctx.Score.Result;
             r.Status = Ctx.Session.Status;

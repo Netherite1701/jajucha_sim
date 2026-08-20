@@ -1,0 +1,55 @@
+﻿{
+    "passed":  true,
+    "timestamp":  "2026-08-20T01:15:33.7305703+09:00",
+    "before":  {
+                   "position_cm":  {
+                                       "x":  350,
+                                       "y":  3.977083,
+                                       "z":  45
+                                   },
+                   "rotation_deg":  {
+                                        "x":  0,
+                                        "y":  0,
+                                        "z":  0
+                                    },
+                   "velocity_cm_s":  {
+                                         "x":  0,
+                                         "y":  1.897812E-05,
+                                         "z":  0
+                                     },
+                   "command":  {
+                                   "left":  0,
+                                   "right":  0,
+                                   "speed":  0
+                               },
+                   "driven_wheel_grounded":  true
+               },
+    "after":  {
+                  "position_cm":  {
+                                      "x":  350,
+                                      "y":  -3653.776,
+                                      "z":  51.53403
+                                  },
+                  "rotation_deg":  {
+                                       "x":  81.15149,
+                                       "y":  0,
+                                       "z":  0
+                                   },
+                  "velocity_cm_s":  {
+                                        "x":  0,
+                                        "y":  -1620.234,
+                                        "z":  0.7123659
+                                    },
+                  "command":  {
+                                  "left":  0,
+                                  "right":  0,
+                                  "speed":  30
+                              },
+                  "driven_wheel_grounded":  false
+              },
+    "distance_cm":  6.5340300000000013,
+    "screenshots":  [
+                        "C:\\dev\\jajucha-sim\\test-artifacts\\drive\\drive_before_1280x720.png",
+                        "C:\\dev\\jajucha-sim\\test-artifacts\\drive\\drive_after_1280x720.png"
+                    ]
+}

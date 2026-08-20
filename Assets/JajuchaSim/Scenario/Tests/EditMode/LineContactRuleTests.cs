@@ -31,9 +31,7 @@ namespace JajuchaSim.Scenario.Tests
 
             var def = ScenarioDefinition.Default();
             def.name = "Line Contact Test";
-            def.startTimingMode = StartTimingMode.SignalGreen;
-            def.redDurationSec = 0.01f;
-            def.yellowDurationSec = 0.01f;
+            def.startTimingMode = StartTimingMode.SignalRelease;
             def.scoring.lineContactPenalty = 5f;
 
             manager.PrepareRun(def, doc);

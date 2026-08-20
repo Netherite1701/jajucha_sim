@@ -3,7 +3,7 @@
 # Locates the Windows standalone build and launches it, forwarding optional
 # command-line arguments:
 #
-#   -Course "template_course"
+#   -Course "2026_preliminary"
 #   -Mode "Drive"
 #   -SimulationSpeed 1.0
 #   -NoDebugUi
@@ -11,10 +11,10 @@
 #
 # Examples:
 #   .\scripts\run_simulator.ps1
-#   .\scripts\run_simulator.ps1 -Course "template_course" -Mode "Drive"
+#   .\scripts\run_simulator.ps1 -Course "2026_preliminary" -Mode "Drive"
 #
-# If no standalone build is found, it falls back to opening the Unity Editor
-# project (requires Unity + the Editor to be installed).
+# The normal development workflow uses the standalone executable. Use
+# -BuildIfMissing to build it automatically when it is not present.
 
 [CmdletBinding()]
 param(
@@ -22,7 +22,8 @@ param(
     [string]$Mode,
     [float]$SimulationSpeed = 1.0,
     [switch]$NoDebugUi,
-    [string]$BatchConfig
+    [string]$BatchConfig,
+    [switch]$BuildIfMissing
 )
 
 $ErrorActionPreference = "Stop"
@@ -39,11 +40,22 @@ foreach ($candidate in @(
 }
 
 if (-not $exe) {
-    Write-Host "[run][WARN] No standalone build found (looked in dist/ and Builds/)." -ForegroundColor Yellow
-    Write-Host "[run][WARN] Build one first with .\scripts\build_windows.ps1, or open the Unity project." -ForegroundColor Yellow
-    Write-Host "[run][WARN] Falling back to Unity Editor Play Mode instructions:" -ForegroundColor Yellow
-    Write-Host "    Open Assets/JajuchaSim/Scenes/JajuchaSimulator.unity and press Play."
-    exit 1
+    if ($BuildIfMissing) {
+        Write-Host "[run] No standalone build found. Building it now..." -ForegroundColor Yellow
+        & (Join-Path $Root "scripts\build_windows.ps1")
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "[run][ERROR] Standalone build failed." -ForegroundColor Red
+            exit $LASTEXITCODE
+        }
+        $candidate = Join-Path $Root "dist\JajuchaSimulator\JajuchaSimulator.exe"
+        if (Test-Path $candidate) { $exe = $candidate }
+    }
+
+    if (-not $exe) {
+        Write-Host "[run][ERROR] No standalone build found." -ForegroundColor Red
+        Write-Host "[run][ERROR] Run 'Jajucha: Build Windows standalone' first, or use 'Jajucha: Open Unity Editor' for Play Mode." -ForegroundColor Red
+        exit 1
+    }
 }
 
 # Build the argument list.

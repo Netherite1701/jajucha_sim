@@ -45,6 +45,18 @@ namespace JajuchaSim.Sensors
         public CameraOutputFormat outputFormat = CameraOutputFormat.RGB24;
 
         [Header("Calibration")]
+        [Tooltip("Lateral spacing between the left and right camera mount centers in cm. Existing model is 10 cm; provisional until the array is measured directly.")]
+        public float arrayWidthCm = 10f;
+
+        [Tooltip("Camera-array mount height above the vehicle reference plane in cm. Existing model is 4 cm; provisional.")]
+        public float mountHeightCm = 4f;
+
+        [Tooltip("Camera-array forward offset from the vehicle reference origin in cm. Existing model is 12 cm; provisional.")]
+        public float mountForwardOffsetCm = 12f;
+
+        [Tooltip("Lateral position of this camera in the array, in cm: left=-5, center=0, right=5 in the current provisional model.")]
+        public float lateralOffsetCm;
+
         [Tooltip("True if the physical camera has been measured and this config reflects real values.")]
         public bool calibrated = false;
 
