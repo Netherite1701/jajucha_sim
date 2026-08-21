@@ -24,6 +24,8 @@ EXAMPLE_FILES = [
     "04_depth_view.py",
     "05_drive_and_view.py",
     "06_test_run.py",
+    "07_stop_on_line.py",
+    "08_camera_lane_drive.py",
 ]
 
 

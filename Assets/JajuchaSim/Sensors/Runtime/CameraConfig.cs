@@ -29,6 +29,10 @@ namespace JajuchaSim.Sensors
         [Range(1f, 179f)]
         public float verticalFov = 60f;
 
+        [Tooltip("Downward camera pitch in degrees. Positive values aim the sensor toward the road surface.")]
+        [Range(0f, 45f)]
+        public float pitchDownDeg = 8f;
+
         [Tooltip("Near clipping plane distance in cm.")]
         public float nearClipCm = 1f;
 

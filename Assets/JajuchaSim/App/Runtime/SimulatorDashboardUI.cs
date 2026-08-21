@@ -77,6 +77,11 @@ namespace JajuchaSim.UI
         private Texture2D _lidarTexture;
         private long _lastLidarFrameId = -1;
         private Text _debugText;
+        private Text _scriptStatus;
+        private InputField _scriptNameInput;
+        private Transform _scriptList;
+        private GameObject _scriptEmptyMessage;
+        private readonly List<GameObject> _scriptRows = new List<GameObject>();
         private Text _driveGuide;
         private Text _resultsText;
         private GameObject _resultsModal;
@@ -357,11 +362,25 @@ namespace JajuchaSim.UI
         private void BuildDebugTab()
         {
             var content = CreateScrollTab(DashboardTab.Debug);
+            var contentRect = content as RectTransform;
+            if (contentRect != null)
+                contentRect.sizeDelta = new Vector2(ContentWidth, 860f);
             MakeText(content, "Heading", new Vector2(14f, -12f), new Vector2(680f, 25f), TextAnchor.MiddleLeft, 14, AccentColor).text = "시뮬레이션 디버그";
-            _debugText = MakeText(content, "Debug", new Vector2(14f, -50f), new Vector2(690f, 260f), TextAnchor.UpperLeft, 13, Color.white);
-            MakeButton(content, "Pause", "일시정지 / 재개", new Vector2(14f, -340f), new Vector2(160f, 32f), ToggleSimulation);
-            MakeButton(content, "Step", "한 스텝 실행", new Vector2(184f, -340f), new Vector2(140f, 32f), () => _simulation?.Step());
-            MakeButton(content, "Reset", "리셋", new Vector2(334f, -340f), new Vector2(100f, 32f), () => _simulation?.ResetSimulation());
+            _debugText = MakeText(content, "Debug", new Vector2(14f, -50f), new Vector2(690f, 220f), TextAnchor.UpperLeft, 13, Color.white);
+            MakeButton(content, "Pause", "일시정지 / 재개", new Vector2(14f, -290f), new Vector2(160f, 32f), ToggleSimulation);
+            MakeButton(content, "Step", "한 스텝 실행", new Vector2(184f, -290f), new Vector2(140f, 32f), () => _simulation?.Step());
+            MakeButton(content, "Reset", "리셋", new Vector2(334f, -290f), new Vector2(100f, 32f), () => _simulation?.ResetSimulation());
+
+            var scriptsPanel = MakePanel(content, "ScriptsPanel", new Vector2(14f, -350f), new Vector2(690f, 470f), PanelColor, new Vector2(0f, 1f));
+            MakeText(scriptsPanel, "Title", new Vector2(12f, -10f), new Vector2(400f, 24f), TextAnchor.MiddleLeft, 13, AccentColor).text = "사용자 스크립트";
+            MakeText(scriptsPanel, "Hint", new Vector2(12f, -34f), new Vector2(660f, 34f), TextAnchor.UpperLeft, 10, MutedColor).text =
+                "이름을 입력하면 실행용 Python 템플릿이 내 스크립트 폴더에 생성됩니다.";
+            _scriptNameInput = MakeInputField(scriptsPanel, "ScriptName", new Vector2(12f, -75f), new Vector2(350f, 30f), "예: my_controller");
+            MakeButton(scriptsPanel, "AddScript", "＋ 새 스크립트", new Vector2(372f, -76f), new Vector2(130f, 30f), CreateDebugScript);
+            MakeButton(scriptsPanel, "RefreshScripts", "새로고침", new Vector2(510f, -76f), new Vector2(100f, 30f), RefreshDebugScripts);
+            _scriptStatus = MakeText(scriptsPanel, "ScriptStatus", new Vector2(12f, -112f), new Vector2(660f, 28f), TextAnchor.MiddleLeft, 10, MutedColor);
+            _scriptList = scriptsPanel;
+            RefreshDebugScripts();
         }
 
         private Transform CreateScrollTab(DashboardTab tab)
@@ -647,6 +666,64 @@ namespace JajuchaSim.UI
                 $"브리지 포트   {_bootstrap?.BridgePort ?? 8765}";
         }
 
+        private void CreateDebugScript()
+        {
+            string requestedName = _scriptNameInput != null ? _scriptNameInput.text : string.Empty;
+            if (!DebugScriptStore.TryCreateScript(requestedName, out string path, out string error))
+            {
+                if (_scriptStatus != null) _scriptStatus.text = error;
+                return;
+            }
+
+            if (_scriptNameInput != null) _scriptNameInput.text = string.Empty;
+            if (_scriptStatus != null) _scriptStatus.text = "생성됨: " + path;
+            RefreshDebugScripts();
+        }
+
+        private void RefreshDebugScripts()
+        {
+            if (_scriptList == null) return;
+            for (int i = 0; i < _scriptRows.Count; i++)
+            {
+                if (_scriptRows[i] == null) continue;
+                if (Application.isPlaying) Destroy(_scriptRows[i]);
+                else DestroyImmediate(_scriptRows[i]);
+            }
+            _scriptRows.Clear();
+            if (_scriptEmptyMessage != null)
+            {
+                if (Application.isPlaying) Destroy(_scriptEmptyMessage);
+                else DestroyImmediate(_scriptEmptyMessage);
+                _scriptEmptyMessage = null;
+            }
+
+            var scripts = DebugScriptStore.ListScripts();
+            if (scripts.Count == 0)
+            {
+                _scriptEmptyMessage = MakeText(_scriptList, "Empty", new Vector2(12f, -146f), new Vector2(660f, 28f), TextAnchor.MiddleLeft, 11, MutedColor).gameObject;
+                _scriptEmptyMessage.GetComponent<Text>().text = "등록된 Python 스크립트가 없습니다.";
+                return;
+            }
+
+            float y = -146f;
+            for (int i = 0; i < scripts.Count; i++)
+            {
+                var script = scripts[i];
+                var row = MakePanel(_scriptList, "ScriptRow_" + i, new Vector2(12f, y), new Vector2(660f, 32f), new Color(.11f, .13f, .17f, 1f), new Vector2(0f, 1f));
+                _scriptRows.Add(row.gameObject);
+                MakeText(row, "Name", new Vector2(8f, -4f), new Vector2(280f, 24f), TextAnchor.MiddleLeft, 11, Color.white).text = script.Name + ".py";
+                MakeText(row, "Source", new Vector2(292f, -4f), new Vector2(170f, 24f), TextAnchor.MiddleLeft, 10, MutedColor).text = script.Source;
+                MakeButton(row, "Edit", "편집", new Vector2(570f, -3f), new Vector2(76f, 26f), () => OpenDebugScript(script.Path));
+                y -= 36f;
+            }
+        }
+
+        private static void OpenDebugScript(string path)
+        {
+            if (string.IsNullOrEmpty(path) || !System.IO.File.Exists(path)) return;
+            Application.OpenURL("file:///" + path.Replace('\\', '/'));
+        }
+
         private void RefreshResults()
         {
             var results = _mapEditor?.ScenarioPanel?.Results;
@@ -757,6 +834,31 @@ namespace JajuchaSim.UI
             text.horizontalOverflow = HorizontalWrapMode.Wrap; text.verticalOverflow = VerticalWrapMode.Overflow;
             var rt = text.rectTransform; rt.anchorMin = new Vector2(0f, 1f); rt.anchorMax = new Vector2(0f, 1f); rt.pivot = new Vector2(0f, 1f); rt.anchoredPosition = position; rt.sizeDelta = size;
             return text;
+        }
+
+        private static InputField MakeInputField(Transform parent, string name, Vector2 position, Vector2 size, string placeholder)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var rt = go.AddComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0f, 1f); rt.anchorMax = new Vector2(0f, 1f); rt.pivot = new Vector2(0f, 1f);
+            rt.anchoredPosition = position; rt.sizeDelta = size;
+            var image = go.AddComponent<Image>(); image.color = new Color(.04f, .05f, .07f, 1f);
+            var input = go.AddComponent<InputField>();
+            input.targetGraphic = image;
+            input.lineType = InputField.LineType.SingleLine;
+            var text = MakeText(go.transform, "Text", new Vector2(8f, -2f), size - new Vector2(16f, 4f), TextAnchor.MiddleLeft, 11, Color.white);
+            text.raycastTarget = false;
+            text.rectTransform.anchorMin = Vector2.zero; text.rectTransform.anchorMax = Vector2.one; text.rectTransform.pivot = new Vector2(.5f, .5f);
+            text.rectTransform.anchoredPosition = Vector2.zero; text.rectTransform.sizeDelta = new Vector2(-16f, -4f);
+            input.textComponent = text;
+            var hint = MakeText(go.transform, "Placeholder", new Vector2(8f, -2f), size - new Vector2(16f, 4f), TextAnchor.MiddleLeft, 11, MutedColor);
+            hint.raycastTarget = false;
+            hint.rectTransform.anchorMin = Vector2.zero; hint.rectTransform.anchorMax = Vector2.one; hint.rectTransform.pivot = new Vector2(.5f, .5f);
+            hint.rectTransform.anchoredPosition = Vector2.zero; hint.rectTransform.sizeDelta = new Vector2(-16f, -4f);
+            hint.text = placeholder;
+            input.placeholder = hint;
+            return input;
         }
 
         private static GameObject MakeButton(Transform parent, string name, string label, Vector2 position, Vector2 size, Action onClick)

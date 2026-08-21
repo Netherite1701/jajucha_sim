@@ -141,6 +141,13 @@ namespace JajuchaSim.Sensors
             _camera.targetTexture = _renderTexture;
             _camera.rect = new Rect(0f, 0f, 1f, 1f);
             _camera.fieldOfView = _config.verticalFov;
+            // The physical cameras look slightly down toward the lane.  The
+            // previous zero-pitch pose put the road edge/grass in the middle
+            // of the sensor image, which made the feed look as if it were
+            // seeing through the road. Keep the calibration configurable but
+            // apply a safe downward default from CameraConfig.
+            _camera.transform.localRotation = Quaternion.Euler(
+                Mathf.Clamp(_config.pitchDownDeg, 0f, 45f), 0f, 0f);
             _camera.nearClipPlane = _config.nearClipCm; // 1 unit = 1 cm
             _camera.farClipPlane = _config.farClipCm;
             _camera.clearFlags = CameraClearFlags.SolidColor;

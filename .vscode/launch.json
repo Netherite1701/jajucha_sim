@@ -2,6 +2,30 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Jajucha: Debug motor test 01",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/python/examples/01_motor_test.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}\\python"
+      }
+    },
+    {
+      "name": "Jajucha: Debug camera drive 08",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/python/examples/08_camera_lane_drive.py",
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}\\python"
+      }
+    },
+    {
       "name": "Jajucha: Debug user controller",
       "type": "debugpy",
       "request": "launch",

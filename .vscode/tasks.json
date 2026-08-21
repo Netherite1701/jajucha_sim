@@ -179,6 +179,29 @@
         "panel": "dedicated",
         "showReuseMessage": false
       }
+    },
+    {
+      "label": "Jajucha: Run camera-drive simulator",
+      "type": "process",
+      "command": "powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "${workspaceFolder}\\scripts\\run_simulator.ps1",
+        "-Course",
+        "${workspaceFolder}\\Courses\\camera_drive_straight.json"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "showReuseMessage": false
+      }
     }
   ]
 }

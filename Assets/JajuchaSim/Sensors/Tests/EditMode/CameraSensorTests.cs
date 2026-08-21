@@ -63,6 +63,7 @@ namespace JajuchaSim.Sensors.Tests
             Assert.AreEqual(640, config.width);
             Assert.AreEqual(480, config.height);
             Assert.AreEqual(60f, config.verticalFov);
+            Assert.AreEqual(8f, config.pitchDownDeg);
             Assert.AreEqual(30f, config.frameRate);
             Assert.IsFalse(config.calibrated);
             Assert.AreEqual(CameraOutputFormat.RGB24, config.outputFormat);

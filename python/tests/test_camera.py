@@ -161,5 +161,32 @@ class TestCameraShowImage(unittest.TestCase):
             pass
 
 
+class TestCameraGridFront(unittest.TestCase):
+    """Tests for the real-vehicle-compatible camera.gridFront helper."""
+
+    def test_grid_front_returns_v_l_r_and_grid(self):
+        image = np.zeros((480, 640, 3), dtype=np.uint8)
+
+        (vertical, left, right), grid = camera.gridFront(image)
+
+        self.assertEqual(len(vertical), 7)
+        self.assertEqual(len(left), 3)
+        self.assertEqual(len(right), 3)
+        self.assertEqual(grid.shape, (480, 640, 3))
+
+    def test_grid_front_matches_no_edge_sentinels(self):
+        image = np.zeros((480, 640, 3), dtype=np.uint8)
+
+        (vertical, left, right), _ = camera.gridFront(image)
+
+        self.assertEqual(vertical, [281] * 7)
+        self.assertEqual(left, [321] * 3)
+        self.assertEqual(right, [321] * 3)
+
+    def test_grid_front_rejects_non_bgr_image(self):
+        with self.assertRaises(ValueError):
+            camera.gridFront(np.zeros((480, 640), dtype=np.uint8))
+
+
 if __name__ == "__main__":
     unittest.main()

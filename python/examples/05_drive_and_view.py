@@ -11,8 +11,12 @@ This is a usage example only - it is not an ANN or FSM implementation.
 """
 
 import time
+from pathlib import Path
+import sys
 
 import cv2
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import jchm
 from jchm.errors import JchmConnectionError, JchmError

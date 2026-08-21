@@ -86,6 +86,9 @@ Replace the loop body with your own algorithm (see `python/user/README.md`).
   stage, and run status. Its tabs are `주행 / 코스 편집 / 채점 / 센서 / 디버그`.
 * The dashboard owns the controls; scenario, scoring, and debug components
   provide state only and do not create additional runtime canvases.
+* In `디버그 → 사용자 스크립트`, enter a name and press `＋ 새 스크립트` to
+  create a runnable Python controller template. New files are saved under the
+  writable `JajuchaSim/Scripts` folder and can be opened with `편집`.
 
 ## Default key bindings
 

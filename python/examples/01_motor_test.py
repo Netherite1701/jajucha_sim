@@ -15,45 +15,58 @@ Each step runs for a short time then returns to a full stop.
 """
 
 import time
+from pathlib import Path
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 import jchm
 from jchm.errors import JchmConnectionError, JchmError
 
 # Seconds to hold each command so the motion is observable.
 STEP_SECONDS = 1.0
+COMMAND_REFRESH_SECONDS = 0.1
 
 
 def step(label: str, left: int, right: int, speed: int, duration: float = STEP_SECONDS) -> None:
-    """Send one motor command, print it, and hold it."""
-    print(f"[motor] {label:28s} set_motor({left:>3}, {right:>3}, {speed:>3})")
-    jchm.control.set_motor(left, right, speed)
-    time.sleep(duration)
+    """Keep refreshing one command so the bridge watchdog cannot cancel it."""
+    print(
+        f"[motor] {label:28s} set_motor({left:>3}, {right:>3}, {speed:>3})",
+        flush=True,
+    )
+    deadline = time.monotonic() + duration
+    while True:
+        jchm.control.set_motor(left, right, speed)
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
+        time.sleep(min(COMMAND_REFRESH_SECONDS, remaining))
 
 
 def main() -> None:
-    print("[motor] Motor test starting - watch the vehicle in the viewport.")
+    print("[motor] Motor test starting - watch the vehicle in the viewport.", flush=True)
     try:
         # 1. Stop (speed zero: no propulsion, no steering).
         step("stop", 0, 0, 0)
-
+        print("1")
         # 2. Forward.
         step("forward", 0, 0, 10)
-
+        print("2")
         # 3. Reverse.
         step("reverse", 0, 0, -10)
-
+        print("3")
         # 4. Left steering while moving forward.
         step("left steering", -10, -10, 8)
-
+        print("4")
         # 5. Right steering while moving forward.
         step("right steering", 10, 10, 8)
-
+        print("5")
         # 6. Independent wheel steering (front wheels oppose).
         step("independent steering", -10, 10, 6)
-
+        print("6")
         # 7. Speed zero with steering (steering works, no propulsion).
         step("speed zero + steering", -10, 10, 0, duration=0.5)
-
+        print("7")
         print("[motor] Motor test complete.")
 
     except KeyboardInterrupt:

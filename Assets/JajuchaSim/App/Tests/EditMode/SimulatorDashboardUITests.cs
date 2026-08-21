@@ -1,5 +1,7 @@
+using JajuchaSim.App;
 using JajuchaSim.UI;
 using NUnit.Framework;
+using System.IO;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -23,6 +25,22 @@ namespace JajuchaSim.App.Tests
             var eventSystem = Object.FindFirstObjectByType<EventSystem>();
             if (eventSystem != null && eventSystem.gameObject.name == "EventSystem")
                 Object.DestroyImmediate(eventSystem.gameObject);
+        }
+
+        [Test]
+        public void DebugScriptStoreNormalizesNamesAndKeepsPythonExtensionOutOfBaseName()
+        {
+            Assert.AreEqual("my_controller", DebugScriptStore.NormalizeFileName("  my_controller.py  "));
+            Assert.AreEqual("controller", DebugScriptStore.NormalizeFileName("controller"));
+            Assert.AreEqual(string.Empty, DebugScriptStore.NormalizeFileName("../"));
+        }
+
+        [Test]
+        public void DebugScriptStoreListsShippedExamples()
+        {
+            var scripts = DebugScriptStore.ListScripts();
+            Assert.IsNotNull(scripts);
+            Assert.IsTrue(scripts.Exists(script => script.Name == "01_motor_test" && File.Exists(script.Path)));
         }
     }
 }
